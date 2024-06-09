@@ -1,0 +1,98 @@
+﻿<nav class="bottom-nav-mobile justify-content-between align-items-center">
+    <a href="\" class="bottom-nav-link bottom-nav-home d-flex flex-column align-items-center justify-content-center @( ViewBag.ActiveBotNav == "home" ? "nav-link-active" : "")">
+        <ion-icon name="home-outline" class="bottom-nav-icon"></ion-icon>
+        <span>Trang chủ</span>
+    </a>
+    <div class="bottom-nav-link bottom-nav-show-sidebar d-flex flex-column align-items-center justify-content-center">
+        <ion-icon name="grid-outline" class="bottom-nav-icon"></ion-icon>
+        <span>Danh mục</span>
+    </div>
+    <a href="/account#orders" class="bottom-nav-link bottom-nav-promotion d-flex flex-column align-items-center justify-content-center">
+        <ion-icon name="clipboard-outline" class="bottom-nav-icon"></ion-icon>
+        <span>Đơn hàng</span>
+    </a>
+    <a href="#" class="bottom-nav-link bottom-nav-chat d-flex flex-column align-items-center justify-content-center">
+        <ion-icon name="chatbubbles-outline" class="bottom-nav-icon"></ion-icon>
+        <span>Tư vấn</span>
+    </a>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <a href="/account" class="bottom-nav-link d-flex flex-column align-items-center justify-content-center @( ViewBag.ActiveBotNav == "account" ? "nav-link-active" : "")">
+            <ion-icon name="person-outline" class="bottom-nav-icon"></ion-icon>
+            <span>@User.Identity.Name</span>
+        </a>
+    }
+    else
+    {
+        <a href="#" class="bottom-nav-link bottom-nav-account d-flex flex-column align-items-center justify-content-center">
+            <ion-icon name="person-outline" class="bottom-nav-icon"></ion-icon>
+            <span>Tài khoản</span>
+        </a>
+    }
+</nav>
+
+<div class="mobile-sidebar">
+    <div class="mobile-sidebar-header d-flex align-items-center justify-content-between">
+        <span class="mobile-sidebar-header-title">DANH MỤC SẢN PHẨM</span>
+        <div class="sidebar-close-btn">
+            <ion-icon name="close-outline" class="close-icon"></ion-icon>
+        </div>
+    </div>
+    <div class="mobile-sidebar-content">
+        @{
+            Html.RenderPartial("Partial_Megamenu");
+        }
+
+        <div class="mobile-sidebar-info">
+            <h4 class="sidebar-info-title">
+                Thông tin
+            </h4>
+            <div class="sidebar-info-content">
+                <ul class="sidebar-info-list">
+                    <li class="sidebar-info-list-item">
+                        <a href="#" class="sidebar-info-link sidebar-info-phone">
+                            <i class="fa-solid fa-phone-volume megamenu-icon"></i>
+                            0123456789
+                        </a>
+                    </li>
+                    <li class="sidebar-info-list-item">
+                        <a href="#" class="sidebar-info-link">
+                            <i class="fa-solid fa-tags megamenu-icon"></i>
+                            Tổng hợp khuyến mãi
+                        </a>
+                    </li>
+                    <li class="sidebar-info-list-item">
+                        <a href="#" class="sidebar-info-link">
+                            <i class="fa-solid fa-screwdriver-wrench megamenu-icon"></i>
+                            Chính sách bảo hành
+                        </a>
+                    </li>
+                    <li class="sidebar-info-list-item">
+                        <a href="#" class="sidebar-info-link">
+                            <i class="fa-solid fa-credit-card megamenu-icon"></i>
+                            Hướng dẫn thanh toán
+                        </a>
+                    </li>
+                    <li class="sidebar-info-list-item">
+                        <a href="#" class="sidebar-info-link">
+                            <i class="fa-solid fa-money-check-dollar megamenu-icon"></i>
+                            Hướng dẫn trả góp
+                        </a>
+                    </li>
+                    <li class="sidebar-info-list-item">
+                        <a href="#" class="sidebar-info-link">
+                            <i class="fa-solid fa-newspaper megamenu-icon"></i>
+                            Tin tức
+                        </a>
+                    </li>
+                    <li class="sidebar-info-list-item">
+                        <a href="/about" class="sidebar-info-link">
+                            <i class="fa-solid fa-phone megamenu-icon"></i>
+                            Liên hệ
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

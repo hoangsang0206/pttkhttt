@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="adac11b7942b4ef681780d4d181cf55f" Name="Diagram1">
+        <EntityTypeShape EntityType="QL_DienMayModel.Banner" Width="1.5" PointX="0.75" PointY="1.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietHD" Width="1.5" PointX="5.25" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietKho" Width="1.5" PointX="5.25" PointY="10.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietPN" Width="1.5" PointX="5.25" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietPXK" Width="1.5" PointX="8.25" PointY="13.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.DanhMuc" Width="1.5" PointX="0.75" PointY="14" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.HangSX" Width="1.5" PointX="0.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.HinhAnhSP" Width="1.5" PointX="5.25" PointY="23.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.HoaDon" Width="1.5" PointX="6" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.KhachHang" Width="1.5" PointX="3.75" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.Kho" Width="1.5" PointX="3" PointY="18.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.Megamenu" Width="1.5" PointX="13" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.MegamenuItem" Width="1.5" PointX="15.25" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.NhaCungCap" Width="1.5" PointX="0.75" PointY="22.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.NhanVien" Width="1.5" PointX="3.75" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.PhieuBaoHanh" Width="1.5" PointX="8.25" PointY="9.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.PhieuDoiTra" Width="1.5" PointX="8.25" PointY="17.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.PhieuNhap" Width="1.5" PointX="3" PointY="22.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.PhieuXuatKho" Width="1.5" PointX="6" PointY="26.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.SanPham" Width="1.5" PointX="3" PointY="12.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.SidebarMenu" Width="1.5" PointX="10.75" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.Slider" Width="1.5" PointX="0.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.sysdiagram" Width="1.5" PointX="0.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.TheThanhVien" Width="1.5" PointX="6" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.ThongSoKyThuat" Width="1.5" PointX="5.25" PointY="34.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.TichDiem" Width="1.5" PointX="8.25" PointY="4.5" IsExpanded="true" />
+        <AssociationConnector Association="QL_DienMayModel.FK_CTHD_HD" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_CTHD_SP" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_CTK_Kho" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_CTK_SP" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_CTPN_PN" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_CTPN_SP" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_CTPXK_PXK" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_CTPXK_SP" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_SP_DM" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_SP_HSX" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_HinhAnhSP" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_HD_KH" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_HD_NV" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PBH_HD" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PDT_HD" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_TD_HD" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_TTV_KH" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PXK_Kho" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_Megamenu_Sidebar" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_MegamenuItem_Megamenu" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PN_NCC" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PBH_NV" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PDT_NV" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PN_NV" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PXK_NV" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PBH_SP" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PDT_SPDoi" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_PDT_T_SPTra" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_TSKT_SP" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_TD_TTV" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

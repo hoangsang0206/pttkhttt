@@ -1,0 +1,162 @@
+﻿<header>
+    <div class="top-header">
+    </div>
+    <div class="container-xxl">
+        <div id="header">
+            <div class="header-box">
+                <div class="mobile-categories-btn">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+                <a href="\" class="mobile-logo">
+                    <img src="~/Assets/Images/logo/stech-logo-mobile.png" alt="Stech Logo">
+                </a>
+                <a href="\" class="logo">
+                    <img src="~/Assets/Images/logo/stech-logo.png" alt="Stech Logo">
+                </a>
+            </div>
+            <div class="categories-btn">
+                <i class="fa-solid fa-bars"></i>
+                <span>Danh mục</span>
+            </div>
+
+            <div class="search d-flex align-items-center">
+                <div class="close-search flex-column align-items-center">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </div>
+                <form action="/search" method="get" class="search-form">
+                    <input type="text" id="search" name="search" class="search-box" placeholder="Bạn cần tìm gì?" required autocomplete="off" />
+                    <button type="submit" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </form>
+                <div class="ajax-search-autocomplete">
+                    <div class="ajax-search-items"></div>
+                    <div class="ajax-search-empty text-black">
+                        Không tìm thấy sản phẩm nào...
+                    </div>
+                </div>
+                <div class="search-history">
+                    <h4>Lịch sử tìm kiếm:</h4>
+                    <ul class="search-history-list">
+                    </ul>
+                    <div class="clear-search-history d-flex align-items-center justify-content-center">
+                        Xóa lịch sử tìm kiếm
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-hotline">
+                <i class="fa-solid fa-headphones-simple header-icon"></i>
+                <span>
+                    Hotline: <br />
+                    <b>0123456789</b>
+                </span>
+            </div>
+            <div class="order-check">
+                <a href="/account#orders">
+                    <i class="fa-regular fa-clipboard header-icon"></i>
+                    <span>Tra cứu đơn hàng</span>
+                </a>
+            </div>
+            <div class="header-btn">
+                <div class="cart-btn">
+                    <a href="/cart">
+                        <ion-icon name="cart-outline"></ion-icon>
+                        <div class="cart-count-holder">
+                            <div class="cart-count">0</div>
+                        </div>
+                        <span>Giỏ <br>hàng</span>
+                    </a>
+                </div>
+            </div>
+            <div class="login-btn-box position-relative">
+                <div class="login-btn">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a href="/account" class="logged-link">
+                            <span>@User.Identity.Name</span>
+                        </a>
+                        <div class="login-info-box account-logged position-absolute">
+                            <a href="/account">
+                                <div class="login-info-name">
+                                    <img src="~/Assets/Images/icon/hello.png" alt="" />
+                                    <span> Xin chào, @User.Identity.Name</span>
+                                </div>
+                            </a>
+                            <hr />
+                            <a href="/account#orders">
+                                <div class="login-info-order">
+                                    <i class="fa-regular fa-clipboard"></i>
+                                    <span>Đơn hàng của tôi</span>
+                                </div>
+                            </a>
+                            <hr />
+                            <div class="login-info-logout d-flex align-items-center">
+                                <ion-icon name="log-out-outline"></ion-icon>
+                                <span>Đăng xuất</span>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <a href="#" class="login-link">
+                            <i class="fa-regular fa-user header-icon login-btn"></i>
+                            <span>Đăng<br /> nhập</span>
+                        </a>
+
+                        <div class="login-info-box position-absolute">
+                            <h4>Đăng nhập/Đăng ký</h4>
+                            <div class="login-register-btn-box d-flex align-items-center">
+                                <button class="action-login-btn position-relative">
+                                    Đăng nhập
+                                </button>
+                                <button class="action-register-btn position-relative">
+                                    Đăng ký
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sub-header">
+        <div class="container-xxl">
+            <ul class="sub-header-item-list d-flex align-items-center">
+            </ul>
+        </div>
+    </div>
+</header>
+<nav>
+    <div class="container-xxl">
+        <div class="navigation">
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-tags nav-icon"></i>
+                <span>Tổng hợp khuyến mãi</span>
+            </a>
+            <div class="nav-break"></div>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-screwdriver-wrench nav-icon"></i>
+                <span>Chính sách bảo hành</span>
+            </a>
+            <div class="nav-break"></div>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-credit-card nav-icon"></i>
+                <span>Hướng dẫn thanh toán</span>
+            </a>
+            <div class="nav-break"></div>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-money-check-dollar nav-icon"></i>
+                <span>Hướng dẫn trả góp</span>
+            </a>
+            <div class="nav-break"></div>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-newspaper nav-icon"></i>
+                <span>Tin tức</span>
+            </a>
+            <div class="nav-break"></div>
+            <a href="/about" class="nav-item">
+                <i class="fa-solid fa-phone nav-icon"></i>
+                <span>Liên hệ</span>
+            </a>
+        </div>
+    </div>
+</nav>
