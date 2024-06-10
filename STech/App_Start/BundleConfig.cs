@@ -18,7 +18,7 @@ namespace STech
 
             bundles.Add(new ScriptBundle("~/scripts").Include(
                 "~/Scripts/script.js",
-                "~/Scripts/product.js",
+                "~/Scripts/products.js",
                 "~/Scripts/cart.js",
                 "~/Scripts/account.js",
                 "~/Scripts/order.js"));

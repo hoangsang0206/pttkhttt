@@ -162,13 +162,16 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\CollectionsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\UrlHelperExtension.cs" />
     <Compile Include="Models\Banner.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Breadcrumb.cs" />
     <Compile Include="Models\ChiTietHD.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -263,6 +266,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
+    <Content Include="Assets\Images\banner\banner-1-img-1.png" />
     <Content Include="Assets\Images\delivery\emsvn-logo.png" />
     <Content Include="Assets\Images\delivery\ghn-logo.png" />
     <Content Include="Assets\Images\delivery\ghtk-logo.png" />
@@ -357,12 +361,15 @@
     <Content Include="Css\fonts\SFProDisplay\SF-Pro-Display-Medium.woff2" />
     <Content Include="Css\fonts\SFProDisplay\SF-Pro-Display-Regular.woff2" />
     <Content Include="Css\fonts\SFProDisplay\SF-Pro-Display-Semibold.woff2" />
+    <Content Include="Assets\Images\banner\10.webp" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\Partial_Footer.cshtml" />
     <Content Include="Views\Shared\Partial_Megamenu.cshtml" />
     <Content Include="Views\Shared\Partial_HiddenContents.cshtml" />
     <Content Include="Views\Shared\Partial_HeaderNav.cshtml" />
     <Content Include="Views\Shared\Partial_MobileNav.cshtml" />
+    <Content Include="Views\Collections\Index.cshtml" />
+    <Content Include="Views\Collections\Search.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

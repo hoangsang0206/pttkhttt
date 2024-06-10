@@ -1,0 +1,525 @@
+﻿
+@{ ViewBag.Title = ViewBag.title; }
+
+@model List<STech.Models.SanPham>
+
+@using STech.Helpers
+
+@{ 
+    var currentUrl = Request.Url.ToString();
+}
+
+<section class="breadcrumb">
+    <ul class="breadcrumb-list d-flex">
+        @foreach (var br in ViewBag.Breadcrumb)
+        {
+            <li class="breadcrumb-item">
+                @if (br.BreadcrumbLink == "")
+                {
+                    <span>@br.BreadcrumbName</span>
+                }
+                else
+                {
+                    <a href="@br.BreadcrumbLink">
+                        @br.BreadcrumbName
+                    </a>
+                }
+            </li>
+        }
+    </ul>
+</section>
+
+<section class="filter-products">
+    <div class="filter-box d-flex justify-content-between mt-2 mb-3 gap-2">
+        <div class="filter-button-list d-flex flex-wrap gap-2 align-items-center">
+            <div class="filter-all-dropdown filter-btn position-relative">
+                <div class="filter-head filter-all-btn">
+                    <i class='bx bx-filter-alt filter-icon'></i>
+                    <span>Lọc</span>
+                </div>
+                <form class="filter-contents">
+                    <button type="button" class="close-filter position-absolute">
+                        <i class="bx bx-x"></i>
+                    </button>
+                    @if (ViewBag.SanPham_HSX.Count > 1)
+                    {
+                        <div class="filter-brands-box mt-5">
+                            <h6>Hãng</h6>
+                            <div class="d-flex flex-wrap gap-3">
+                                @foreach (var hsx in ViewBag.SanPham_HSX)
+                                {
+                                    <div class="filter-checkbox">
+                                        <input type="checkbox" name="filter-brand" id="cbox-all-filter-@hsx.MaHSX" value="@hsx.MaHSX" class="d-none" />
+                                        <label for="cbox-all-filter-@hsx.MaHSX">@hsx.TenHang</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    <div class="filter-price-box mt-5">
+                        <h6>Giá</h6>
+                        <div class="filter-price-box">
+                            <div class="filter-price-value d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="filter-input d-flex align-items-center gap-2">
+                                    <span>Từ</span>
+                                    <input type="text" id="minprice1" name="minprice" value="100.000đ" />
+                                </div>
+                                <span>-</span>
+                                <div class="filter-input d-flex align-items-center gap-2">
+                                    <span>Đến</span>
+                                    <input type="text" id="maxprice1" name="maxprice" value="140.000.000đ" />
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="filter-price-range position-relative">
+                                <div class="range-progress position-absolute"> </div>
+                                <input type="range" class="input-range range-min" name="range-min" min="100000" max="139000000" value="0" />
+                                <input type="range" class="input-range range-max" name="range-max" min="200000" max="140000000" value="140000000" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-action d-flex gap-3 mt-5">
+                        <button type="button" class="filter-action-btn cancel-filter">
+                            Bỏ chọn
+                        </button>
+                        <button type="submit" class="filter-action-btn confirm-filter">
+                            Xác nhận
+                        </button>
+                    </div>
+                </form>
+            </div>
+            @if (ViewBag.SanPham_HSX.Count > 1)
+            {
+                <div class="filter-brands filter-btn position-relative">
+                    <div class="filter-head">
+                        Hãng
+                    </div>
+                    <form class="filter-contents">
+                        <div class="filter-brands-box d-flex flex-wrap gap-3">
+                            @foreach (var hsx in ViewBag.SanPham_HSX)
+                            {
+                                <div class="filter-checkbox">
+                                    <input type="checkbox" name="filter-brand" id="cbox-filter-@hsx.MaHSX" value="@hsx.MaHSX" class="d-none" />
+                                    <label for="cbox-filter-@hsx.MaHSX">@hsx.TenHang</label>
+                                </div>
+                            }
+                        </div>
+                        <div class="filter-action d-flex gap-3 mt-5">
+                            <button type="button" class="filter-action-btn cancel-filter">
+                                Bỏ chọn
+                            </button>
+                            <button type="submit" class="filter-action-btn confirm-filter">
+                                Xác nhận
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            }
+            <div class="filter-price filter-btn position-relative">
+                <div class="filter-head">
+                    Giá
+                </div>
+                <form action="#" method="post" class="filter-contents">
+                    <div class="filter-price-box">
+                        <div class="filter-price-value d-flex flex-wrap align-items-center justify-content-between">
+                            <div class="filter-input d-flex align-items-center gap-2">
+                                <span>Từ</span>
+                                <input type="text" id="minprice2" name="minprice" value="100.000đ" />
+                            </div>
+                            <div class="filter-input d-flex align-items-center gap-2">
+                                <span>Đến</span>
+                                <input type="text" id="maxprice2" name="maxprice" value="140.000.000đ" />
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="filter-price-range position-relative">
+                            <div class="range-progress position-absolute"> </div>
+                            <input type="range" class="input-range range-min" name="range-min" min="100000" max="139000000" value="0" />
+                            <input type="range" class="input-range range-max" name="range-max" min="200000" max="140000000" value="140000000" />
+                        </div>
+                    </div>
+                    <div class="filter-action d-flex gap-3 mt-5">
+                        <button type="button" class="filter-action-btn cancel-filter">
+                            Bỏ chọn
+                        </button>
+                        <button type="submit" class="filter-action-btn confirm-filter">
+                            Xác nhận
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="sort-dropdown-box d-flex align-items-center justify-content-end">
+            <div class="sort-dropdown">
+                <button class="sort-dropdown-btn">
+                    <i class="fa-solid fa-arrow-down-short-wide"></i>
+                    Sắp xếp theo: <span id="sort-value">@ViewBag.SortName</span>
+                </button>
+                <div class="sort-dropdown-content">
+                    <a href="@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "sort", "random")">
+                        <div class="sort-dropdown-content-item @( ViewBag.sortValue == "random" ? "active" : "" )">
+                            Ngẫu nhiên
+                        </div>
+                    </a>
+
+                    <a href="@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "sort", "price-ascending")">
+                        <div class="sort-dropdown-content-item @( ViewBag.sortValue == "price-ascending" ? "active" : "" )">
+                            Giá tăng dần
+                        </div>
+                    </a>
+
+                    <a href="@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "sort", "price-descending")">
+                        <div class="sort-dropdown-content-item @( ViewBag.sortValue == "price-descending" ? "active" : "" )">
+                            Giá giảm dần
+                        </div>
+                    </a>
+
+                    <a href="@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "sort", "name-az")">
+                        <div class="sort-dropdown-content-item @( ViewBag.sortValue == "name-az" ? "active" : "" ) ">
+                            Tên A-Z
+                        </div>
+                    </a>
+
+                    <a href="@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "sort", "name-za")">
+                        <div class="sort-dropdown-content-item @( ViewBag.sortValue == "name-za" ? "active" : "" )">
+                            Tên Z - A
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @if (Model.Count <= 0)
+    {
+        <div class="filter-error mt-3 mb-5 px-3 d-flex flex-column align-items-center justify-content-center">
+            <p class="text-center">
+                Có thể các sản phẩm này chưa được cập nhật hoặc đã hết hàng, vui lòng chọn danh mục sản phẩm khác
+            </p>
+            <button class="to-home-page-btn" onclick="window.location.href='/'">
+                QUAY LẠI TRANG CHỦ
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="filter-item-list">
+            @foreach (var sp in Model)
+            {
+                <div class="filter-item">
+                    <div class="product-box">
+                        <a href="/product/@sp.MaSP" class="product-link">
+                            <div class="product-image lazy-loading">
+                                <img lazy-src="@(sp.HinhAnhSPs.FirstOrDefault() != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : "~/Assets/Images/no-image.jpg")" alt="@sp.MaSP" class="product-img">
+                            </div>
+                        </a>
+                        @if (sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
+                        {
+                            <div class="out-of-stock mt-1 text-center">
+                                Hết hàng
+                            </div>
+                        }
+                        <a href="/product/@sp.MaSP" class="product-link">
+                            <div class="product-name">
+                                @sp.TenSP
+                            </div>
+                        </a>
+
+                        @{ double discountPercent = 0; }
+                        <div class="product-original-price">
+                            @if (sp.GiaGoc > sp.GiaBan)
+                            {
+                                decimal GiaGoc = Convert.ToDecimal(sp.GiaGoc);
+
+                                discountPercent = ((Convert.ToDouble(sp.GiaGoc) - Convert.ToDouble(sp.GiaBan))
+                                    / Convert.ToDouble(sp.GiaGoc)) * 100;
+                                <span>@GiaGoc.ToString("#,###", ViewBag.cul)đ</span>
+                            }
+                            else
+                            {
+                                <span style="visibility: hidden">0</span>
+                            }
+                        </div>
+                        <div class="product-price d-flex flex-wrap align-items-center">
+                            @{
+                                decimal GiaBan = Convert.ToDecimal(sp.GiaBan);
+
+                            }
+                            <span>@GiaBan.ToString("#,###", ViewBag.cul)đ</span>
+                            @if (discountPercent > 0)
+                            {
+                                <div class="product-discount-percent">
+                                    @( "-" + (int)discountPercent + "%" )
+                                </div>
+                            }
+                        </div>
+                        <button class="view-product" onclick="window.location.href='/product/@sp.MaSP'">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                        <button class="btn-add-to-cart" data-product="@sp.MaSP">
+                            <i class="fa-solid fa-cart-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="pagination-box d-flex justify-content-center align-items-center">
+
+        @if (ViewBag.Page > 1)
+        {
+            if (ViewBag.NoOfPages > 2)
+            {
+                <button class="pagination-first-page pagination-btn" onclick="window.location.href='@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "page", "1")'">
+                    <img src="~/Assets/Images/icon/double-chevron-left.png" alt="" class="pagination-icon" />
+                </button>
+            }
+
+            <button class="pagination-previous pagination-btn" onclick="window.location.href='@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "page", Convert.ToString(ViewBag.Page - 1))'">
+                <img src="~/Assets/Images/icon/chevron-left.png" alt="" class="pagination-icon" />
+            </button>
+        }
+
+        <ul class="pagination d-flex align-items-center p-0 m-0">
+            @if (ViewBag.NoOfPages > 1)
+            {
+                if (ViewBag.NoOfPages <= 3)
+                {
+                    for (int i = 1; i <= ViewBag.NoOfPages; i++)
+                    {
+                        <li class="pagination-item @(i == ViewBag.Page ? "active" : "")">
+                            <a href="@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "page", Convert.ToString(i))">@i</a>
+                        </li>
+                    }
+                }
+                else
+                {
+                    int startPage = ViewBag.Page - 1;
+                    int endPage = ViewBag.Page + 1;
+
+
+                    if (startPage > 1)
+                    {
+                        <li class="mx-2">
+                            <span>...</span>
+                        </li>
+                    }
+
+                    if (ViewBag.Page <= 1)
+                    {
+                        startPage = 1;
+                        endPage = 3;
+                    }
+                    else if (ViewBag.Page >= ViewBag.NoOfPages)
+                    {
+                        startPage = ViewBag.NoOfPages - 2;
+                        endPage = ViewBag.NoOfPages;
+                    }
+
+                    for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="pagination-item @(i == ViewBag.Page ? "active" : "")">
+                            <a href="@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "page", Convert.ToString(i))">@i</a>
+                        </li>
+                    }
+
+                    if (endPage < ViewBag.NoOfPages)
+                    {
+                        <li class="mx-2">
+                            <span>...</span>
+                        </li>
+                    }
+                }
+            }
+        </ul>
+
+        @if (ViewBag.Page < ViewBag.NoOfPages)
+        {
+            <button class="pagination-next pagination-btn" onclick="window.location.href='@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "page", Convert.ToString(ViewBag.Page + 1))'">
+                <img src="~/Assets/Images/icon/chevron-right.png" alt="" class="pagination-icon" />
+            </button>
+
+            if (ViewBag.NoOfPages > 2)
+            {
+                <button class="pagination-last-page pagination-btn" onclick="window.location.href='@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "page", Convert.ToString(ViewBag.NoOfPages))'">
+                    <img src="~/Assets/Images/icon/double-chevron-right.png" alt="" class="pagination-icon" />
+                </button>
+            }
+        }
+
+    </div>
+
+</section>
+
+<section class="side-overlay"></section>
+
+<script>
+    let urlParams = new URLSearchParams(window.location.search);
+
+    const priceGap = 1000000;
+    const rangeInputFormAll = document.querySelectorAll('.filter-all-dropdown .input-range');
+    const rangeInputFormPrice = document.querySelectorAll('.filter-price .input-range');
+    const progressFormAll = document.querySelector('.filter-all-dropdown .range-progress');
+    const progressFormPrice = document.querySelector('.filter-price .range-progress');
+    const minprice1 = document.getElementById("minprice1");
+    const maxprice1 = document.getElementById("maxprice1");
+    const minprice2 = document.getElementById("minprice2");
+    const maxprice2 = document.getElementById("maxprice2");
+
+    const documentminprice = @Json.Encode(ViewBag.minprice);
+    const documentmaxprice = @Json.Encode(ViewBag.maxprice);
+
+    if (documentminprice != null) {
+        rangeInputFormAll[0].value = documentminprice;
+        rangeInputFormPrice[0].value = documentminprice;
+        progressFormAll.style.left = (documentminprice / rangeInputFormAll[0].max) * 100 + "%";
+        progressFormPrice.style.left = (documentminprice / rangeInputFormPrice[0].max) * 100 + "%";
+        minprice1.value = parseInt(rangeInputFormAll[0].value).toLocaleString('vi-VN') + 'đ';
+        minprice2.value = parseInt(rangeInputFormPrice[0].value).toLocaleString('vi-VN') + 'đ';
+        document.querySelector('.filter-price').classList.add('active');
+    }
+
+    if (documentmaxprice != null) {
+        rangeInputFormAll[1].value = documentmaxprice;
+        rangeInputFormPrice[1].value = documentmaxprice;
+        progressFormAll.style.right = 100 - (documentmaxprice / rangeInputFormAll[1].max) * 100 + "%";
+        progressFormPrice.style.right = 100 - (documentmaxprice / rangeInputFormPrice[1].max) * 100 + "%";
+        maxprice1.value = parseInt(rangeInputFormAll[1].value).toLocaleString('vi-VN') + 'đ';
+        maxprice2.value = parseInt(rangeInputFormPrice[1].value).toLocaleString('vi-VN') + 'đ';
+        document.querySelector('.filter-price').classList.add('active');
+    }
+
+    rangeInputFormAll.forEach(input => {
+        input.addEventListener('input', e => {
+            let minVal = parseInt(rangeInputFormAll[0].value);
+            let maxVal = parseInt(rangeInputFormAll[1].value);
+
+            if (maxVal - minVal < priceGap) {
+                if (e.target.className === 'range-min') {
+                    rangeInputFormAll[0].value = maxVal - priceGap;
+                }
+                else {
+                    rangeInputFormAll[1].value = minVal + priceGap;
+                }
+            }
+            else {
+                rangeInputFormAll[0].value = minVal;
+                rangeInputFormAll[1].value = maxVal;
+            }
+
+            progressFormAll.style.left = (minVal / rangeInputFormAll[0].max) * 100 + "%";
+            progressFormAll.style.right = 100 - (maxVal / rangeInputFormAll[1].max) * 100 + "%";
+
+            minprice1.value = parseInt(rangeInputFormAll[0].value).toLocaleString('vi-VN') + 'đ';
+            maxprice1.value = parseInt(rangeInputFormAll[1].value).toLocaleString('vi-VN') + 'đ';
+        })
+    })
+
+    rangeInputFormPrice.forEach(input => {
+        input.addEventListener('input', e => {
+            let minVal = parseInt(rangeInputFormPrice[0].value);
+            let maxVal = parseInt(rangeInputFormPrice[1].value);
+
+            if (maxVal - minVal < priceGap) {
+                if (e.target.className === 'range-min') {
+                    rangeInputFormPrice[0].value = maxVal - priceGap;
+                }
+                else {
+                    rangeInputFormPrice[1].value = minVal + priceGap;
+                }
+            }
+            else {
+                rangeInputFormPrice[0].value = minVal;
+                rangeInputFormPrice[1].value = maxVal;
+            }
+
+            progressFormPrice.style.left = (minVal / rangeInputFormPrice[0].max) * 100 + "%";
+            progressFormPrice.style.right = 100 - (maxVal / rangeInputFormPrice[1].max) * 100 + "%";
+
+            minprice2.value = parseInt(rangeInputFormPrice[0].value).toLocaleString('vi-VN') + 'đ';
+            maxprice2.value = parseInt(rangeInputFormPrice[1].value).toLocaleString('vi-VN') + 'đ';
+        })
+    })
+
+    const formAll = document.querySelector('.filter-all-dropdown .filter-contents');
+    const cancelFilterAll = formAll.querySelector('.cancel-filter');
+    formAll.addEventListener('submit', (event) => {
+        event.preventDefault();
+        let brandBox = formAll.querySelector('.filter-brands-box');
+        let checkedBrands = brandBox.querySelectorAll('input[name="filter-brand"]:checked');
+        let brandValues = Array.from(checkedBrands).map((item) => {
+            return item.value;
+        })
+
+        if (brandValues.length > 0) {
+            urlParams.set('brand', brandValues.join(','));
+        }
+        urlParams.set('minprice', rangeInputFormAll[0].value);
+        urlParams.set('maxprice', rangeInputFormAll[1].value);
+        urlParams.set('page', 1);
+        window.location.href = window.location.pathname + '?' + urlParams.toString();
+    })
+    cancelFilterAll.addEventListener('click', () => {
+        window.location.href = '?page=1'
+    })
+
+    const formPrice = document.querySelector('.filter-price .filter-contents');
+    formPrice.addEventListener('submit', (event) => {
+        event.preventDefault();
+        urlParams.set('minprice', rangeInputFormAll[0].value);
+        urlParams.set('maxprice', rangeInputFormAll[1].value);
+        urlParams.set('page', 1);
+        window.location.href = window.location.pathname + '?' + urlParams.toString();
+    })
+    const cancelFilterPrice = document.querySelector('.filter-price .cancel-filter');
+    cancelFilterPrice.addEventListener('click', () => {
+        urlParams.delete('minprice');
+        urlParams.delete('maxprice');
+        urlParams.set('page', 1);
+        window.location.href = window.location.pathname + '?' + urlParams.toString();
+    })
+
+    const formBrands = document.querySelector('.filter-brands .filter-contents');
+    if (formBrands != null) {
+        formBrands.addEventListener('submit', (event) => {
+            event.preventDefault();
+            var checkedBrands = formBrands.querySelectorAll('input[name="filter-brand"]:checked');
+            var brandValues = Array.from(checkedBrands).map((item) => {
+                return item.value;
+            })
+            if (brandValues.length > 0) {
+                urlParams.set('brand', brandValues.join(','));
+                urlParams.set('page', 1);
+                window.location.href = window.location.pathname + '?' + urlParams.toString();
+            }
+        })
+
+        const cancelFilterBrand = document.querySelector('.filter-brands .cancel-filter');
+        cancelFilterBrand.addEventListener('click', () => {
+            var checkBrands = formBrands.querySelectorAll('input[name="filter-brand"]');
+            checkBrands.forEach(item => {
+                item.checked = false;
+            })
+
+            urlParams.delete('brand');
+            urlParams.set('page', 1);
+            window.location.href = window.location.pathname + '?' + urlParams.toString();
+        })
+
+        var checkedBrandStr = @Html.Raw(Json.Encode(ViewBag.Brand));
+        var checkedBrandArr = checkedBrandStr.split(',');
+        var allCheckBrand = document.querySelectorAll('input[name="filter-brand"]');
+        allCheckBrand.forEach(item => {
+            if (checkedBrandArr.includes(item.value)) {
+                item.checked = true;
+            }
+        })
+        var checkedBrands = formBrands.querySelectorAll('input[name="filter-brand"]:checked');
+        if (checkedBrands.length > 0) {
+            document.querySelector('.filter-brands').classList.add('active');
+        }
+    }
+</script>
