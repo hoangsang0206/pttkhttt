@@ -21,7 +21,6 @@
     <!-- CSS -->
     @Styles.Render("~/css")
 
-    @using STech.Models;
 </head>
 <body>
 
@@ -45,6 +44,11 @@
     @Html.Partial("Partial_Footer")
     @Html.Partial("Partial_HiddenContents")
     @Html.Partial("Partial_MobileNav")
+
+    @Html.Partial("Partial_Login", new STech.ViewModels.LoginVM())
+    @{ 
+        Html.RenderPartial("Partial_Register", new STech.ViewModels.RegisterVM());
+    }
 
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>

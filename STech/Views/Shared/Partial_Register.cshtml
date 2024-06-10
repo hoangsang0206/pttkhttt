@@ -1,0 +1,63 @@
+﻿@model STech.ViewModels.RegisterVM
+
+<div class="form-container register">
+    <div class="form-box">
+        <div class="close-form">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <h3 class="text-center mt-3 mb-4 fw-semibold">Đăng ký</h3>
+        <div class="form-error"></div>
+        <form method="post">
+            <div class="login-input-box">
+                @Html.LabelFor(row => row.RegUsername, "Tên đăng nhập")
+                <div class="login-input">
+                    <i class='bx bx-user'></i>
+                    @Html.TextBoxFor(row => row.RegUsername, new { placeholder = "Tên đăng nhập" })
+                    <span class="input-focus"></span>
+                </div>
+                @Html.ValidationMessageFor(row => row.RegUsername)
+            </div>
+            <div class="login-input-box">
+                @Html.LabelFor(row => row.RegPassword, "Mậ khẩu")
+                <div class="login-input">
+                    <i class='bx bx-lock-alt'></i>
+                    @Html.PasswordFor(row => row.RegPassword, new { placeholder = "Mật khẩu", autocomplete = true })
+                    <span class="input-focus"></span>
+                </div>
+                @Html.ValidationMessageFor(row => row.RegPassword)
+            </div>
+            <div class="login-input-box">
+                @Html.LabelFor(row => row.ConfirmPassword, "Nhập lại mật khẩu")
+                <div class="login-input">
+                    <i class='bx bx-lock-alt'></i>
+                    @Html.PasswordFor(row => row.ConfirmPassword, new { placeholder = "Nhập lại mật khẩu", autocomplete = true })
+                    <span class="input-focus"></span>
+                </div>
+                @Html.ValidationMessageFor(row => row.ConfirmPassword)
+            </div>
+            <div class="login-input-box">
+                @Html.LabelFor(row => row.RegEmail, "Email")
+                <div class="login-input">
+                    <i class='bx bx-envelope'></i>
+                    @Html.TextBoxFor(row => row.RegEmail, new { placeholder = "Email", type = "email" })
+                    <span class="input-focus"></span>
+                </div>
+                @Html.ValidationMessageFor(row => row.RegEmail)
+            </div>
+            <div class="d-flex login-redirect">
+                <p>Đã có tài khoản?&nbsp;</p>
+                <a href="javascript:void(0)" class="to-login">Đăng nhập</a>
+            </div>
+
+            <button type="submit" class="form-submit-btn">Đăng ký tài khoản</button>
+        </form>
+
+        <div class="other-login d-flex flex-column align-items-center mt-4">
+            <span>Hoặc đăng nhập bằng</span>
+            <div class="d-flex gap-2">
+                <a href="javascript:void(0)"><i class="bx bxl-facebook-circle"></i></a>
+                <a href="javascript:void(0)"><i class="bx bxl-google"></i></a>
+            </div>
+        </div>
+    </div>
+</div>

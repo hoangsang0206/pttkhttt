@@ -9,12 +9,12 @@ namespace STech
         {
 
             bundles.Add(new StyleBundle("~/css").Include(
-                      "~/Css/style.css",
-                      "~/Css/home.css",
-                      "~/Css/collections.css",
-                      "~/Css/product.css",
-                      "~/Css/account.css",
-                      "~/Css/cart.css"));
+                      "~/CSS/style.css",
+                      "~/CSS/home.css",
+                      "~/CSS/collections.css",
+                      "~/CSS/product.css",
+                      "~/CSS/account.css",
+                      "~/CSS/cart.css"));
 
             bundles.Add(new ScriptBundle("~/scripts").Include(
                 "~/Scripts/script.js",

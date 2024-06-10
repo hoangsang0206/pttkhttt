@@ -1,6 +1,4 @@
-﻿/*@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;600;700&display=swap');*/
-
-@font-face {
+﻿@font-face {
     font-family: 'SF Pro Display';
     src: url('./fonts/SFProDisplay/SF-Pro-Display-Semibold.woff2') format('woff2');
     font-weight: 600;
@@ -152,7 +150,6 @@ html {
     padding: 0;
     margin: 0;
     font-size: 0.97rem;
-    /*font-family: 'Roboto', sans-serif;*/
     font-family: 'SF Pro Display';
 }
 
@@ -625,31 +622,40 @@ header {
     text-decoration: none;
 }
 
-.login, .register, .forgot-password, .reset-password, .logout-confirm {
-    width: 100vw;
-    height: 100vh;
+.form-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
     background: #00000075;
     top: 0;
     left: 0;
     display: grid;
+    opacity: 0;
     visibility: hidden;
     place-items: center;
     z-index: 30;
 }
 
-.form-container {
-    width: 30%;
-    background: var(--content-color-white);
-    padding:2rem 2rem 1.5rem 2rem;
-    border-radius: 0.3rem;
-    cursor: auto;
-    transform: translateY(-100%);
-    opacity: 0;
+.form-container.show {
+    opacity: 1;
+    visibility: visible;
 }
 
-.showForm {
-    transform: translateY(0);
+.form-box {
+    position: relative;
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100% - 2rem) !important;
+    background: var(--content-color-white);
+    padding: 2rem;
+    border-radius: 0.3rem;
+    cursor: auto;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.form-container.show .form-box {
     opacity: 1;
+    visibility: visible;
     transition: var(--trans-all-04);
 }
 
@@ -661,46 +667,6 @@ header {
     font-size: 1.4rem;
     font-weight: bold;
     margin-bottom: 1.5rem !important;
-}
-
-.login-form, .register-form {
-}
-
-.form-input-box {
-    border: 1px solid #cfcfcf;
-    border-radius: 0.3rem;
-    margin-top: 1rem;
-}
-
-.form-input {
-    width: 100%;
-    border: none;
-    outline: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.3rem;
-    font-size: 1.1rem;
-}
-
-.form-input:focus ~ .input-label, .form-input.input-valid ~ .input-label {
-    transform: translateY(-110%);
-    font-size: 0.8rem;
-}
-
-.input-label {
-    pointer-events: none;
-    left: 0.8rem;
-    padding: 0 0.4rem;
-    background: var(--content-color-white);
-    transition: transform .4s ease;
-}
-
-.forgot-password-box {
-    margin-top: 1rem;
-}
-
-.forgot-password-link {
-    font-size: 1rem;
-    cursor: pointer;
 }
 
 .form-submit-btn {
@@ -722,6 +688,7 @@ header {
 }
 
 .close-form {
+    position: absolute;
     padding: 0;
     top: 0.8rem;
     right: 0.8rem;
@@ -730,60 +697,6 @@ header {
 
 .close-form i {
     font-size: 1.5rem;
-}
-
-.logout-confirm-box {
-    width: 30rem;
-    background: var(--content-color-white);
-    padding: 2rem 2rem 1.5rem 2rem;
-    border-radius: 0.3rem;
-    cursor: auto;
-    opacity: 0;
-    transform: scale(0);
-    transition: all .3s ease;
-}
-
-.showLogoutConfirm {
-    opacity: 1;
-    transform: scaleZ(1);
-}
-
-.logout-confirm-box i {
-    font-size: 4rem;
-    color: #ff6606;
-    margin-bottom: 1rem;
-}
-
-.logout-confirm-box span {
-    font-size: 1.1rem;
-}
-
-.logout-confirm-btn-box {
-    width: 90%;
-    margin-top: 1.5rem;
-}
-
-.logout-confirm-btn-box button {
-    border: none;
-    padding: 0.7rem 1rem;
-    border-radius: 0.2rem;
-    width: 49%;
-    font-weight: 500;
-}
-
-.logout-confirm-no:hover {
-    background: #d4d4d4;
-}
-
-.logout-confirm-yes {
-    display: grid;
-    place-items: center;
-    background: var(--primary-color);
-    color: var(--content-color-white);
-}
-
-.logout-confirm-yes:hover {
-    outline: 2px solid var(--primary-color-hover);
 }
 
 .form-error {
@@ -815,6 +728,98 @@ header {
     color: #e30019;
     font-size: 0.85rem !important;
 }
+
+
+.login-input-box {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+    .login-input-box i {
+        width: 3rem;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+        color: #757575;
+    }
+
+    .login-input-box input {
+        width: calc(100% - 3rem);
+        border-radius: .4rem;
+        border: none;
+        outline: none;
+        padding: .6rem 1rem .6rem 0;
+        font-weight: 500;
+    }
+
+        .login-input-box input:focus ~ .input-focus,
+        .login-input-box input:invalid _ .input-focus {
+            background: #6d6d6d;
+            transform: scale(1);
+        }
+
+    .login-input-box label {
+        margin-bottom: .2rem;
+        font-size: .87rem;
+        font-weight: 500;
+        color: #000;
+    }
+
+.login-input {
+    width: 100%;
+    position: relative;
+    display: flex;
+    border-bottom: 2px solid #ccc;
+}
+
+.input-focus {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    background: none;
+    transform: scale(0);
+    transform-origin: left;
+    transition: all .5s ease;
+}
+
+.login-redirect * {
+    font-size: .9rem;
+}
+
+.other-login a {
+    text-decoration: none;
+}
+
+.other-login span {
+    color: #757575;
+    margin-bottom: .5rem;
+}
+
+.other-login .bxl-facebook-circle {
+    color: #1773ea;
+    font-size: 2.4rem;
+}
+
+.other-login .bxl-google {
+    font-size: 2.4rem;
+    background: conic-gradient(from -45deg, #ea4335 110deg, #4285f4 90deg 180deg, #34a853 180deg 270deg, #fbbc05 270deg) 73% 55% / 150% 150% no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+
+.login .form-box,
+.register .form-box {
+    width: 35rem;
+}
+
 /* ------------------------------------ */
 nav {
     background-color: #ffff;
@@ -1756,10 +1761,6 @@ input[name="theme"]:checked ~ .theme-label-box .theme-label::after {
         display: none;
     }
 
-    .form-container {
-        width: 90%;
-    }
-
     .logout-confirm-box {
         width: 85%;
         max-width: 20rem;
@@ -1883,9 +1884,7 @@ input[name="theme"]:checked ~ .theme-label-box .theme-label::after {
 
 /* --------------------------- */
 @media screen and (min-width: 450px) and (max-width: 767px) {
-    .form-container {
-        width: 27rem;
-    }
+     
 }
 
 /* For tablet (767 < width <= 1024px) ---------------------------------------------*/
@@ -1972,9 +1971,7 @@ input[name="theme"]:checked ~ .theme-label-box .theme-label::after {
         display: flex;
     }
 
-    .form-container {
-        width: 32rem;
-    }
+   
 
     .to-top-btn {
         bottom: 5.5rem;
@@ -2053,9 +2050,7 @@ input[name="theme"]:checked ~ .theme-label-box .theme-label::after {
         transform: scale(0);
     }
 
-    .form-container {
-        width: 30rem;
-    }
+   
 
     .slider {
         width: 100%;

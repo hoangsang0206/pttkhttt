@@ -5,16 +5,16 @@ $(document).ready(() => {
         url: '/api/categories',
         success: (data) => {
             $('.sub-header-item-list').empty();
-            for (var i = 0; i < data.categories.length; i++) {
-                var str = `<li class="sub-header-item">
-                    <a href="/collections/${data.categories[i].CateID}" class="sub-header-link">${data.categories[i].CateName}</a>
+            data.map(item => {
+                const str = `<li class="sub-header-item">
+                    <a href="/collections/${item.MaDM}" class="sub-header-link">${item.TenDM}</a>
                 </li>`;
 
                 $('.sub-header-item-list').append(str);
-            }
+            })
         },
         error: () => {
-            console.error("Cannot get category list");
+            console.error("Cannot get categories");
         }
     })
 })
@@ -449,7 +449,7 @@ $(document).ready(function () {
             $('.search-history').children('h4').hide();
 
             for (var i = searchHistory.length - 1; i >= 0; i--) {
-                $('.search-history-list').append(`<a href="/search/${searchHistory[i]}">`
+                $('.search-history-list').append(`<a href="/search?q=${searchHistory[i]}">`
                     + `<li class="search-history-list-item">`
                     + searchHistory[i] + '</li>' + '</a>');
             }
@@ -482,7 +482,7 @@ $("#search").keyup(function () {
                 url: '/api/products',
                 type: 'GET',
                 data: {
-                    proName: searchText
+                    q: searchText
                 },
                 success: function (responses) {
                     var maxItems = window.innerWidth < 768 ? 25 : 6
@@ -497,27 +497,24 @@ $("#search").keyup(function () {
                         $('.ajax-search-items').empty();
                         $('.ajax-search-empty').hide();
                         for (let i = 0; i <= responses.length && i < maxItems; i++) {
-                            const product = responses[i];
-                            if (product != null) {
-                                const strHTML = `<a href="/product/${product.ProductID}"> 
-                                    <div class="ajax-search-item d-flex justify-content-between align-items-center">
-                                        <div class="ajax-search-item-info">
-                                            <div class="ajax-search-item-name d-flex align-items-center">
-                                                <h3>${product.ProductName}</h3>
-                                            </div>
-                                            <div class="ajax-search-item-price d-flex align-items-center">
-                                                <h3>${product.Price.toLocaleString("vi-VN") + 'đ'}</h3>
-                                                <h4>${product.Cost > product.Price ? product.Cost.toLocaleString("vi-VN") + 'đ' : ''}</h4>
-                                            </div>
+                            const strHTML = `<a href="/product/${responses[i].MaSP}"> 
+                                <div class="ajax-search-item d-flex justify-content-between align-items-center">
+                                    <div class="ajax-search-item-info">
+                                        <div class="ajax-search-item-name d-flex align-items-center">
+                                            <h3>${responses[i].TenSP}</h3>
                                         </div>
-                                        <div class="ajax-search-item-image">
-                                            <img src="${product.ImgSrc != null ? product.ImgSrc : '/images/no-image.jpg'}" alt="" />
+                                        <div class="ajax-search-item-price d-flex align-items-center">
+                                            <h3>${responses[i].GiaBan.toLocaleString('vi-VN') + 'đ'}</h3>
+                                            <h4>${responses[i].GiaGoc > responses[i].GiaBan ? responses[i].GiaGoc.toLocaleString('vi-VN') + 'đ' : ''}</h4>
                                         </div>
                                     </div>
-                                </a>`;
+                                    <div class="ajax-search-item-image">
+                                        <img src="${responses[i].HinhAnh ? responses[i].HinhAnh : '/Assets/Images/no-image.jpg'}" alt="" />
+                                    </div>
+                                </div>
+                            </a>`;
 
-                                $('.ajax-search-items').append(strHTML);
-                            }
+                            $('.ajax-search-items').append(strHTML);
                         }
                     }
                 },
@@ -563,156 +560,55 @@ inputArr.forEach((input) => {
 
 //--Show form ----------------------------------------------------------------
 $('.action-login-btn').click(() => {
-    $('.login').css('visibility', 'visible');
-    $('.login .form-container').addClass('showForm');
+    $('.login').addClass('show');
 })
 
 $('.action-register-btn').click(() => {
-    $('.register').css('visibility', 'visible');
-    $('.register .form-container').addClass('showForm');
+    $('.register').addClass('show');
 })
 
 $('.login-btn .login-link').click(() => {
-    $('.login').css('visibility', 'visible');
-    $('.login .form-container').addClass('showForm');
+    $('.login').addClass('show');
 })
 
 $('.bottom-nav-account').click(() => {
-    $('.login').css('visibility', 'visible');
-    $('.login .form-container').addClass('showForm');
+    $('.login').addClass('show');
 })
 
 //-----
 
 $('.login-info-logout, .account-logout').on('click', () => {
-    $('.logout-confirm').css('visibility', 'visible');
-    $('.logout-confirm-box').addClass('showLogoutConfirm');
+   //
 })
 
 $('.logout-confirm').click((e) => {
-    if (!(e.target).closest('.logout-confirm-box')) {
-        $(e.target).css('visibility', 'hidden');
-        $('.logout-confirm-box').removeClass('showLogoutConfirm');
-    }
+    //
 })
 
 $('.logout-confirm-no').click(() => {
-    $('.logout-confirm').css('visibility', 'hidden');
-    $('.logout-confirm-box').removeClass('showLogoutConfirm');
+   //
 })
 
 //---
-var formArr = [$('.login'), $('.register'), $('.register'), $('.forgot-password'), $('.reset-password')];
+$('.close-form').click(function () {
+    $(this).closest('.form-container').removeClass('show');
+})
 
-formArr.forEach(form => {
-    var _form = $(form);
-//    _form.on('click', (e) => {
-//        if ($(e.target).closest('.form-container').length <= 0) {
-//            $(e.target).css('visibility', 'hidden');
-//            $('.form-container').removeClass('showForm');
-//        }
-//    })
+$('.form-container').click(function(e) {
+    if ($(e.target).closest('.form-box').length <= 0) {
+        $(this).removeClass('show');
+    }
+})
 
-    //--CLose form -----
-    _form.find('.close-form').click(() => {
-        _form.css('visibility', 'hidden');
-        _form.find('.form-container').removeClass('showForm');
-    })
+$('.to-login').click(() => {
+    $('.register').removeClass('show');
+    $('.login').addClass('show');
+})
+
+$('.to-register').click(() => {
+    $('.login').removeClass('show');
+    $('.register').addClass('show');
 })
 
  //------------------------
-$('.register-now-link').click(() => {
-    $('.login').css('visibility', 'hidden');
-    $('.login .form-container').removeClass('showForm');
-    $('.register').css('visibility', 'visible');
-    $('.register .form-container').addClass('showForm');
-    
-}) 
-
-$('.login-now-link').click(() => {
-    $('.register').css('visibility', 'hidden');
-    $('.register .form-container').removeClass('showForm');
-    $('.login').css('visibility', 'visible');
-    $('.login .form-container').addClass('showForm');
-})
-
-$('.forgot-password-link').click(() => {
-    $('.login').css('visibility', 'hidden');
-    $('.login .form-container').removeClass('showForm');
-    $('.forgot-password').css('visibility', 'visible');
-    $('.forgot-password .form-container').addClass('showForm');
-})
-
-$('.back-to-login-link').click(() => {
-    $('.forgot-password').css('visibility', 'hidden');
-    $('.forgot-password .form-container').removeClass('showForm');
-    $('.login').css('visibility', 'visible');
-    $('.login .form-container').addClass('showForm');
-})
-
-$('.forgot-password-form').on('submit', (e) => {
-    e.preventDefault();
-    $('.forgot-password').css('visibility', 'hidden');
-    $('.forgot-password .form-container').removeClass('showForm');
-    $('.reset-password').css('visibility', 'visible');
-    $('.reset-password .form-container').addClass('showForm');
-})
-
- //--Sale countdown ------------------------------------
-$(document).ready(() => {
-    var days, hours, minutes, seconds, totalSeconds;
-    function getCountdown() {
-        $.ajax({
-            type: 'GET',
-            url: '/home/countdown',
-            dataType: 'json',
-            success: (data) => {
-                if (data.success) {
-                    totalSeconds = data.times.TotalSeconds;
-                }
-                else {
-                    totalSeconds = 0;
-                }
-            },
-            error: () => {
-                totalSeconds = 0;
-            }
-        })
-    }
-
-    getCountdown();
-
-    var intervalCd = setInterval(() => {
-        if (totalSeconds <= 0) {
-            $('.sale').hide();
-
-            $.ajax({
-                type: 'post',
-                url: '/home/endsale',
-                success: () => { },
-                error: () => { }
-            })
-
-            clearInterval(intervalCd);
-        }
-        else { 
-            days = Math.floor(totalSeconds / (24 * 3600));
-            hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
-            minutes = Math.floor((totalSeconds % 3600) / 60);
-            seconds = Math.floor(totalSeconds % 60);
-
-            updateCountdown();
-        }
-
-        totalSeconds--;
-    }, 1000);
-
-    function updateCountdown() {
-        $("#countdown-days").text(String(days).padStart(2, "0"));
-        $("#countdown-hours").text(String(hours).padStart(2, "0"));
-        $("#countdown-minutes").text(String(minutes).padStart(2, "0"));
-        $("#countdown-seconds").text(String(seconds).padStart(2, "0"));
-    }
-    // -------------------------------------
-})
 

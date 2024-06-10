@@ -1,0 +1,41 @@
+﻿@model STech.ViewModels.LoginVM
+
+<div class="form-container login">
+    <div class="form-box">
+        <h3 class="text-center mt-3 mb-4 fw-semibold">Đăng nhập</h3>
+        <form method="post">
+            <div class="login-input-box">
+                @Html.LabelFor(row => row.Username, "Tên đăng nhập")
+                <div class="login-input">
+                    <i class='bx bx-user'></i>
+                    @Html.TextBoxFor(row => row.Username, new { placeholder = "Tên đăng nhập" })
+                    <span class="input-focus"></span>
+                </div>
+                @Html.ValidationMessageFor(row => row.Username)
+            </div>
+            <div class="login-input-box">
+                @Html.LabelFor(row => row.Password, "Mật khẩu")
+                <div class="login-input">
+                    <i class='bx bx-lock-alt'></i>
+                    @Html.PasswordFor(row => row.Password, new { placeholder = "Mật khẩu", autocomplete = true })
+                    <span class="input-focus"></span>
+                </div>
+                @Html.ValidationMessageFor(row => row.Password)
+            </div>
+            <div class="d-flex login-redirect">
+                <p>Chưa có tải khoản?&nbsp;</p>
+                <a href="javascript:void(0)" class="to-register">Đăng ký</a>
+            </div>
+
+            <button type="submit" class="form-submit-btn">Đăng nhập</button>
+        </form>
+
+        <div class="other-login d-flex flex-column align-items-center mt-4">
+            <span>Hoặc đăng nhập bằng</span>
+            <div class="d-flex gap-2">
+                <a href="javascript:void(0)"><i class="bx bxl-facebook-circle"></i></a>
+                <a href="javascript:void(0)"><i class="bx bxl-google"></i></a>
+            </div>
+        </div>
+    </div>
+</div>

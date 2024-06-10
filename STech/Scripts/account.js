@@ -32,7 +32,7 @@ $('#re-enter-password').keyup(() => {
     }
 })
 
-$('.register-form').submit((e) => {
+$('.register form').submit((e) => {
     e.preventDefault();
     var userName = $('.register #ResUsername').val();
     var password = $('.register #ResPassword').val();
