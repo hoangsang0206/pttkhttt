@@ -2,7 +2,11 @@
 
 <div class="form-container login">
     <div class="form-box">
+        <div class="close-form">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
         <h3 class="text-center mt-3 mb-4 fw-semibold">Đăng nhập</h3>
+        <div class="form-error show"></div>
         <form method="post">
             <div class="login-input-box">
                 @Html.LabelFor(row => row.Username, "Tên đăng nhập")

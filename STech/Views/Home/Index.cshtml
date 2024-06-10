@@ -1,6 +1,6 @@
 ﻿@{ ViewBag.Title = "Trang chủ"; }
 
-@model List<List<STech.Models.SanPham>>
+@model List<List<STech.DTO.SanPhamDTO>>
 
 <section class="menu">
     @{
@@ -146,7 +146,7 @@
         <div class="section-header">
             <div class="section-header-box">
                 <h2 class="section-title">
-                    <a href="/collections/@first_sp.MaDM">@first_sp.DanhMuc.TenDM nổi bậc</a>
+                    <a href="/collections/@first_sp.DanhMuc.MaDM">@first_sp.DanhMuc.TenDM nổi bậc</a>
                 </h2>
                 <div class="section-sub-header-box">
                     <i class="fa-solid fa-truck"></i>
@@ -154,7 +154,7 @@
                 </div>
             </div>
             <div class="section-header-link">
-                <a href="/collections/@first_sp.MaDM">Xem tất cả</a>
+                <a href="/collections/@first_sp.DanhMuc.MaDM">Xem tất cả</a>
             </div>
         </div>
         <div class="section-content">
@@ -165,10 +165,10 @@
                         <div class="product-box">
                             <a href="/product/@sp.MaSP" class="product-link">
                                 <div class="product-image lazy-loading">
-                                    <img lazy-src="@(sp.HinhAnhSPs.FirstOrDefault() != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : "~/Assets/Images/no-image.jpg")" alt="" class="product-img">
+                                    <img lazy-src="@(sp.HinhAnh != null ? sp.HinhAnh : "~/Assets/Images/no-image.jpg")" alt="" class="product-img">
                                 </div>
                             </a>
-                            @if (sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
+                            @if (sp.Tonkho <= 0)
                             {
                                 <div class="out-of-stock mt-1 text-center">
                                     Hết hàng

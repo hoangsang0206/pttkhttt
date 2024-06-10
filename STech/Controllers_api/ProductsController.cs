@@ -24,7 +24,8 @@ namespace STech.Controllers_api
                         TenSP = sp.TenSP,
                         GiaBan = sp.GiaBan,
                         GiaGoc = sp.GiaGoc,
-                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null
+                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                        Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
                     }).ToListAsync();
             }
         }
@@ -43,7 +44,8 @@ namespace STech.Controllers_api
                         TenSP = sp.TenSP,
                         GiaBan = sp.GiaBan,
                         GiaGoc = sp.GiaGoc,
-                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null
+                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                        Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
                     }).ToListAsync();
             }
         }
@@ -60,7 +62,8 @@ namespace STech.Controllers_api
                         TenSP = sp.TenSP,
                         GiaBan = sp.GiaBan,
                         GiaGoc = sp.GiaGoc,
-                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null
+                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                        Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
                     }).ToListAsync();
             }   
         }
@@ -77,7 +80,8 @@ namespace STech.Controllers_api
                     TenSP = sp.TenSP,
                     GiaBan = sp.GiaBan,
                     GiaGoc = sp.GiaGoc,
-                    HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null
+                    HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                    Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
                 }).ToListAsync();
             }
         }
@@ -94,7 +98,8 @@ namespace STech.Controllers_api
                         TenSP = sp.TenSP,
                         GiaBan = sp.GiaBan,
                         GiaGoc = sp.GiaGoc,
-                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null
+                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                        Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
                     }).ToListAsync();
             }    
         }
@@ -111,7 +116,8 @@ namespace STech.Controllers_api
                         TenSP = sp.TenSP,
                         GiaBan = sp.GiaBan,
                         GiaGoc = sp.GiaGoc,
-                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null
+                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                        Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
                     });
             }  
         }

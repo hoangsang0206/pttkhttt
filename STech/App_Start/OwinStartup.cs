@@ -37,7 +37,15 @@ namespace STech.App_Start
                 roleManager.Create(role);
             }
 
-            if(userManager.FindByName("admin") == null)
+            if (!roleManager.RoleExists("Customer"))
+            {
+                IdentityRole role = new IdentityRole();
+                role.Name = "Customer";
+                roleManager.Create(role);
+            }
+
+
+            if (userManager.FindByName("admin") == null)
             {
                 ApplicationUser user = new ApplicationUser();
                 user.UserName = "admin";

@@ -707,6 +707,10 @@ header {
     display: none;
 }
 
+.form-error.show {
+    display: block;
+}
+
 .form-error i {
     font-size: 1rem;
     margin-right: 0.5rem;

@@ -18,72 +18,54 @@ function resetBtn(button, btnText) {
 }
 
 //--Register with Ajax --------------------------------------------
-$('#re-enter-password').keyup(() => {
-    var password = $('#register-password').val();
-    var confirmPassword = $('#re-enter-password').val();
-
-    if (password !== confirmPassword) {
-        $('#re-enter-password').parent('.form-input-box')
-            .css('border', '1px solid #e30019');
-    }
-    else {
-        $('#re-enter-password').parent('.form-input-box')
-            .css('border', '1px solid #cfcfcf');
-    }
-})
-
-$('.register form').submit((e) => {
+$('.register form').submit(function(e) {
     e.preventDefault();
-    var userName = $('.register #ResUsername').val();
-    var password = $('.register #ResPassword').val();
-    var confirmPassword = $('.register #ResConfirmPassword').val();
-    var email = $('#Email').val();
+    const userName = $(this).find('#RegUsername').val();
+    const password = $(this).find('#RegPassword').val();
+    const confirmPassword = $(this).find('#ConfirmPassword').val();
+    const email = $(this).find('#RegEmail').val();
 
-    var submitBtn = $(e.target).find('.form-submit-btn');
-    var btnText = showBtnLoading(submitBtn);
+    const submitBtn = $(e.target).find('.form-submit-btn');
+    const btnText = showBtnLoading(submitBtn);
     $.ajax({
         type: 'POST',
         url: '/account/register',
         data: {
-            ResUsername: userName,
-            ResPassword: password,
-            ResConfirmPassword: confirmPassword,
-            Email: email
+            RegUsername: userName,
+            RegPassword: password,
+            ConfirmPassword: confirmPassword,
+            RegEmail: email
         },
         success: (response) => {
             resetBtn(submitBtn, btnText);
-            if (response.success) {
-                $('.register .form-error').hide();
-                $('.register .form-error').empty();
-
-                window.location.href = response.redirectUrl;
-            }
-            else {
-                if (response.error.length > 0) {
-                    var str = `<span>
-                    <i class="fa-solid fa-circle-exclamation"></i>`
-                        + response.error + `</span>`;
-
-                    $('.register .form-error').show();
-                    $('.register .form-error').empty();
-                    $('.register .form-error').append(str);
-                }
-            }
+            $(this).find('.form-error').hide();
+            $(this).find('.form-error').empty();
+            window.location.href = '';
         },
-        error: (err) => { resetBtn(submitBtn, btnText); }
+        error: (jqXHR) => {
+            resetBtn(submitBtn, btnText);
+            var str = `<span>
+                <i class="fa-solid fa-circle-exclamation"></i>`
+                + jqXHR.responseText + `</span>`;
+
+            $(this).find('.form-error').show();
+            $(this).find('.form-error').empty();
+            $(this).find('.form-error').append(str);
+        }
     })
 })
 
 
 
 //--Login with Ajax -----------------------------------------------
-$('.login-form').submit((e) => {
+$('.login form').submit(function(e) {
     e.preventDefault();
-    var userName = $('.login #Username').val();
-    var password = $('.login #Password').val();
+    var userName = $(this).find('#Username').val();
+    var password = $(this).find('#Password').val();
 
-    var submitBtn = $(e.target).find('.form-submit-btn');
+    var submitBtn = $(this).find('.form-submit-btn');
     var btnText = showBtnLoading(submitBtn);
+
     $.ajax({
         type: 'POST',
         url: '/account/login',
@@ -93,34 +75,25 @@ $('.login-form').submit((e) => {
         },
         success: (response) => {
             resetBtn(submitBtn, btnText);
-            if (response.success) {
-                $('.login .form-error').hide();
-                $('.login .form-error').empty();
-
+            if (response.status === 200) {
+                $(this).find('.form-error').hide();
+                $(this).find('.form-error').empty();
                 window.location.href = response.redirectUrl;
             }
-            else {
-                if (response.error.length > 0) {
-                    var str = `<span>
-                    <i class="fa-solid fa-circle-exclamation"></i>`
-                        + response.error + `</span>`;
-
-                    $('.login .form-error').show();
-                    $('.login .form-error').empty();
-                    $('.login .form-error').append(str);
-                }
-            }
+            
         },
-        error: (err) => { resetBtn(submitBtn, btnText); }
+        error: (jqXHR) => {
+            resetBtn(submitBtn, btnText);
+            const str = `<span>
+                <i class="fa-solid fa-circle-exclamation"></i>`
+                + jqXHR.statusText + `</span>`;
+
+            $(this).find('.form-error').addClass('show');
+            $(this).find('.form-error').empty();
+            $(this).find('.form-error').append(str);
+        }
     })
 })
-
-//--Logout ---------------------------------
-$('.logout-confirm-yes').click((e) => {
-    var btnText = showBtnLoading($(e.target));
-    window.location.href = '/account/logout';
-})
-
 
 //--Update with AJAX ----------------------------------------------
 function closeUpdateErr() {

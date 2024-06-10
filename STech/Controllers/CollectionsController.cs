@@ -1,10 +1,12 @@
 ﻿using STech.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -13,83 +15,76 @@ namespace STech.Controllers
     public class CollectionsController : Controller
     {
         // GET: Collections
-        public ActionResult Index(string id = "", string sort = "", string brand = "", string q = "", decimal? minprice = null, decimal? maxprice = null, int page = 1)
+        public async Task<ActionResult> Index(string id = "", string sort = "", string brand = "", string q = "", decimal? minprice = null, decimal? maxprice = null, int page = 1)
         {
             try
             {
-                DbEntities db = new DbEntities();
-                if (id.Length > 0 && (id != null || id.Equals("all")))
+                using (DbEntities db = new DbEntities())
                 {
-                    //Lấy danh sách sản phẩm theo danh mục
-                    List<SanPham> dsSP = new List<SanPham>();
-                    List<HangSX> dsHSX = new List<HangSX>();
-
-                    string breadcrumbItem = "";
-
-                    if (id == "all")
+                    if (id.Length > 0 && (id != null || id.Equals("all")))
                     {
-                        dsSP = db.SanPhams.ToList();
-                        breadcrumbItem = "Tất cả sản phẩm";
-                    }
-                    else
-                    {
-                        dsSP = db.SanPhams.Where(t => t.DanhMuc.MaDM.Equals(id)).ToList();
+                        List<SanPham> dsSP = new List<SanPham>();
+                        List<HangSX> dsHSX = new List<HangSX>();
 
-                        //Lấy danh mục của danh sách sản phẩm
-                        DanhMuc dm = db.DanhMucs.Where(t => t.MaDM.Equals(id)).FirstOrDefault();
-                        //
-                        breadcrumbItem = dm != null ? dm.TenDM : "";
-                    }
+                        string breadcrumbItem = "";
 
-                    dsHSX = dsSP.Select(p => p.HangSX).Distinct().ToList();
-                    //--------
-                    //Sắp xếp danh sách sản phẩm
-                    if (sort.Length > 0)
-                    {
-                        dsSP = Sort(sort, dsSP);
-                    }
-
-                    //Lọc danh sách sản phẩm
-                    if (dsSP.Count > 0)
-                    {
-                        dsSP = Filter(dsSP, brand, q, minprice, maxprice);
-                        ViewBag.Brand = brand;
-                        ViewBag.Query = q;
-                        ViewBag.MinPrice = minprice;
-                        ViewBag.MaxPrice = maxprice;
-                        if (!string.IsNullOrEmpty(ViewBag.filterName))
+                        if (id == "all")
                         {
-                            breadcrumbItem += " " + ViewBag.filterName;
+                            dsSP = await db.SanPhams.ToListAsync();
+                            breadcrumbItem = "Tất cả sản phẩm";
                         }
+                        else
+                        {
+                            dsSP = await db.SanPhams.Where(t => t.DanhMuc.MaDM.Equals(id)).ToListAsync();
+
+                            DanhMuc dm = await db.DanhMucs.Where(t => t.MaDM.Equals(id)).FirstOrDefaultAsync();
+                            breadcrumbItem = dm != null ? dm.TenDM : "";
+                        }
+
+                        dsHSX = dsSP.Select(p => p.HangSX).Distinct().ToList();
+
+                        if (sort.Length > 0)
+                        {
+                            dsSP = Sort(sort, dsSP);
+                        }
+
+                        if (dsSP.Count > 0)
+                        {
+                            dsSP = Filter(dsSP, brand, q, minprice, maxprice);
+                            ViewBag.Brand = brand;
+                            ViewBag.Query = q;
+                            ViewBag.MinPrice = minprice;
+                            ViewBag.MaxPrice = maxprice;
+                            if (!string.IsNullOrEmpty(ViewBag.filterName))
+                            {
+                                breadcrumbItem += " " + ViewBag.filterName;
+                            }
+                        }
+
+                        List<Breadcrumb> breadcrumb = new List<Breadcrumb>();
+                        breadcrumb.Add(new Breadcrumb("Trang chủ", "/"));
+                        breadcrumb.Add(new Breadcrumb(breadcrumbItem, ""));
+
+                        if (sort.Length > 0)
+                        {
+                            dsSP = Sort(sort, dsSP);
+                        }
+
+                        dsSP = Pagination(dsSP, page);
+
+                        ViewBag.MaDM = id;
+                        ViewBag.title = breadcrumbItem;
+                        ViewBag.Breadcrumb = breadcrumb;
+                        ViewBag.sortValue = sort;
+
+                        ViewBag.SanPham_HSX = dsHSX;
+
+                        CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
+                        ViewBag.cul = cul;
+                        return View(dsSP);
                     }
-
-                    //Tạo danh sách Breadcrumb
-                    List<Breadcrumb> breadcrumb = new List<Breadcrumb>();
-                    breadcrumb.Add(new Breadcrumb("Trang chủ", "/"));
-                    breadcrumb.Add(new Breadcrumb(breadcrumbItem, ""));
-
-                    //Sắp xếp danh sách sản phẩm
-                    if (sort.Length > 0)
-                    {
-                        dsSP = Sort(sort, dsSP);
-                    }
-
-                    //Paging ------
-                    dsSP = Pagination(dsSP, page);
-
-                    //-----------
-                    ViewBag.MaDM = id;
-                    ViewBag.title = breadcrumbItem;
-                    ViewBag.Breadcrumb = breadcrumb;
-                    ViewBag.sortValue = sort;
-
-                    ViewBag.SanPham_HSX = dsHSX;
-
-                    CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
-                    ViewBag.cul = cul;
-                    return View(dsSP);
-                }
-                return Redirect("/error/notfound");
+                    return Redirect("/error/notfound");
+                }    
             } 
             catch(Exception ex)
             {
@@ -97,32 +92,30 @@ namespace STech.Controllers
             }
         }
 
-        public ActionResult Search(string q = "", string sort = "", int page = 1)
+        public async Task<ActionResult> Search(string q = "", string sort = "", int page = 1)
         {
-            DbEntities db = new DbEntities();
-
-            List<SanPham> dsSP = new List<SanPham>();
-
-            if (!string.IsNullOrWhiteSpace(q))
+            using (DbEntities db = new DbEntities())
             {
-                string[] keywords = q.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-                dsSP = db.SanPhams.Where(sp => keywords.All(keyw => sp.TenSP.Contains(keyw))).ToList();
-            }
+                List<SanPham> dsSP = new List<SanPham>();
 
-            if (sort.Length > 0)
-            {
-                dsSP = Sort(sort, dsSP);
-            }
+                if (!string.IsNullOrWhiteSpace(q))
+                {
+                    string[] keywords = q.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    dsSP = await db.SanPhams.Where(sp => keywords.All(keyw => sp.TenSP.Contains(keyw))).ToListAsync();
+                }
 
-            //Paging -----
-            dsSP = Pagination(dsSP, page);
+                if (sort.Length > 0)
+                {
+                    dsSP = Sort(sort, dsSP);
+                }
 
-            //----------
-            ViewBag.searchValue = q;
-            ViewBag.sortValue = sort;
+                dsSP = Pagination(dsSP, page);
 
-            //return
-            return View(dsSP);
+                ViewBag.searchValue = q;
+                ViewBag.sortValue = sort;
+
+                return View(dsSP);
+            }  
         }
 
         public List<SanPham> Sort(string value, List<SanPham> dsSP)
