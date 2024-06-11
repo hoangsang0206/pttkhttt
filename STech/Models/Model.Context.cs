@@ -31,6 +31,7 @@ namespace STech.Models
         public virtual DbSet<ChiTietPN> ChiTietPNs { get; set; }
         public virtual DbSet<ChiTietPXK> ChiTietPXKs { get; set; }
         public virtual DbSet<DanhMuc> DanhMucs { get; set; }
+        public virtual DbSet<GioHang> GioHangs { get; set; }
         public virtual DbSet<HangSX> HangSXes { get; set; }
         public virtual DbSet<HinhAnhSP> HinhAnhSPs { get; set; }
         public virtual DbSet<HoaDon> HoaDons { get; set; }
@@ -47,7 +48,6 @@ namespace STech.Models
         public virtual DbSet<SanPham> SanPhams { get; set; }
         public virtual DbSet<SidebarMenu> SidebarMenus { get; set; }
         public virtual DbSet<Slider> Sliders { get; set; }
-        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<TheThanhVien> TheThanhViens { get; set; }
         public virtual DbSet<ThongSoKyThuat> ThongSoKyThuats { get; set; }
         public virtual DbSet<TichDiem> TichDiems { get; set; }

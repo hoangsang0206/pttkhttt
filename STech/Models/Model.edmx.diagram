@@ -4,33 +4,33 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="adac11b7942b4ef681780d4d181cf55f" Name="Diagram1">
-        <EntityTypeShape EntityType="QL_DienMayModel.Banner" Width="1.5" PointX="0.75" PointY="1.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietHD" Width="1.5" PointX="5.25" PointY="13.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietKho" Width="1.5" PointX="5.25" PointY="10.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietPN" Width="1.5" PointX="5.25" PointY="16.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietPXK" Width="1.5" PointX="8.25" PointY="13.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.DanhMuc" Width="1.5" PointX="0.75" PointY="14" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.HangSX" Width="1.5" PointX="0.75" PointY="10.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.HinhAnhSP" Width="1.5" PointX="5.25" PointY="23.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.HoaDon" Width="1.5" PointX="6" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.KhachHang" Width="1.5" PointX="3.75" PointY="2.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.Kho" Width="1.5" PointX="3" PointY="18.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.Megamenu" Width="1.5" PointX="13" PointY="1.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.MegamenuItem" Width="1.5" PointX="15.25" PointY="2" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.NhaCungCap" Width="1.5" PointX="0.75" PointY="22.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.NhanVien" Width="1.5" PointX="3.75" PointY="5.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.PhieuBaoHanh" Width="1.5" PointX="8.25" PointY="9.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.PhieuDoiTra" Width="1.5" PointX="8.25" PointY="17.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.PhieuNhap" Width="1.5" PointX="3" PointY="22.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.PhieuXuatKho" Width="1.5" PointX="6" PointY="26.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.SanPham" Width="1.5" PointX="3" PointY="12.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.SidebarMenu" Width="1.5" PointX="10.75" PointY="2" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.Slider" Width="1.5" PointX="0.75" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.sysdiagram" Width="1.5" PointX="0.75" PointY="7.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.TheThanhVien" Width="1.5" PointX="6" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.ThongSoKyThuat" Width="1.5" PointX="5.25" PointY="34.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="QL_DienMayModel.TichDiem" Width="1.5" PointX="8.25" PointY="4.5" IsExpanded="true" />
+      <Diagram DiagramId="b40e982a65a644a884b91668f7affcc4" Name="Diagram1">
+        <EntityTypeShape EntityType="QL_DienMayModel.Banner" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietHD" Width="1.5" PointX="5.25" PointY="15" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietKho" Width="1.5" PointX="5.25" PointY="12" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietPN" Width="1.5" PointX="5.25" PointY="18" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.ChiTietPXK" Width="1.5" PointX="8.25" PointY="15" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.DanhMuc" Width="1.5" PointX="0.75" PointY="15.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.GioHang" Width="1.5" PointX="5.25" PointY="23.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.HangSX" Width="1.5" PointX="0.75" PointY="12" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.HinhAnhSP" Width="1.5" PointX="5.25" PointY="26.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.HoaDon" Width="1.5" PointX="6" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.KhachHang" Width="1.5" PointX="3.75" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.Kho" Width="1.5" PointX="3" PointY="19.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.Megamenu" Width="1.5" PointX="11" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.MegamenuItem" Width="1.5" PointX="13.25" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.NhaCungCap" Width="1.5" PointX="0.75" PointY="24" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.NhanVien" Width="1.5" PointX="3.75" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.PhieuBaoHanh" Width="1.5" PointX="8.25" PointY="10.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.PhieuDoiTra" Width="1.5" PointX="8.25" PointY="18.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.PhieuNhap" Width="1.5" PointX="3" PointY="23.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.PhieuXuatKho" Width="1.5" PointX="6" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.SanPham" Width="1.5" PointX="3" PointY="13.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.SidebarMenu" Width="1.5" PointX="8.75" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.Slider" Width="1.5" PointX="0.75" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.TheThanhVien" Width="1.5" PointX="6" PointY="29" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.ThongSoKyThuat" Width="1.5" PointX="5.25" PointY="36.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienMayModel.TichDiem" Width="1.5" PointX="8.25" PointY="5.75" IsExpanded="true" />
         <AssociationConnector Association="QL_DienMayModel.FK_CTHD_HD" ManuallyRouted="false" />
         <AssociationConnector Association="QL_DienMayModel.FK_CTHD_SP" ManuallyRouted="false" />
         <AssociationConnector Association="QL_DienMayModel.FK_CTK_Kho" ManuallyRouted="false" />
@@ -40,6 +40,7 @@
         <AssociationConnector Association="QL_DienMayModel.FK_CTPXK_PXK" ManuallyRouted="false" />
         <AssociationConnector Association="QL_DienMayModel.FK_CTPXK_SP" ManuallyRouted="false" />
         <AssociationConnector Association="QL_DienMayModel.FK_SP_DM" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienMayModel.FK_GH_SP" ManuallyRouted="false" />
         <AssociationConnector Association="QL_DienMayModel.FK_SP_HSX" ManuallyRouted="false" />
         <AssociationConnector Association="QL_DienMayModel.FK_HinhAnhSP" ManuallyRouted="false" />
         <AssociationConnector Association="QL_DienMayModel.FK_HD_KH" ManuallyRouted="false" />

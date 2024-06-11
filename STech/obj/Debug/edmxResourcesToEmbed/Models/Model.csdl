@@ -63,6 +63,16 @@
     <Property Name="HinhAnh" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
     <NavigationProperty Name="SanPhams" Relationship="Self.FK_SP_DM" FromRole="DanhMuc" ToRole="SanPham" />
   </EntityType>
+  <EntityType Name="GioHang">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="MaSP" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="SoLuong" Type="Int32" Nullable="false" />
+    <Property Name="AccountId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="SanPham" Relationship="Self.FK_GH_SP" FromRole="GioHang" ToRole="SanPham" />
+  </EntityType>
   <EntityType Name="HangSX">
     <Key>
       <PropertyRef Name="MaHSX" />
@@ -115,6 +125,7 @@
     <Property Name="DiaChi" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
     <Property Name="NgaySinh" Type="DateTime" Precision="0" />
     <Property Name="GioiTinh" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="AccountId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
     <NavigationProperty Name="HoaDons" Relationship="Self.FK_HD_KH" FromRole="KhachHang" ToRole="HoaDon" />
     <NavigationProperty Name="TheThanhViens" Relationship="Self.FK_TTV_KH" FromRole="KhachHang" ToRole="TheThanhVien" />
   </EntityType>
@@ -259,6 +270,7 @@
     <NavigationProperty Name="ChiTietPNs" Relationship="Self.FK_CTPN_SP" FromRole="SanPham" ToRole="ChiTietPN" />
     <NavigationProperty Name="ChiTietPXKs" Relationship="Self.FK_CTPXK_SP" FromRole="SanPham" ToRole="ChiTietPXK" />
     <NavigationProperty Name="DanhMuc" Relationship="Self.FK_SP_DM" FromRole="SanPham" ToRole="DanhMuc" />
+    <NavigationProperty Name="GioHangs" Relationship="Self.FK_GH_SP" FromRole="SanPham" ToRole="GioHang" />
     <NavigationProperty Name="HangSX" Relationship="Self.FK_SP_HSX" FromRole="SanPham" ToRole="HangSX" />
     <NavigationProperty Name="HinhAnhSPs" Relationship="Self.FK_HinhAnhSP" FromRole="SanPham" ToRole="HinhAnhSP" />
     <NavigationProperty Name="PhieuBaoHanhs" Relationship="Self.FK_PBH_SP" FromRole="SanPham" ToRole="PhieuBaoHanh" />
@@ -283,16 +295,6 @@
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="SliderImgSrc" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
     <Property Name="SliderLink" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-  </EntityType>
-  <EntityType Name="sysdiagram">
-    <Key>
-      <PropertyRef Name="diagram_id" />
-    </Key>
-    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-    <Property Name="principal_id" Type="Int32" Nullable="false" />
-    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="version" Type="Int32" />
-    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
   </EntityType>
   <EntityType Name="TheThanhVien">
     <Key>
@@ -433,6 +435,18 @@
       </Principal>
       <Dependent Role="SanPham">
         <PropertyRef Name="MaDM" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_GH_SP">
+    <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
+    <End Role="GioHang" Type="Self.GioHang" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SanPham">
+        <PropertyRef Name="MaSP" />
+      </Principal>
+      <Dependent Role="GioHang">
+        <PropertyRef Name="MaSP" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -695,6 +709,7 @@
     <EntitySet Name="ChiTietPNs" EntityType="Self.ChiTietPN" />
     <EntitySet Name="ChiTietPXKs" EntityType="Self.ChiTietPXK" />
     <EntitySet Name="DanhMucs" EntityType="Self.DanhMuc" />
+    <EntitySet Name="GioHangs" EntityType="Self.GioHang" />
     <EntitySet Name="HangSXes" EntityType="Self.HangSX" />
     <EntitySet Name="HinhAnhSPs" EntityType="Self.HinhAnhSP" />
     <EntitySet Name="HoaDons" EntityType="Self.HoaDon" />
@@ -711,7 +726,6 @@
     <EntitySet Name="SanPhams" EntityType="Self.SanPham" />
     <EntitySet Name="SidebarMenus" EntityType="Self.SidebarMenu" />
     <EntitySet Name="Sliders" EntityType="Self.Slider" />
-    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
     <EntitySet Name="TheThanhViens" EntityType="Self.TheThanhVien" />
     <EntitySet Name="ThongSoKyThuats" EntityType="Self.ThongSoKyThuat" />
     <EntitySet Name="TichDiems" EntityType="Self.TichDiem" />
@@ -750,6 +764,10 @@
     <AssociationSet Name="FK_SP_DM" Association="Self.FK_SP_DM">
       <End Role="DanhMuc" EntitySet="DanhMucs" />
       <End Role="SanPham" EntitySet="SanPhams" />
+    </AssociationSet>
+    <AssociationSet Name="FK_GH_SP" Association="Self.FK_GH_SP">
+      <End Role="SanPham" EntitySet="SanPhams" />
+      <End Role="GioHang" EntitySet="GioHangs" />
     </AssociationSet>
     <AssociationSet Name="FK_SP_HSX" Association="Self.FK_SP_HSX">
       <End Role="HangSX" EntitySet="HangSXes" />

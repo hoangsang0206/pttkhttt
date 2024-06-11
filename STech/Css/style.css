@@ -707,10 +707,6 @@ header {
     display: none;
 }
 
-.form-error.show {
-    display: block;
-}
-
 .form-error i {
     font-size: 1rem;
     margin-right: 0.5rem;
@@ -821,7 +817,7 @@ header {
 
 .login .form-box,
 .register .form-box {
-    width: 35rem;
+    width: 30rem;
 }
 
 /* ------------------------------------ */

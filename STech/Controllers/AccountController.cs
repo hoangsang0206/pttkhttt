@@ -36,14 +36,14 @@ namespace STech.Controllers
                             return Json(new {status = 200, redirectUrl = "/admin"});
                         }
 
-                        return Json(new { status = 200, redirectUrl = "" });
+                        return Json(new { status = 200 });
                     }
                 }
 
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Sai tên đăng nhập hoặc mật khẩu");
+                return Json(new { status = 400, message = "Sai tên đăng nhập hoặc mật khẩu" });
             }
 
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Đăng nhập thất bại");
+            return Json(new { status = 400, message = "Đăng nhập thất bại" });
         }
 
         [HttpPost]
@@ -62,12 +62,12 @@ namespace STech.Controllers
 
                     if (await userManager.FindByNameAsync(register.RegUsername) != null) 
                     {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Tài khoản này đã tồn tại");
+                        return Json(new { status = 400, message = "Tài khoản này đã tồn tại" });
                     }
 
                     if (await userManager.FindByEmailAsync(register.RegEmail) != null)
                     {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Email này đã tồn tại");
+                        return Json(new { status = 400, message = "Email này đã tồn tại" });
                     }
 
                     IdentityResult result = await userManager.CreateAsync(user);
@@ -84,7 +84,7 @@ namespace STech.Controllers
                     
             }
 
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Thông tin không hợp lệ");
+            return Json(new { status = 400, message = "Thông tin không hợp lệ" });
         }
 
         public ActionResult Logout()

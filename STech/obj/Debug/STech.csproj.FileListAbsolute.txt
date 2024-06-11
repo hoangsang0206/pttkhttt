@@ -117,8 +117,6 @@ D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Microsoft.Owin.Host.SystemWeb.xml
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Microsoft.Owin.Security.xml
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Microsoft.Owin.Security.Cookies.xml
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Microsoft.Owin.Security.OAuth.xml
-D:\HUFI\HK6\TH PTTKHTTT\STech\STech\obj\Debug\STech.IdentityMigration.init.resources
-D:\HUFI\HK6\TH PTTKHTTT\STech\STech\obj\Debug\STech.csproj.GenerateResource.cache
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Azure.Core.dll
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Azure.Storage.Blobs.dll
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Azure.Storage.Common.dll
@@ -141,3 +139,7 @@ D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\System.Memory.Data.xml
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\System.Text.Encodings.Web.xml
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\System.Text.Json.xml
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\System.ValueTuple.xml
+D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Stripe.net.dll
+D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Stripe.net.xml
+D:\HUFI\HK6\TH PTTKHTTT\STech\STech\obj\Debug\STech.IdentityMigration.init.resources
+D:\HUFI\HK6\TH PTTKHTTT\STech\STech\obj\Debug\STech.csproj.GenerateResource.cache

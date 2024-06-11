@@ -17,16 +17,32 @@ namespace STech.Controllers_api
         {
             using (DbEntities db = new DbEntities())
             {
-                return await db.SanPhams
-                    .Select(sp => new SanPhamDTO
+                List<SanPham> dsSP = await db.SanPhams
+                    .Include(sp => sp.HinhAnhSPs)
+                    .Include(sp => sp.ChiTietKhoes)
+                    .Include(sp => sp.DanhMuc)
+                    .Include(sp => sp.HangSX)
+                    .ToListAsync(); 
+
+                return dsSP.Select(sp => new SanPhamDTO()
+                {
+                    MaSP = sp.MaSP,
+                    TenSP = sp.TenSP,
+                    GiaBan = sp.GiaBan,
+                    GiaGoc = sp.GiaGoc,
+                    HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                    Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong),
+                    DanhMuc = new DanhMucDTO()
                     {
-                        MaSP = sp.MaSP,
-                        TenSP = sp.TenSP,
-                        GiaBan = sp.GiaBan,
-                        GiaGoc = sp.GiaGoc,
-                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
-                        Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
-                    }).ToListAsync();
+                        MaDM = sp.MaDM,
+                        TenDM = sp.DanhMuc.TenDM
+                    },
+                    HangSX = new HangSxDTO()
+                    {
+                        MaHSX = sp.MaHSX,
+                        TenHang = sp.HangSX.TenHang
+                    }
+                });
             }
         }
 
@@ -34,19 +50,34 @@ namespace STech.Controllers_api
         {
             using (DbEntities db = new DbEntities())
             {
-
                 string[] keywords = q.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                return await db.SanPhams
+                List<SanPham> dsSP = await db.SanPhams
                     .Where(sp => keywords.All(keyw => sp.TenSP.Contains(keyw)))
-                    .Select(sp => new SanPhamDTO
+                    .Include(sp => sp.HinhAnhSPs)
+                    .Include(sp => sp.ChiTietKhoes)
+                    .Include(sp => sp.DanhMuc)
+                    .Include(sp => sp.HangSX)
+                    .ToListAsync();
+
+                return dsSP.Select(sp => new SanPhamDTO()
+                {
+                    MaSP = sp.MaSP,
+                    TenSP = sp.TenSP,
+                    GiaBan = sp.GiaBan,
+                    GiaGoc = sp.GiaGoc,
+                    HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                    Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong),
+                    DanhMuc = new DanhMucDTO()
                     {
-                        MaSP = sp.MaSP,
-                        TenSP = sp.TenSP,
-                        GiaBan = sp.GiaBan,
-                        GiaGoc = sp.GiaGoc,
-                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
-                        Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
-                    }).ToListAsync();
+                        MaDM = sp.MaDM,
+                        TenDM = sp.DanhMuc.TenDM
+                    },
+                    HangSX = new HangSxDTO()
+                    {
+                        MaHSX = sp.MaHSX,
+                        TenHang = sp.HangSX.TenHang
+                    }
+                });
             }
         }
 
@@ -54,17 +85,33 @@ namespace STech.Controllers_api
         {
             using (DbEntities db = new DbEntities())
             {
-                return await db.SanPhams
+                List<SanPham> dsSP = await db.SanPhams
                     .Where(sp => sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
-                    .Select(sp => new SanPhamDTO
+                    .Include(sp => sp.HinhAnhSPs)
+                    .Include(sp => sp.ChiTietKhoes)
+                    .Include(sp => sp.DanhMuc)
+                    .Include(sp => sp.HangSX)
+                    .ToListAsync();
+
+                return dsSP.Select(sp => new SanPhamDTO()
+                {
+                    MaSP = sp.MaSP,
+                    TenSP = sp.TenSP,
+                    GiaBan = sp.GiaBan,
+                    GiaGoc = sp.GiaGoc,
+                    HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                    Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong),
+                    DanhMuc = new DanhMucDTO()
                     {
-                        MaSP = sp.MaSP,
-                        TenSP = sp.TenSP,
-                        GiaBan = sp.GiaBan,
-                        GiaGoc = sp.GiaGoc,
-                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
-                        Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
-                    }).ToListAsync();
+                        MaDM = sp.MaDM,
+                        TenDM = sp.DanhMuc.TenDM
+                    },
+                    HangSX = new HangSxDTO()
+                    {
+                        MaHSX = sp.MaHSX,
+                        TenHang = sp.HangSX.TenHang
+                    }
+                });
             }   
         }
 
@@ -72,17 +119,33 @@ namespace STech.Controllers_api
         {
             using (DbEntities db = new DbEntities())
             {
-                return await db.SanPhams
+                List<SanPham> dsSP = await db.SanPhams
                 .Where(sp => sp.MaDM.Equals(category))
-                .Select(sp => new SanPhamDTO
+                .Include(sp => sp.HinhAnhSPs)
+                .Include(sp => sp.ChiTietKhoes)
+                .Include(sp => sp.DanhMuc)
+                .Include(sp => sp.HangSX)
+                .ToListAsync();
+
+                return dsSP.Select(sp => new SanPhamDTO()
                 {
                     MaSP = sp.MaSP,
                     TenSP = sp.TenSP,
                     GiaBan = sp.GiaBan,
                     GiaGoc = sp.GiaGoc,
                     HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
-                    Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
-                }).ToListAsync();
+                    Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong),
+                    DanhMuc = new DanhMucDTO()
+                    {
+                        MaDM = sp.MaDM,
+                        TenDM = sp.DanhMuc.TenDM
+                    },
+                    HangSX = new HangSxDTO()
+                    {
+                        MaHSX = sp.MaHSX,
+                        TenHang = sp.HangSX.TenHang
+                    }
+                });
             }
         }
 
@@ -90,35 +153,67 @@ namespace STech.Controllers_api
         {
             using (DbEntities db = new DbEntities())
             {
-                return await db.SanPhams
+                List<SanPham> dsSP = await db.SanPhams
                     .Where(sp => sp.MaHSX.Equals(brand))
-                    .Select(sp => new SanPhamDTO
+                    .Include(sp => sp.HinhAnhSPs)
+                    .Include(sp => sp.ChiTietKhoes)
+                    .Include(sp => sp.DanhMuc)
+                    .Include(sp => sp.HangSX)
+                    .ToListAsync();
+
+                return dsSP.Select(sp => new SanPhamDTO()
+                {
+                    MaSP = sp.MaSP,
+                    TenSP = sp.TenSP,
+                    GiaBan = sp.GiaBan,
+                    GiaGoc = sp.GiaGoc,
+                    HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                    Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong),
+                    DanhMuc = new DanhMucDTO()
                     {
-                        MaSP = sp.MaSP,
-                        TenSP = sp.TenSP,
-                        GiaBan = sp.GiaBan,
-                        GiaGoc = sp.GiaGoc,
-                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
-                        Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
-                    }).ToListAsync();
+                        MaDM = sp.MaDM,
+                        TenDM = sp.DanhMuc.TenDM
+                    },
+                    HangSX = new HangSxDTO()
+                    {
+                        MaHSX = sp.MaHSX,
+                        TenHang = sp.HangSX.TenHang
+                    }
+                });
             }    
         }
 
-        public IEnumerable<SanPhamDTO> GetByCategoryAndBrand(string category, string brand)
+        public async Task<IEnumerable<SanPhamDTO>> GetByCategoryAndBrand(string category, string brand)
         {
             using (DbEntities db = new DbEntities())
             {
-                return db.SanPhams
+                List<SanPham> dsSP = await db.SanPhams
                     .Where(sp => sp.MaDM.Equals(category) && sp.MaHSX.Equals(brand))
-                    .Select(sp => new SanPhamDTO
+                    .Include(sp => sp.HinhAnhSPs)
+                    .Include(sp => sp.ChiTietKhoes)
+                    .Include(sp => sp.DanhMuc)
+                    .Include(sp => sp.HangSX)
+                    .ToListAsync();
+
+                return dsSP.Select(sp => new SanPhamDTO()
+                {
+                    MaSP = sp.MaSP,
+                    TenSP = sp.TenSP,
+                    GiaBan = sp.GiaBan,
+                    GiaGoc = sp.GiaGoc,
+                    HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                    Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong),
+                    DanhMuc = new DanhMucDTO()
                     {
-                        MaSP = sp.MaSP,
-                        TenSP = sp.TenSP,
-                        GiaBan = sp.GiaBan,
-                        GiaGoc = sp.GiaGoc,
-                        HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
-                        Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong)
-                    });
+                        MaDM = sp.MaDM,
+                        TenDM = sp.DanhMuc.TenDM
+                    },
+                    HangSX = new HangSxDTO()
+                    {
+                        MaHSX = sp.MaHSX,
+                        TenHang = sp.HangSX.TenHang
+                    }
+                });
             }  
         }
     }

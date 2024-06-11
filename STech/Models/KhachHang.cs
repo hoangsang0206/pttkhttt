@@ -28,6 +28,7 @@ namespace STech.Models
         public string DiaChi { get; set; }
         public Nullable<System.DateTime> NgaySinh { get; set; }
         public string GioiTinh { get; set; }
+        public string AccountId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<HoaDon> HoaDons { get; set; }

@@ -36,19 +36,36 @@ namespace STech.Controllers
                         GiaGoc = sp.GiaGoc,
                         HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
                         Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong),
-                        DanhMuc = new DanhMucDTO() 
-                        { 
+                        DanhMuc = new DanhMucDTO()
+                        {
                             MaDM = sp.DanhMuc.MaDM,
                             TenDM = sp.DanhMuc.TenDM
                         }
                     }).Take(15).ToList());
                 }
 
+                IEnumerable<DanhMucDTO> _danhmuc = danhmuc
+                    .Select(d => new DanhMucDTO()
+                    {
+                        MaDM = d.MaDM,
+                        TenDM = d.TenDM,
+                        HinhAnh = d.HinhAnh
+                    })
+                    .ToList();
+                IEnumerable<HangSxDTO> _hsx = hangSx
+                    .Select(h => new HangSxDTO()
+                    {
+                        MaHSX = h.MaHSX,
+                        TenHang = h.TenHang,
+                        HinhAnh = h.HinhAnh
+                    })
+                    .ToList();
+
                 //----------
                 ViewBag.Sliders = sliders;
                 ViewBag.Banner = banner;
-                ViewBag.HangSX = hangSx;
-                ViewBag.DanhMuc = danhmuc;
+                ViewBag.HangSX = _hsx;
+                ViewBag.DanhMuc = _danhmuc;
                 ViewBag.ActiveBotNav = "home";
 
                 CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");

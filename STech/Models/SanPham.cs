@@ -21,6 +21,7 @@ namespace STech.Models
             this.ChiTietKhoes = new HashSet<ChiTietKho>();
             this.ChiTietPNs = new HashSet<ChiTietPN>();
             this.ChiTietPXKs = new HashSet<ChiTietPXK>();
+            this.GioHangs = new HashSet<GioHang>();
             this.HinhAnhSPs = new HashSet<HinhAnhSP>();
             this.PhieuBaoHanhs = new HashSet<PhieuBaoHanh>();
             this.PhieuDoiTras = new HashSet<PhieuDoiTra>();
@@ -47,6 +48,8 @@ namespace STech.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietPXK> ChiTietPXKs { get; set; }
         public virtual DanhMuc DanhMuc { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<GioHang> GioHangs { get; set; }
         public virtual HangSX HangSX { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<HinhAnhSP> HinhAnhSPs { get; set; }

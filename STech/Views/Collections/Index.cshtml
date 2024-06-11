@@ -1,7 +1,7 @@
 ﻿
 @{ ViewBag.Title = ViewBag.title; }
 
-@model List<STech.Models.SanPham>
+@model List<STech.DTO.SanPhamDTO>
 
 @using STech.Helpers
 
@@ -212,10 +212,10 @@
                     <div class="product-box">
                         <a href="/product/@sp.MaSP" class="product-link">
                             <div class="product-image lazy-loading">
-                                <img lazy-src="@(sp.HinhAnhSPs.FirstOrDefault() != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : "~/Assets/Images/no-image.jpg")" alt="@sp.MaSP" class="product-img">
+                                <img lazy-src="@(sp.HinhAnh != null ? sp.HinhAnh : "~/Assets/Images/no-image.jpg")" alt="@sp.MaSP" class="product-img">
                             </div>
                         </a>
-                        @if (sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
+                        @if (sp.Tonkho <= 0)
                         {
                             <div class="out-of-stock mt-1 text-center">
                                 Hết hàng

@@ -54,6 +54,15 @@
     <Property Name="TenDM" Type="nvarchar" MaxLength="50" Nullable="false" />
     <Property Name="HinhAnh" Type="nvarchar(max)" />
   </EntityType>
+  <EntityType Name="GioHang">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="MaSP" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="SoLuong" Type="int" Nullable="false" />
+    <Property Name="AccountId" Type="nvarchar" MaxLength="128" Nullable="false" />
+  </EntityType>
   <EntityType Name="HangSX">
     <Key>
       <PropertyRef Name="MaHSX" />
@@ -98,6 +107,7 @@
     <Property Name="DiaChi" Type="nvarchar" MaxLength="200" />
     <Property Name="NgaySinh" Type="date" />
     <Property Name="GioiTinh" Type="nvarchar" MaxLength="10" />
+    <Property Name="AccountId" Type="nvarchar" MaxLength="128" />
   </EntityType>
   <EntityType Name="Kho">
     <Key>
@@ -229,16 +239,6 @@
     <Property Name="SliderImgSrc" Type="nvarchar(max)" />
     <Property Name="SliderLink" Type="nvarchar(max)" />
   </EntityType>
-  <EntityType Name="sysdiagrams">
-    <Key>
-      <PropertyRef Name="diagram_id" />
-    </Key>
-    <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
-    <Property Name="principal_id" Type="int" Nullable="false" />
-    <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="version" Type="int" />
-    <Property Name="definition" Type="varbinary(max)" />
-  </EntityType>
   <EntityType Name="TheThanhVien">
     <Key>
       <PropertyRef Name="MaThe" />
@@ -360,6 +360,18 @@
         <PropertyRef Name="MaSP" />
       </Principal>
       <Dependent Role="ChiTietPXK">
+        <PropertyRef Name="MaSP" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_GH_SP">
+    <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
+    <End Role="GioHang" Type="Self.GioHang" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SanPham">
+        <PropertyRef Name="MaSP" />
+      </Principal>
+      <Dependent Role="GioHang">
         <PropertyRef Name="MaSP" />
       </Dependent>
     </ReferentialConstraint>
@@ -635,6 +647,7 @@
     <EntitySet Name="ChiTietPN" EntityType="Self.ChiTietPN" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ChiTietPXK" EntityType="Self.ChiTietPXK" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="DanhMuc" EntityType="Self.DanhMuc" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="GioHang" EntityType="Self.GioHang" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="HangSX" EntityType="Self.HangSX" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="HinhAnhSP" EntityType="Self.HinhAnhSP" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="HoaDon" EntityType="Self.HoaDon" Schema="dbo" store:Type="Tables" />
@@ -651,7 +664,6 @@
     <EntitySet Name="SanPham" EntityType="Self.SanPham" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="SidebarMenu" EntityType="Self.SidebarMenu" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Slider" EntityType="Self.Slider" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="TheThanhVien" EntityType="Self.TheThanhVien" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ThongSoKyThuat" EntityType="Self.ThongSoKyThuat" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="TichDiem" EntityType="Self.TichDiem" Schema="dbo" store:Type="Tables" />
@@ -686,6 +698,10 @@
     <AssociationSet Name="FK_CTPXK_SP" Association="Self.FK_CTPXK_SP">
       <End Role="SanPham" EntitySet="SanPham" />
       <End Role="ChiTietPXK" EntitySet="ChiTietPXK" />
+    </AssociationSet>
+    <AssociationSet Name="FK_GH_SP" Association="Self.FK_GH_SP">
+      <End Role="SanPham" EntitySet="SanPham" />
+      <End Role="GioHang" EntitySet="GioHang" />
     </AssociationSet>
     <AssociationSet Name="FK_HD_KH" Association="Self.FK_HD_KH">
       <End Role="KhachHang" EntitySet="KhachHang" />

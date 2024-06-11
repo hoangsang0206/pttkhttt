@@ -37,21 +37,22 @@ $('.register form').submit(function(e) {
             RegEmail: email
         },
         success: (response) => {
-            resetBtn(submitBtn, btnText);
-            $(this).find('.form-error').hide();
-            $(this).find('.form-error').empty();
-            window.location.href = '';
-        },
-        error: (jqXHR) => {
-            resetBtn(submitBtn, btnText);
-            var str = `<span>
+            if (response.status === 400) {
+                var str = `<span>
                 <i class="fa-solid fa-circle-exclamation"></i>`
-                + jqXHR.responseText + `</span>`;
+                    + response.message + `</span>`;
 
-            $(this).find('.form-error').show();
-            $(this).find('.form-error').empty();
-            $(this).find('.form-error').append(str);
-        }
+                $(this).find('.form-error').show();
+                $(this).find('.form-error').empty();
+                $(this).find('.form-error').append(str);
+            } else {
+                $(this).find('.form-error').hide();
+                $(this).find('.form-error').empty();
+                location.reload();
+            }
+            resetBtn(submitBtn, btnText);
+        },
+        error: (jqXHR) => { }
     })
 })
 
@@ -74,24 +75,30 @@ $('.login form').submit(function(e) {
             Password: password
         },
         success: (response) => {
-            resetBtn(submitBtn, btnText);
             if (response.status === 200) {
                 $(this).find('.form-error').hide();
                 $(this).find('.form-error').empty();
-                window.location.href = response.redirectUrl;
-            }
-            
-        },
-        error: (jqXHR) => {
-            resetBtn(submitBtn, btnText);
-            const str = `<span>
-                <i class="fa-solid fa-circle-exclamation"></i>`
-                + jqXHR.statusText + `</span>`;
+                if (response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
+                } else {
+                    location.reload();
+                }
 
-            $(this).find('.form-error').addClass('show');
-            $(this).find('.form-error').empty();
-            $(this).find('.form-error').append(str);
-        }
+            } else {
+                const str = `<span>
+                <i class="fa-solid fa-circle-exclamation"></i>`
+                    + response.message + `</span>`;
+
+                $(this).find('.form-error').show();
+                $(this).find('.form-error').empty();
+                $(this).find('.form-error').append(str);
+
+                console.log()
+            }
+
+            resetBtn(submitBtn, btnText);
+        },
+        error: (jqXHR) => { }
     })
 })
 

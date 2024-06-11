@@ -13,7 +13,7 @@ namespace STech.IdentityMigration
         
         string IMigrationMetadata.Id
         {
-            get { return "202406101242306_init"; }
+            get { return "202406110747327_init"; }
         }
         
         string IMigrationMetadata.Source

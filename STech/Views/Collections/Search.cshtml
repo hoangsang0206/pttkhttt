@@ -3,7 +3,7 @@
     ViewBag.Title = "Tìm kiếm sản phẩm";
 }
 
-@model List<STech.Models.SanPham>
+@model List<STech.DTO.SanPhamDTO>
 
 @using STech.Helpers
 @{ 
@@ -89,10 +89,10 @@
                     <div class="product-box">
                         <a href="/product/@sp.MaSP" class="product-link">
                             <div class="product-image lazy-loading">
-                                <img lazy-src="@(sp.HinhAnhSPs.FirstOrDefault() != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : "/images/no-image.jpg")" alt="" class="product-img">
+                                <img lazy-src="@(sp.HinhAnh != null ? sp.HinhAnh: "/images/no-image.jpg")" alt="" class="product-img">
                             </div>
                         </a>
-                        @if (sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
+                        @if (sp.Tonkho <= 0)
                         {
                             <div class="out-of-stock mt-1 text-center">
                                 Hết hàng
@@ -152,12 +152,12 @@
             if (ViewBag.NoOfPages > 2)
             {
                 <button class="pagination-first-page pagination-btn" onclick="window.location.href='@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "page", "1")'">
-                    <img src="/images/icons/double-chevron-left.png" alt="" class="pagination-icon" />
+                    <img src="~/Assets/Iimages/icon/double-chevron-left.png" alt="" class="pagination-icon" />
                 </button>
             }
 
             <button class="pagination-previous pagination-btn" onclick="window.location.href='@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "page", Convert.ToString(ViewBag.Page - 1))'">
-                <img src="/images/icons/chevron-left.png" alt="" class="pagination-icon" />
+                <img src="~/Assets/Iimages/icon/chevron-left.png" alt="" class="pagination-icon" />
             </button>
         }
 
@@ -217,13 +217,13 @@
         @if (ViewBag.Page < ViewBag.NoOfPages)
         {
             <button class="pagination-next pagination-btn" onclick="window.location.href='@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "page", Convert.ToString(ViewBag.Page + 1))'">
-                <img src="/images/icons/chevron-right.png" alt="" class="pagination-icon" />
+                <img src="~/Assets/Images/icon/chevron-right.png" alt="" class="pagination-icon" />
             </button>
 
             if (ViewBag.NoOfPages > 2)
             {
                 <button class="pagination-last-page pagination-btn" onclick="window.location.href='@UrlHelperExtension.AddOrUpdateQueryParam(currentUrl, "page", Convert.ToString(ViewBag.NoOfPages))'">
-                    <img src="/images/icons/double-chevron-right.png" alt="" class="pagination-icon" />
+                    <img src="~/Assets/Images/icon/double-chevron-right.png" alt="" class="pagination-icon" />
                 </button>
             }
         }

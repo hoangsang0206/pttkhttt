@@ -98,6 +98,9 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
+    <Reference Include="Stripe.net, Version=44.11.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stripe.net.44.11.0\lib\net461\Stripe.net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -128,6 +131,11 @@
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Security" />
     <Reference Include="System.Text.Encodings.Web, Version=4.0.5.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -238,31 +246,23 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CollectionsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers_api\CartController.cs" />
     <Compile Include="Controllers_api\CategoriesController.cs" />
     <Compile Include="Controllers_api\ProductsController.cs" />
     <Compile Include="DTO\DanhMucDTO.cs" />
-    <Compile Include="ViewModels\LoginVM.cs" />
-    <Compile Include="ViewModels\RegisterVM.cs" />
-    <Compile Include="DTO\SanPhamDTO.cs" />
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="Helpers\UrlHelperExtension.cs" />
-    <Compile Include="IdentityMigration\202406101242306_init.cs" />
-    <Compile Include="IdentityMigration\202406101242306_init.designer.cs">
-      <DependentUpon>202406101242306_init.cs</DependentUpon>
+    <Compile Include="DTO\GioHangDTO.cs" />
+    <Compile Include="DTO\HangSxDTO.cs" />
+    <Compile Include="IdentityMigration\202406110747327_init.cs" />
+    <Compile Include="IdentityMigration\202406110747327_init.designer.cs">
+      <DependentUpon>202406110747327_init.cs</DependentUpon>
     </Compile>
     <Compile Include="IdentityMigration\Configuration.cs" />
-    <Compile Include="Identity\ApplicationDbContext.cs" />
-    <Compile Include="Identity\ApplicationUser.cs" />
-    <Compile Include="Identity\ApplicationUserManager.cs" />
-    <Compile Include="Identity\ApplicationUserStore.cs" />
     <Compile Include="Models\Banner.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Breadcrumb.cs" />
     <Compile Include="Models\ChiTietHD.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -276,6 +276,9 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DanhMuc.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GioHang.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\HangSX.cs">
@@ -341,9 +344,6 @@
     <Compile Include="Models\Slider.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\sysdiagram.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\TheThanhVien.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -353,6 +353,19 @@
     <Compile Include="Models\TichDiem.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="OtherModels\GioHangCookie.cs" />
+    <Compile Include="ViewModels\LoginVM.cs" />
+    <Compile Include="ViewModels\RegisterVM.cs" />
+    <Compile Include="DTO\SanPhamDTO.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\UrlHelperExtension.cs" />
+    <Compile Include="Identity\ApplicationDbContext.cs" />
+    <Compile Include="Identity\ApplicationUser.cs" />
+    <Compile Include="Identity\ApplicationUserManager.cs" />
+    <Compile Include="Identity\ApplicationUserStore.cs" />
+    <Compile Include="OtherModels\Breadcrumb.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -420,13 +433,6 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <EntityDeploy Include="Models\Model.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Model.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\Model.edmx.diagram">
-      <DependentUpon>Model.edmx</DependentUpon>
-    </Content>
     <Content Include="CSS\fonts\SFProDisplay\SF-Pro-Display-Bold.woff2" />
     <Content Include="CSS\fonts\SFProDisplay\SF-Pro-Display-Light.woff2" />
     <Content Include="CSS\fonts\SFProDisplay\SF-Pro-Display-Medium.woff2" />
@@ -452,6 +458,13 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <EntityDeploy Include="Models\Model.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Model.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\Model.edmx.diagram">
+      <DependentUpon>Model.edmx</DependentUpon>
+    </Content>
     <None Include="packages.config" />
     <Content Include="Views\Shared\Partial_Footer.cshtml" />
     <Content Include="Views\Shared\Partial_Megamenu.cshtml" />
@@ -463,13 +476,14 @@
     <Content Include="Views\Shared\Partial_Forms.cshtml" />
     <Content Include="Views\Shared\Partial_Login.cshtml" />
     <Content Include="Views\Shared\Partial_Register.cshtml" />
+    <Content Include="Views\Cart\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="IdentityMigration\202406101242306_init.resx">
-      <DependentUpon>202406101242306_init.cs</DependentUpon>
+    <EmbeddedResource Include="IdentityMigration\202406110747327_init.resx">
+      <DependentUpon>202406110747327_init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
