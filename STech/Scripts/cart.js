@@ -11,7 +11,7 @@ function hideWebLoader() {
 //Update quantity of item in cart to header
 function updateCartCount() {
     $.ajax({
-        type: 'POST',
+        type: 'GET',
         url: '/cart/cartcount',
         success: (data) => {
             $('.cart-count').empty();
@@ -38,8 +38,8 @@ $('.add-to-cart-btn, .buy-action-btn').click(() => {
             type: 'POST',
             url: '/cart/addtocart',
             data: {
-                ProductID: productID,
-                Quantity: 1
+                MaSP: productID,
+                SoLuong: 1
             },
             success: (respone) => {
                 if (respone.success) {
@@ -63,8 +63,8 @@ $('.btn-add-to-cart').click((e) => {
             type: 'POST',
             url: '/cart/addtocart',
             data: {
-                ProductID: productID,
-                Quantity: 1
+                MaSP: productID,
+                SoLuong: 1
             },
             success: (respone) => {
                 if (respone.success) {
@@ -77,14 +77,12 @@ $('.btn-add-to-cart').click((e) => {
 
 //-------------------------------
 $('.not-logged-in').click(() => {
-    $('.login').css('visibility', 'visible');
-    $('.login .form-container').addClass('showForm');
+    $('.login').addClass('show');
 })
 
 //---------------------------------
 $(document).ready(() => {
     var cartFormInput = $('.cart-form input').toArray();
-    var addressVal;
     cartFormInput.forEach((input) => {
         checkInputValid($(input));
     })
@@ -147,19 +145,19 @@ $(document).ready(() => {
 })
 
 //--Update cart item quantity
-$('.update-quantity').click((e) => {
-    var productID = $(e.target).data('product-btn');
-    var updateType = $(e.target).data('update');
-    var parentOfBtn = $(e.target).parent('.cart-product-quantity');
+$('.update-quantity').click(function() {
+    var productID = $(this).data('product');
+    var updateType = $(this).data('update');
+    var parentOfBtn = $(this).parent('.cart-product-quantity');
     var inputQuantity = parentOfBtn.children('input[name="quantity"]');
 
     if (productID.length > 0 && updateType.length > 0) {
         showWebLoader();
         $.ajax({
-            type: 'Post',
+            type: 'PUT',
             url: '/cart/updatequantity',
             data: {
-                productID: productID,
+                maSP: productID,
                 updateType: updateType
             },
             success: (res) => {
@@ -198,11 +196,11 @@ $('input[name="quantity"]').focus((e) => {
         if (newVal != currentVal) {
             showWebLoader();    
             $.ajax({
-                type: 'Post',
+                type: 'PUT',
                 url: '/cart/updatequantity',
                 data: {
-                    productID: productID,
-                    qtity: newVal
+                    maSP: productID,
+                    sluong: newVal
                 },
                 success: (res) => {
                     setTimeout(hideWebLoader, 500);

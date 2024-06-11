@@ -729,6 +729,34 @@ header {
     font-size: 0.85rem !important;
 }
 
+.form-input-box {
+    border: 1px solid #cfcfcf;
+    border-radius: 0.3rem;
+    margin-top: 1rem;
+}
+
+.form-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.3rem;
+    font-size: 1.1rem;
+}
+
+    .form-input:focus ~ .input-label, .form-input.input-valid ~ .input-label {
+        transform: translateY(-110%);
+        font-size: 0.8rem;
+    }
+
+.input-label {
+    pointer-events: none;
+    left: 0.8rem;
+    padding: 0 0.4rem;
+    background: var(--content-color-white);
+    transition: transform .4s ease;
+}
+
 
 .login-input-box {
     width: 100%;

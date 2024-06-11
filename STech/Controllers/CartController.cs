@@ -27,7 +27,7 @@ namespace STech.Controllers
                 using (DbEntities db = new DbEntities())
                 {
                     List<GioHangCookie> cartCookie = new List<GioHangCookie>();
-
+                    List<GioHangDTO> cartDTO = new List<GioHangDTO>();
                     CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
                     ViewBag.cul = cul;
 
@@ -74,7 +74,7 @@ namespace STech.Controllers
                         List<GioHang> cartToDelete = new List<GioHang>();
                         foreach (GioHang cart in userCart)
                         {
-                            if (cart.SanPham.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
+                            if (cart.SanPham.ChiTietKhoes.Count <= 0 || cart.SanPham.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
                             {
                                 cartToDelete.Add(cart);
                             }
@@ -92,9 +92,9 @@ namespace STech.Controllers
                         ViewBag.User = user;
 
                         //Delete cookie
-                        Response.Cookies["GioHangCookies"].Expires = DateTime.Now.AddDays(-10);
+                        Response.Cookies["GioHangCookie"].Expires = DateTime.Now.AddDays(-10);
 
-                        IEnumerable<GioHangDTO> cartDTO = userCart.Select(c => new GioHangDTO()
+                        cartDTO = userCart.Select(c => new GioHangDTO()
                         {
                             SanPham = new SanPhamDTO()
                             {
@@ -105,14 +105,11 @@ namespace STech.Controllers
                                 HinhAnh = c.SanPham.HinhAnhSPs != null ? c.SanPham.HinhAnhSPs.FirstOrDefault().DuongDan : null
                             },
                             SoLuong = c.SoLuong
-                        });
-
-                        return View(cartDTO);
+                        }).ToList();
                     }
                     else
                     {
                         cartCookie = getCartFromCookie();
-                        List<GioHangDTO> cartDTO = new List<GioHangDTO>();
                         List<GioHangCookie> cartToDelete = new List<GioHangCookie>();
                         if (cartCookie.Count > 0)
                         {
@@ -121,7 +118,7 @@ namespace STech.Controllers
                                 int quantity = cart.SoLuong;
                                 SanPham sp = await db.SanPhams.FirstOrDefaultAsync(t => t.MaSP == cart.MaSP);
 
-                                if (sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0 || sp.ChiTietKhoes == null)
+                                if (sp.ChiTietKhoes.Count <= 0 || sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
                                 {
                                     cartToDelete.Add(cart);
                                     continue;
@@ -148,9 +145,10 @@ namespace STech.Controllers
                                 saveCartToCookie(cartCookie);
                             }
                         }
-
-                        return View(cartDTO);
                     }
+
+
+                    return View(cartDTO);
                 }
             }
             catch (Exception ex)
@@ -167,8 +165,8 @@ namespace STech.Controllers
             {
                 using (DbEntities db = new DbEntities())
                 {
-                    SanPham sanpham = await db.SanPhams.FirstOrDefaultAsync(t => t.MaDM == cart.MaSP);
-                    if (sanpham == null || sanpham.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
+                    SanPham sanpham = await db.SanPhams.FirstOrDefaultAsync(t => t.MaSP == cart.MaSP);
+                    if (sanpham == null || sanpham.ChiTietKhoes.Count <= 0 || sanpham.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
                     {
                         return Json(new { success = false });
                     }
@@ -182,7 +180,7 @@ namespace STech.Controllers
                         GioHang existCart = userCart.FirstOrDefault(t => t.MaSP == cart.MaSP);
                         if (existCart != null)
                         {
-                            if (existCart.SanPham.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
+                            if (existCart.SanPham.ChiTietKhoes.Count <= 0 || existCart.SanPham.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
                             {
                                 db.GioHangs.Remove(existCart);
                             }
@@ -275,13 +273,7 @@ namespace STech.Controllers
 
                             cartCookie.RemoveAt(line - 1);
 
-                            var cartJson = JsonConvert.SerializeObject(cartCookie);
-                            var bytesToEncode = Encoding.UTF8.GetBytes(cartJson);
-                            var base64String = Convert.ToBase64String(bytesToEncode);
-                            string json = JsonConvert.SerializeObject(cartCookie);
-                            Response.Cookies["CartItems"].Value = base64String;
-                            //Cookie will expire in 30 days from the date the new product is added
-                            Response.Cookies["CartItems"].Expires = DateTime.Now.AddDays(30);
+                            saveCartToCookie(cartCookie);
                         }
                     }    
                 }
@@ -294,19 +286,164 @@ namespace STech.Controllers
             }
         }
 
+        [HttpPut]
+        public async Task<ActionResult> UpdateQuantity(string maSP, string updateType, int sluong = 0)
+        {
+            try
+            {
+                int quantity = 0;
+                decimal totalPrice = 0;
+                string updateError = "";
+
+                if (User.Identity.IsAuthenticated)
+                {
+                    using (DbEntities db = new DbEntities())
+                    {
+                        string userID = User.Identity.GetUserId();
+                        GioHang cart = await db.GioHangs.FirstOrDefaultAsync(t => t.AccountId == userID && t.MaSP == maSP);
+
+                        if (cart != null)
+                        {
+                            int inventory = cart.SanPham.ChiTietKhoes.Sum(ctk => ctk.SoLuong);
+                            if (updateType == "increase")
+                            {
+                                cart.SoLuong += 1;
+                                if (cart.SoLuong > inventory)
+                                {
+                                    cart.SoLuong = inventory;
+                                    updateError = "Sản phẩm này chỉ còn " + inventory + " sản phẩm trong kho.";
+                                }
+                            }
+                            else if (updateType == "decrease")
+                            {
+                                cart.SoLuong -= 1;
+                                if (cart.SoLuong <= 0) cart.SoLuong = 1;
+                            }
+                            else
+                            {
+                                if (sluong <= 0) sluong = 1;
+                                if (sluong >= inventory)
+                                {
+                                    sluong = inventory;
+                                    updateError = "Sản phẩm này chỉ còn " + inventory + " sản phẩm trong kho.";
+                                }
+
+                                cart.SoLuong = sluong;
+                            }
+                            quantity = cart.SoLuong;
+                            db.GioHangs.AddOrUpdate(cart);
+                            db.SaveChanges();
+
+                            List<GioHang> userCart = await db.GioHangs.Where(t => t.AccountId == userID).ToListAsync();
+                            totalPrice = userCart.Sum(t => t.SanPham.GiaBan * t.SoLuong);
+                        }
+                    }
+                }
+                else
+                {
+                    List<GioHangCookie> cartCookie = getCartFromCookie();
+                    GioHangCookie cartCItem = cartCookie.FirstOrDefault(t => t.MaSP == maSP);
+                    if (cartCItem != null)
+                    {
+                        using (DbEntities db = new DbEntities())
+                        {
+                            int inventory = (int)db.SanPhams.FirstOrDefault(t => t.MaSP == cartCItem.MaSP).ChiTietKhoes.Sum(ctk => ctk.SoLuong);
+
+                            if (updateType == "increase")
+                            {
+                                cartCItem.SoLuong += 1;
+                                if (cartCItem.SoLuong > inventory)
+                                {
+                                    cartCItem.SoLuong = inventory;
+                                    updateError = "Sản phẩm này chỉ còn " + inventory + " sản phẩm trong kho.";
+                                }
+                            }
+                            else if (updateType == "decrease")
+                            {
+                                cartCItem.SoLuong -= 1;
+                                if (cartCItem.SoLuong <= 0) cartCItem.SoLuong = 1;
+                            }
+                            else
+                            {
+                                if (sluong <= 0) sluong = 1;
+                                if (sluong >= inventory)
+                                {
+                                    sluong = inventory;
+                                    updateError = "Sản phẩm này chỉ còn " + inventory + " sản phẩm trong kho.";
+                                }
+
+                                cartCItem.SoLuong = sluong;
+                            }
+                            quantity = cartCItem.SoLuong;
+                            cartCookie.Remove(cartCItem);
+                            cartCookie.Add(cartCItem);
+
+                            saveCartToCookie(cartCookie);
+
+                            //Update total price in cart page
+                            List<GioHangDTO> cartDTO = new List<GioHangDTO>();
+                            if (cartCookie.Count > 0)
+                            {
+                                foreach (GioHangCookie item in cartCookie)
+                                {
+                                    SanPham sp = await db.SanPhams.FirstOrDefaultAsync(t => t.MaSP == item.MaSP);
+                                    SanPhamDTO spDTO = new SanPhamDTO()
+                                    {
+                                        GiaBan = sp.GiaBan
+                                    };
+
+                                    cartDTO.Add(new GioHangDTO(spDTO, item.SoLuong));
+                                }
+                            }
+
+                            totalPrice = (decimal)cartDTO.Sum(t => t.SanPham.GiaBan * t.SoLuong);
+                        }
+                    }
+                }
+
+                return Json(new { qty = quantity, total = totalPrice, error = updateError });
+            }
+            catch (Exception ex)
+            {
+                return Redirect("/cart");
+            }
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> CartCount()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                using (DbEntities db = new DbEntities())
+                {
+                    string userID = User.Identity.GetUserId();
+                    List<GioHang> userCart = await db.GioHangs.Where(t => t.AccountId == userID).ToListAsync();
+                    int cartCount = userCart.Count();
+
+                    return Json(new { count = cartCount }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                List<GioHangCookie> cartCookie = getCartFromCookie();
+
+                return Json(new { count = cartCookie.Count() }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         private List<GioHangCookie> getCartFromCookie()
         {
-            List<GioHangCookie> GioHangCookies = new List<GioHangCookie>();
+            List<GioHangCookie> cartCookie = new List<GioHangCookie>();
             var base64String = Request.Cookies["GioHangCookie"]?.Value;
 
             if (!string.IsNullOrEmpty(base64String))
             {
                 var bytesToDecode = Convert.FromBase64String(base64String);
                 var GioHangCookiesJson = Encoding.UTF8.GetString(bytesToDecode);
-                GioHangCookies = JsonConvert.DeserializeObject<List<GioHangCookie>>(GioHangCookiesJson);
+                cartCookie = JsonConvert.DeserializeObject<List<GioHangCookie>>(GioHangCookiesJson);
             }
 
-            return GioHangCookies;
+            return cartCookie;
         }
 
         private void saveCartToCookie(List<GioHangCookie> cartCookie)
