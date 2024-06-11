@@ -251,9 +251,13 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers_api\CategoriesController.cs" />
     <Compile Include="Controllers_api\ProductsController.cs" />
+    <Compile Include="DTO\ChiTietHDDTO.cs" />
     <Compile Include="DTO\DanhMucDTO.cs" />
     <Compile Include="DTO\GioHangDTO.cs" />
     <Compile Include="DTO\HangSxDTO.cs" />
+    <Compile Include="DTO\HoaDonDTO.cs" />
+    <Compile Include="DTO\KhachHangDTO.cs" />
+    <Compile Include="DTO\NhanVienDTO.cs" />
     <Compile Include="IdentityMigration\202406110747327_init.cs" />
     <Compile Include="IdentityMigration\202406110747327_init.designer.cs">
       <DependentUpon>202406110747327_init.cs</DependentUpon>
@@ -476,6 +480,7 @@
     <Content Include="Views\Shared\Partial_Login.cshtml" />
     <Content Include="Views\Shared\Partial_Register.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
+    <Content Include="Views\Account\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

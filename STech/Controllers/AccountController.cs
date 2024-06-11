@@ -8,6 +8,13 @@ using System.Web.Helpers;
 using Microsoft.Owin.Security;
 using System.Web.Mvc;
 using System.Net;
+using STech.Models;
+using System.Collections;
+using System.Linq;
+using System.Data.Entity;
+using System.Collections.Generic;
+using STech.DTO;
+using System;
 
 namespace STech.Controllers
 {
@@ -15,7 +22,51 @@ namespace STech.Controllers
     {
         public async Task<ActionResult> Index()
         {
-            return View();
+            try
+            {
+                using (DbEntities db = new DbEntities())
+                {
+                    string userId = User.Identity.GetUserId();
+                    ApplicationUserManager userManager = new ApplicationUserManager(new ApplicationUserStore(new ApplicationDbContext()));
+                    ApplicationUser user = userManager.FindByIdAsync(userId).Result;
+
+                    List<HoaDonDTO> dsHD = await db.HoaDons
+                        .Where(hd => hd.KhachHang.AccountId.Equals(user.Id))
+                        .Select(hd => new HoaDonDTO()
+                        {
+                            MaHD = hd.MaHD,
+                            NgayDat = hd.NgayDat,
+                            TongTien = hd.TongTien,
+                            PhuongThucThanhToan = hd.PhuongThucThanhToan,
+                            TrangThaiThanhToan = hd.TrangThaiThanhToan,
+                            TrangThai = hd.TrangThai
+                        })
+                        .ToListAsync();
+
+
+                    KhachHang kh = await db.KhachHangs.FirstOrDefaultAsync(k => k.AccountId.Equals(user.Id));
+                    if (kh != null)
+                    {
+                        user.UserFullName = kh.HoTen;
+                        user.PhoneNumber = kh.SDT;
+                        user.Address = kh.DiaChi;
+                        user.Email = kh.Email;
+                        user.Gender = kh.GioiTinh;
+                        user.DOB = kh.NgaySinh;
+
+                        await userManager.UpdateAsync(user);
+                    }
+
+                    Tuple<ApplicationUser, List<HoaDonDTO>> tuple = new Tuple<ApplicationUser, List<HoaDonDTO>>(user, dsHD);
+                    ViewBag.ActiveBotNav = "account";
+
+                    return View(tuple);
+                }
+            } 
+            catch (Exception ex) 
+            {
+                return Redirect("/");
+            }
         }
 
         [HttpPost]

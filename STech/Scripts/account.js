@@ -45,12 +45,12 @@ $('.register form').submit(function(e) {
                 $(this).find('.form-error').show();
                 $(this).find('.form-error').empty();
                 $(this).find('.form-error').append(str);
+                resetBtn(submitBtn, btnText);
             } else {
                 $(this).find('.form-error').hide();
                 $(this).find('.form-error').empty();
                 location.reload();
             }
-            resetBtn(submitBtn, btnText);
         },
         error: (jqXHR) => { }
     })
@@ -93,10 +93,8 @@ $('.login form').submit(function(e) {
                 $(this).find('.form-error').empty();
                 $(this).find('.form-error').append(str);
 
-                console.log()
+                resetBtn(submitBtn, btnText);
             }
-
-            resetBtn(submitBtn, btnText);
         },
         error: (jqXHR) => { }
     })
@@ -341,12 +339,18 @@ $(document).ready(() => {
 
 //-----------------------------------------------
 function setParentHeight() {
-    var childHeight = $('.account-right-box.current').outerHeight(true);
+    const childHeight = $('.account-right-box.current').outerHeight(true);
     $('.account-right-side').css('height', childHeight + 'px');
+
+    const leftSideHeight = $('.account-left-side').outerHeight(true);
+    if (leftSideHeight > childHeight) {
+        $('.account-right-box.current').css('height', leftSideHeight + 'px');
+        $('.account-right-side').css('height', leftSideHeight + 'px');
+    }
 }
 
 function showCard() {
-    var idFromUrl = window.location.hash.substring(1);
+    const idFromUrl = window.location.hash.substring(1);
     if (idFromUrl.length > 0) {
         $('.account-right-box').removeClass('current');
         $('.account-nav-list-item a').removeClass('activeNav');
