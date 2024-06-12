@@ -279,7 +279,6 @@
 
 .user-form-box {
     padding: 0.5rem 0;
-    width: 80%;
     column-gap: 2.5rem;
 }
 
@@ -287,22 +286,12 @@
     width: 8rem;
 }
 
-.user-form-box input[type="text"],
-.user-form-box input[type="email"],
-.user-form-box input[type="password"] {
+.user-form-box input:not([type="radio"]) {
     border: 1px solid #cfcfcf;
     padding: 0.5rem 1rem;
     border-radius: 0.3rem;
     outline: none;
-    width: 70%;
-}
-
-.user-form-box input[type="date"] {
-    border: 1px solid #cfcfcf;
-    padding: 0.5rem 1rem;
-    border-radius: 0.3rem;
-    outline: none;
-    width: 35%;
+    max-width: 30rem;
 }
 
 .input-radio label {
@@ -546,25 +535,21 @@
         width: 100%;
     }
 
+    .account-right-side * {
+        font-size: 0.95rem;
+    }
+
+    .account-right-box {
+        padding: 1rem;
+    }
+
     .user-form-box {
         width: 100%;
         column-gap: 1rem;
     }
 
-    .user-form-box input[type="text"], 
-    .user-form-box input[type="email"], 
-    .user-form-box input[type="date"] {
-        width: calc(73% - 1rem);
-    }
-
     .user-input-label {
-        width: 27%;
-    }
-
-    .upload-form-box {
-        max-width: 22rem;
-        width: 90%;
-        padding: 1.8rem;
+        width: 4rem;
     }
 
     .order-info-wrapper {
@@ -604,16 +589,6 @@
 
     .user-form-box {
         width: 100%;
-    }
-
-    .user-form-box input[type="text"],
-    .user-form-box input[type="email"],
-    .user-form-box input[type="password"] {
-        width: 70%;
-    }
-
-    .user-form-box input[type="date"] {
-        width: 50%;
     }
 
     .user-input-label {

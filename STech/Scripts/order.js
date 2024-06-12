@@ -1,6 +1,4 @@
 ﻿//---------------------------------
-
-//Kiểm tra thông tin người đặt hàng 
 $('.order-info-summary').click(() => {
     var gender = $('input[name="gender"]:checked').val();
     var name = $('#UserFullName').val();
@@ -56,13 +54,13 @@ $('.order-info-summary').click(() => {
     })
 })
 
-//Thanh toán qua thẻ VISA/MASTERCARD --------------------------------------------
+
 $('.payment-action').click(() => {
     var paymentMethod = $('input[name="payment-method"]:checked').val();
 
     if (paymentMethod.length > 0) {
         $.ajax({
-            type: 'Post',
+            type: 'POST',
             url: '/order/checkout',
             data: {
                 paymentMethod: paymentMethod

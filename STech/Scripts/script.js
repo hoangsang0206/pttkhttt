@@ -108,7 +108,10 @@ function showWebLoader() {
 }
 
 function hideWebLoader() {
-    $('.webloading').hide();
+    const timeout = setTimeout(() => {
+        $('.webloading').hide();
+        clearTimeout(timeout);
+    }, 1000);
 }
 
 //Show scroll to top button ----------------------------------------------------------

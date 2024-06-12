@@ -1,14 +1,4 @@
-﻿//Show/hide web loader
-function showWebLoader() {
-    $('.webloading').css('display', 'grid');
-}
-
-function hideWebLoader() {
-    $('.webloading').hide();
-}
-
-
-//Update quantity of item in cart to header
+﻿
 function updateCartCount() {
     $.ajax({
         type: 'GET',
@@ -43,7 +33,7 @@ $('.add-to-cart-btn, .buy-action-btn').click(() => {
             },
             success: (respone) => {
                 if (respone.success) {
-                    setTimeout(hideWebLoader, 500);
+                    hideWebLoader()
                     updateCartCount();
                 }
             }
@@ -161,7 +151,7 @@ $('.update-quantity').click(function() {
                 updateType: updateType
             },
             success: (res) => {
-                setTimeout(hideWebLoader, 500);
+                hideWebLoader()
                 inputQuantity.val(res.qty);
 
                 var total = res.total.toLocaleString("vi-VN") + 'đ';
@@ -203,7 +193,7 @@ $('input[name="quantity"]').focus((e) => {
                     sluong: newVal
                 },
                 success: (res) => {
-                    setTimeout(hideWebLoader, 500);
+                    hideWebLoader()
                     $(e.target).val(res.qty);
 
                     var total = res.total.toLocaleString("vi-VN") + 'đ';

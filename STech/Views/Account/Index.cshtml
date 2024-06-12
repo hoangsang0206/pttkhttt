@@ -42,7 +42,7 @@
                         </a>
                     </li>
                     <li class="account-nav-list-item">
-                        <p class="account-logout" onclick="window.location.href = '/account/logout'">
+                        <p class="account-logout">
                             <i class="fa-solid fa-right-from-bracket account-list-icon"></i>
                             <span>Đăng xuất</span>
                         </p>
@@ -54,54 +54,7 @@
             <div class="account-right-box current" data-account-side="account-info">
                 <h3 class="r-side-header">Thông tin tài khoản</h3>
                 <div class="account-info-wrapper">
-                    <form action="#" method="post" class="user-update-form">
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end">
-                                <span>Họ tên</span>
-                            </div>
-                            <input type="text" id="UserFulName" name="UserFulName" value="@Model.Item1.UserFullName" />
-                        </div>
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end">
-                                <span>Giới tính</span>
-                            </div>
-                            <div class="input-radio d-flex align-items-center">
-                                <input type="radio" id="Gender1" name="Gender" value="Nam" @(Model.Item1.Gender.Equals("Nam") ? "checked" : "") />
-                                <label for="Gender1">Nam</label>
-                                <input type="radio" id="Gender2" name="Gender" value="Nữ" @(Model.Item1.Gender.Equals("Nữ") ? "checked" : "") />
-                                <label for="Gender2">Nữ</label>
-                            </div>
-                        </div>
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end">
-                                <span>Số điện thoại</span>
-                            </div>
-                            <input type="text" id="PhoneNumber" name="PhoneNumber" value="@Model.Item1.PhoneNumber" />
-                        </div>
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end">
-                                <span>Email</span>
-                            </div>
-                            <input type="email" id="Email" name="Email" value="@Model.Item1.Email" />
-                        </div>
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end">
-                                <span>Ngày sinh</span>
-                            </div>
-                            <input type="date" id="DOB" name="DOB" value="@( Model.Item1.DOB.HasValue ? Model.Item1.DOB.Value.ToString("yyyy-MM-dd") : "")" />
-                        </div>
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end">
-                                <span>Địa chỉ</span>
-                            </div>
-                            <input type="text" id="Address" name="Address" value="@( Model.Item1.Address )" />
-                        </div>
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end"></div>
-                            <button type="submit" class="user-form-submit">LƯU THAY ĐỔI</button>
-                        </div>
-                    </form>
-
+                    @Html.Partial("Partial_UpdateAccount", new Tuple<STech.Identity.ApplicationUser, STech.ViewModels.UpdateAccountVM>(Model.Item1, new STech.ViewModels.UpdateAccountVM()))
                     <div class="update-error mt-3">
                     </div>
                 </div>
@@ -118,8 +71,8 @@
                             <li data-get-order="new">
                                 MỚI
                             </li>
-                            <li data-get-order="wait-for-pay">
-                                CHỜ THANH TOÁN
+                            <li data-get-order="unpaid">
+                                CHƯA THANH TOÁN
                             </li>
                             <li data-get-order="paid">
                                 ĐÃ THANH TOÁN
@@ -128,7 +81,7 @@
                     </div>
                     <div class="order-search-box">
                         <form action="#" method="post" class="order-search-form">
-                            <input type="text" id="order-search" name="order-search" value="" required autocomplete="off" placeholder="Tìm đơn hàng theo mã đơn" />
+                            <input type="text" id="order-search" name="order-search" autocomplete="off" placeholder="Tìm theo mã đơn hàng" />
                             <button type="submit" class="order-search-btn">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </button>
@@ -150,19 +103,40 @@
                                     </tr>
                                     @foreach (var item in Model.Item2)
                                     {
-                                        var paymentStatusClass = "order-success";
-                                        if (item.TrangThaiThanhToan.Equals("failed")) { paymentStatusClass = "order-failed"; }
-                                        else if (item.TrangThaiThanhToan.Equals("Chờ thanh toán")) { paymentStatusClass = "order-waiting"; }
+                                        string paymentStatusClass = "order-waiting";
+                                        string paymentText = "Chưa thanh toán";
+                                        if (item.TrangThaiThanhToan.Equals("failed"))
+                                        {
+                                            paymentStatusClass = "order-failed";
+                                            paymentText = "T.toán thất bại";
+                                        }
+                                        else if (item.TrangThaiThanhToan.Equals("paid"))
+                                        {
+                                            paymentStatusClass = "order-success";
+                                            paymentText = "Đã thanh toán";
+                                        }
+
+                                        string statusClass = "order-waiting";
+                                        string statusText = "Chờ xác nhận";
+                                        if (item.TrangThai.Equals("cancelled"))
+                                        {
+                                            statusClass = "order-failed";
+                                            statusText = "Đã hủy";
+                                        } else if(item.TrangThai.Equals("confirmed"))
+                                        {
+                                            statusClass = "order-success";
+                                            statusText = "Đã xác nhận";
+                                        }
 
                                         <tr>
                                             <td class="order-id">@item.MaHD</td>
                                             <td class="order-date">@(item.NgayDat.HasValue ? item.NgayDat.Value.ToString("dd/MM/yyyy") : "")</td>
                                             <td class="order-total">@item.TongTien.Value.ToString("##,###", ViewBag.cul)đ</td>
                                             <td>
-                                                <div class="order-pstatus @paymentStatusClass">@item.TrangThaiThanhToan </div>
+                                                <div class="order-pstatus @paymentStatusClass">@paymentText </div>
                                             </td>
                                             <td>
-                                                <div class="order-status @(item.TrangThai.Equals("confirmed") ? "order-success" : item.TrangThai.Equals("unconfirmed") ? "order-waiting" : item.TrangThai.Equals("cancelled") ? "order-failed" : "")">@item.TrangThai</div>
+                                                <div class="order-status @statusClass">@statusText</div>
                                             </td>
                                             <td> <a href="/order/detail/@item.MaHD">Chi tiết</a></td>
                                         </tr>
@@ -187,30 +161,7 @@
             <div class="account-right-box" data-account-side="password">
                 <h3 class="r-side-header">Đổi mật khẩu</h3>
                 <div class="password-wrapper">
-                    <form action="#" method="post" class="change-password-form">
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end">
-                                <span>Mật khẩu cũ</span>
-                            </div>
-                            <input type="password" id="OldPassword" name="OldPassword" value="" required autocomplete="off" />
-                        </div>
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end">
-                                <span>Mật khẩu mới</span>
-                            </div>
-                            <input type="password" id="NewPassword" name="NewPassword" value="" required autocomplete="off" />
-                        </div>
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end">
-                                <span>Nhập lại mật khẩu mới</span>
-                            </div>
-                            <input type="password" id="ConfirmNewPassword" name="ConfirmNewPassword" value="" required autocomplete="off" />
-                        </div>
-                        <div class="user-form-box d-flex align-items-center">
-                            <div class="user-input-label text-end"></div>
-                            <button type="submit" class="user-form-submit">ĐỔI MẬT KHẨU</button>
-                        </div>
-                    </form>
+                    @Html.Partial("Partial_ChangePassword", new STech.ViewModels.ChangePasswordVM())
                 </div>
                 <div class="update-error mt-3">
                 </div>

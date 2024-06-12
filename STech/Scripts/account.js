@@ -1,23 +1,40 @@
-﻿//--Show button loading -------------------------------------------
-function showBtnLoading(button) {
+﻿const showBtnLoading = (button) => {
     var btnText = button.text();
-    button.empty();
     var loadingStr = `<div class="loadingio-spinner-dual-ring-ekj0ol56kwc">
                         <div class="ldio-gmrbyawnrc">
                             <div></div><div><div></div></div>
                         </div>
                     </div>`;
-    button.append(loadingStr);
+    button.html(loadingStr);
 
     return btnText;
 }
 
-function resetBtn(button, btnText) {
-    button.empty();
-    button.text(btnText);
+const resetBtn = (button, btnText) => {
+    const timeout = setTimeout(() => {
+        button.html(btnText);
+        clearTimeout(timeout);
+    }, 1000);
 }
 
-//--Register with Ajax --------------------------------------------
+const showFormError = (form, message) => {
+    $(form).find('.form-error').show();
+    $(form).find('.form-error').html(message);
+}
+
+const closeFormError = (form) => {
+    $(form).find('.form-error').hide();
+    $(form).find('.form-error').empty();
+}
+
+const closeFormErrorWithTimeout = (form) => {
+    const timeout = setTimeout(() => {
+        $(form).find('.form-error').hide();
+        $(form).find('.form-error').empty();
+        clearTimeout(timeout);
+    }, 5000)
+}
+
 $('.register form').submit(function(e) {
     e.preventDefault();
     const userName = $(this).find('#RegUsername').val();
@@ -38,17 +55,14 @@ $('.register form').submit(function(e) {
         },
         success: (response) => {
             if (response.status === 400) {
-                var str = `<span>
+                const str = `<span>
                 <i class="fa-solid fa-circle-exclamation"></i>`
                     + response.message + `</span>`;
-
-                $(this).find('.form-error').show();
-                $(this).find('.form-error').empty();
-                $(this).find('.form-error').append(str);
+                showFormError(this, str);
+                closeFormErrorWithTimeout(this);
                 resetBtn(submitBtn, btnText);
             } else {
-                $(this).find('.form-error').hide();
-                $(this).find('.form-error').empty();
+                closeFormError(this);
                 location.reload();
             }
         },
@@ -57,8 +71,6 @@ $('.register form').submit(function(e) {
 })
 
 
-
-//--Login with Ajax -----------------------------------------------
 $('.login form').submit(function(e) {
     e.preventDefault();
     var userName = $(this).find('#Username').val();
@@ -76,23 +88,19 @@ $('.login form').submit(function(e) {
         },
         success: (response) => {
             if (response.status === 200) {
-                $(this).find('.form-error').hide();
-                $(this).find('.form-error').empty();
+                closeFormError(this);
                 if (response.redirectUrl) {
                     window.location.href = response.redirectUrl;
                 } else {
                     location.reload();
                 }
 
-            } else {
+            } else if(response.status === 400) {
                 const str = `<span>
                 <i class="fa-solid fa-circle-exclamation"></i>`
                     + response.message + `</span>`;
-
-                $(this).find('.form-error').show();
-                $(this).find('.form-error').empty();
-                $(this).find('.form-error').append(str);
-
+                showFormError(this, str);
+                closeFormErrorWithTimeout(this);
                 resetBtn(submitBtn, btnText);
             }
         },
@@ -100,24 +108,35 @@ $('.login form').submit(function(e) {
     })
 })
 
-//--Update with AJAX ----------------------------------------------
-function closeUpdateErr() {
-    $('.update-error').empty();
+
+const showUpdateMessage = (message) => {
+    const element = $('.account-right-box.current').find('.update-error');
+    element.empty();
+    element.html(message);
+    const timeout = setTimeout(() => {
+        element.empty();
+        clearTimeout(timeout);
+    }, 5000);
 }
 
-$('.user-update-form').submit((e) => {
-    e.preventDefault();
-    var fullName = $('#UserFulName').val();
-    var gender = $('input[name="Gender"]:checked').val();
-    var phone = $('#PhoneNumber').val();
-    var email = $('#Email').val();
-    var dob = $('#DOB').val();
-    var address = $('#Address').val();
+const closeUpdateMessage = () => {
+    const parent = $('.account-right-box.current');
+    parent.find('.update-error').empty();
+}
 
-    var submitBtn = $(e.target).find('.user-form-submit');
-    var btnText = showBtnLoading(submitBtn);
+$('.user-update-form').submit(function(e) {
+    e.preventDefault();
+    const fullName = $(this).find('#Item2_UserFullName').val();
+    const gender = $(this).find('input[name="Gender"]:checked').val();
+    const phone = $(this).find('#Item2_PhoneNumber').val();
+    const email = $(this).find('#Item2_Email').val();
+    const dob = $(this).find('#Item2_DOB').val();
+    const address = $(this).find('#Item2_Address').val();
+
+    const submitBtn = $(this).find('.user-form-submit');
+    const btnText = showBtnLoading(submitBtn);
     $.ajax({
-        type: 'POST',
+        type: 'PUT',
         url: '/account/update',
         data: {
             UserFullName: fullName,
@@ -129,75 +148,52 @@ $('.user-update-form').submit((e) => {
         },
         success: (response) => {
             resetBtn(submitBtn, btnText);
-            if (response.success) {
-                var str = '<span>Cập nhật thành công.</span>';
-                $('.update-error').empty();
-                $('.update-error').append(str);
-
-                var timeout = setTimeout(() => {
-                    closeUpdateErr();
-                    clearTimeout(timeout);
-                }, 6000)
+            if (response.status === 200) {
+                const str = '<span style="color: #44bd32">Cập nhật thành công.</span>';
+                showUpdateMessage(str);
             }
-            else {
+            else if(response.status === 400) {
                 $('.update-error').empty();
-                var str = '<span>' + response.error +'</span>'
-               
-                $('.update-error').append(str);
-
-                var timeout = setTimeout(() => {
-                    closeUpdateErr();
-                    clearTimeout(timeout);
-                }, 6000)
+                const str = '<span style="color: #e30019">' + response.message + '</span>'
+                showUpdateMessage(str)
             }
         },
         error: (err) => { resetBtn(submitBtn, btnText); }
     })
 })
 
-//-Change password -----------------------------------
-$('.change-password-form').submit((e) => {
-    e.preventDefault();
-    var oldPassword = $('#OldPassword').val();
-    var newPassword = $('#NewPassword').val();
-    var confirmNewPassword = $('#ConfirmNewPassword').val();
 
-    var submitBtn = $(e.target).find('.user-form-submit');
-    var btnText = showBtnLoading(submitBtn);
+$('.change-password-form').submit(function(e) {
+    e.preventDefault();
+    const oldPassword = $('#OldPassword').val();
+    const newPassword = $('#NewPassword').val();
+    const confirmNewPassword = $('#ConfirmNewPassword').val();
+
+    const submitBtn = $(this).find('.user-form-submit');
+    const btnText = showBtnLoading(submitBtn);
     $.ajax({
         type: 'POST',
         url: '/account/changepassword',
         data: {
-            oldPassword: oldPassword,
-            newPassword: newPassword,
-            confirmNewPassword: confirmNewPassword
+            OldPassword: oldPassword,
+            NewPassword: newPassword,
+            ConfirmNewPassword: confirmNewPassword
         },
         success: (response) => {
             resetBtn(submitBtn, btnText);
-            if (response.success) {
-                var str = '<span>Đổi mật khẩu thành công.</span>';
-                $('.update-error').empty();
-                $('.update-error').append(str);
-
+            if (response.status === 200) {
+                const str = '<span style="color: #44bd32">Đổi mật khẩu thành công.</span>';
+                showUpdateMessage(str);
+                
                 $('#OldPassword').val('');
                 $('#NewPassword').val('');
                 $('#ConfirmNewPassword').val('');
-
-                var timeout = setTimeout(() => {
-                    closeUpdateErr();
-                    clearTimeout(timeout);
-                }, 6000)
             }
-            else {
+            else if (response.status === 400) {
                 $('.update-error').empty();
-                var str = `<span>${response.error}</span>`;
+                const str = `<span style="color: #e30019">${response.message}</span>`;
 
-                $('.update-error').append(str);
-
-                var timeout = setTimeout(() => {
-                    closeUpdateErr();
-                    clearTimeout(timeout);
-                }, 6000)
+                showUpdateMessage(str)
             }
 
         },
@@ -205,7 +201,25 @@ $('.change-password-form').submit((e) => {
     })
 })
 
-//--Upload user image ----------
+//--
+$('.login-info-logout, .account-logout').click(() => {
+    Swal.fire({
+        title: "Đăng xuất?",
+        text: "Bạn chắc chắn muốn đăng xuất?",
+        icon: "question",
+        showCancelButton: true,
+        showConfirmButton: true,
+        focusConfirm: false,
+        cancelButtonText: "Hủy",
+        confirmButtonText: "Đăng xuất",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '/account/logout'
+        }
+    });
+})
+
+
 $('.upload-img-btn').click(() => {
     $('.upload-user-image').addClass('show');
     $('.upload-form-box').addClass('show');
@@ -224,7 +238,7 @@ $('.close-upload-frm').click(() => {
     $('.upload-frm-notice').removeClass('failed')
     $('.upload-frm-notice').css('display', 'none !important');
 })
-//------------
+
 function updateUploadFormNotice(string, status) {
     $('.upload-frm-notice').empty();
     $('.upload-frm-notice').show();
@@ -240,7 +254,7 @@ function updateUploadFormNotice(string, status) {
 
     $('.upload-frm-notice').append(string);
 }
-//------------
+
 
 $(document).ready(() => {
     function uploadUserImage(file) {
@@ -337,7 +351,7 @@ $(document).ready(() => {
     })
 });
 
-//-----------------------------------------------
+
 function setParentHeight() {
     const childHeight = $('.account-right-box.current').outerHeight(true);
     $('.account-right-side').css('height', childHeight + 'px');
@@ -366,112 +380,182 @@ $(window).on('hashchange' ,() => {
     showCard();
 })
 
+
+$(document).ready(() => {
+    const element = document.querySelector('.account-right-box.current')
+    if (element) {
+        const resizeObserver = new ResizeObserver((entries) => {
+            entries.map(entry => {
+                setParentHeight();
+            })
+        })
+
+        resizeObserver.observe(element);
+    }
+})
+
+
 // Format datetime ASP.NET to "dd/MM/yyyy"
-function formatDateFromAspNet(jsonDate) {
-    var ticks = /\/Date\((\d+)\)\//.exec(jsonDate);
-    if (ticks) {
-        var milliseconds = parseInt(ticks[1]);
-        var date = new Date(milliseconds);
-        var day = date.getDate();
-        var month = date.getMonth() + 1;
-        var year = date.getFullYear();
+const formatDate = (inputDate) => {
+    const date = new Date(inputDate);
+    if (date != null) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
         return day + '/' + month + '/' + year;
     }
-    return jsonDate;
+    return inputDate;
 }
 
-//Order search ----------------------------------------------
-$('.order-search-form').submit((e) => {
+
+$('.order-search-form').submit(function(e) {
     e.preventDefault();
-    var orderID = $('#order-search').val();
+    const orderID = $(this).find('#order-search').val();
 
     showWebLoader();
     $.ajax({
-        type: 'POST',
-        url: '/order/searchorder',
+        type: 'GET',
+        url: '/api/orders',
         data: {
-            orderID: orderID
+            searchId: orderID
         },
         success: (data) => {
-            setTimeout(hideWebLoader, 500);
-            var str = ` <tr>
-                    <th>Mã ĐH</th>
-                    <th>Ngày đặt</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái thanh toán</th>
-                    <th>Trạng thái</th>
-                    <th></th>
-                </tr>`;
-            $('.order-list table tbody').empty();
-            $.each(data.orders, (index, order) => {
-                var statusClass = "order-success";
-                if (order.PaymentStatus == "Thanh toán thất bại") { statusClass = "order-failed"; }
-                else if (order.PaymentStatus == "Chờ thanh toán") { statusClass = "order-waiting"; }
-                str += `<tr>
-                    <td class="order-id">${order.OrderID}</td>
-                    <td class="order-date">${formatDateFromAspNet(order.OrderDate)}</td>
-                    <td class="order-total">${order.TotalPaymentAmout.toLocaleString("vi-VN")}đ</td>
+            hideWebLoader();
+            $('.account-right-box.current').css('height', 'auto');
+            if (data != null && data.length > 0) {
+                let headerStr = ` <tr>
+                        <th>Mã ĐH</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>TT thanh toán</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                        </tr>`;
+
+                $('.order-list table tbody').empty();
+                $('.order-list table tbody').append(headerStr)
+
+                data.map(order => {
+                    let paymentStatusClass = "order-waiting";
+                    let paymentText = "Chưa thanh toán";
+                    if (order.TrangThaiThanhToan === "failed") {
+                        paymentStatusClass = "order-failed";
+                        paymentText = "T.toán thất bại";
+                    }
+                    else if (order.TrangThaiThanhToan === "paid") {
+                        paymentStatusClass = "order-success";
+                        paymentText = "Đã thanh toán";
+                    }
+
+                    let statusClass = "order-waiting";
+                    let statusText = "Chờ xác nhận";
+                    if (order.TrangThai === "cancelled") {
+                        statusClass = "order-failed";
+                        statusText = "Đã hủy";
+                    } else if (order.TrangThai === "confirmed") {
+                        statusClass = "order-success";
+                        statusText = "Đã xác nhận";
+                    }
+
+                    let str = `<tr>
+                    <td class="order-id">${order.MaHD}</td>
+                    <td class="order-date">${formatDate(order.NgayDat)}</td>
+                    <td class="order-total">${order.TongTien.toLocaleString("vi-VN")}đ</td>
                     <td>
-                        <div class="order-status ${statusClass}">${order.PaymentStatus}</div>
+                        <div class="order-status ${paymentStatusClass}">${paymentText}</div>
                     </td>
                      <td>
-                        <div class="order-status ${order.Status == 'Đã xác nhận' ? 'order-success' : 'order-waiting'}">${order.Status}</div>
+                        <div class="order-status ${statusClass}">${statusText}</div>
                     </td>
-                    <td> <a href="/order/detail/${order.OrderID}">Chi tiết</a></td>
-                </tr>`;
-            })
+                    <td> <a href="/order/detail/${order.MaHD}">Chi tiết</a></td>
+                    </tr>`;
 
-            $('.order-list table tbody').append(str);
+                    $('.order-list table tbody').append(str);
+
+                })
+            } else {
+                $('.order-list table tbody').html(`<div class="my-5 text-center">Không tìm thấy đơn hàng nào</div>`);
+            }
+
             setParentHeight();
         },
         error: () => { hideWebLoader(); }
     })
 })
 
-//Get order list by Status
-$('.order-header-list li').click((e) => {
-    $('.order-header-list li').removeClass('active');
-    $(e.target).addClass('active');
 
-    var value = $(e.target).data('get-order');
+$('.order-header-list li').click(function() {
+    $('.order-header-list li').removeClass('active');
+    $(this).addClass('active');
+
+    const value = $(this).data('get-order');
     if (value.length > 0) {
         showWebLoader();
         $.ajax({
-            type: 'POST',
-            url: '/order/getorder',
+            type: 'GET',
+            url: '/api/orders',
             data: {
-                status: value
+                type: value
             },
             success: (data) => {
-                setTimeout(hideWebLoader, 500);
-                var str = ` <tr>
-                    <th>Mã ĐH</th>
-                    <th>Ngày đặt</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái thanh toán</th>
-                    <th>Trạng thái</th>
-                    <th></th>
-                </tr>`;
-                $('.order-list table tbody').empty();
-                $.each(data.orders, (index, order) => {
-                    var statusClass = "order-success";
-                    if (order.PaymentStatus == "Thanh toán thất bại") { statusClass = "order-failed"; }
-                    else if (order.PaymentStatus == "Chờ thanh toán") { statusClass = "order-waiting"; }
-                    str += `<tr>
-                    <td class="order-id">${order.OrderID}</td>
-                    <td class="order-date">${formatDateFromAspNet(order.OrderDate)}</td>
-                    <td class="order-total">${order.TotalPaymentAmout.toLocaleString("vi-VN")}đ</td>
-                    <td>
-                        <div class="order-pstatus ${statusClass}">${order.PaymentStatus}</div>
-                    </td>
-                    <td>
-                        <div class="order-status ${order.Status == 'Đã xác nhận' ? 'order-success' : 'order-waiting'}">${order.Status}</div>
-                    </td>
-                    <td> <a href="/order/detail/${order.OrderID}">Chi tiết</a></td>
-                </tr>`;
-                })
+                hideWebLoader();
+                $('.account-right-box.current').css('height', 'auto');
+                if (data != null && data.length > 0) {
+                    let headerStr = ` <tr>
+                        <th>Mã ĐH</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>TT thanh toán</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                        </tr>`;
 
-                $('.order-list table tbody').append(str);
+                    $('.order-list table tbody').empty();
+                    $('.order-list table tbody').append(headerStr)
+
+                    data.map(order => {
+                        let paymentStatusClass = "order-waiting";
+                        let paymentText = "Chưa thanh toán";
+                        if (order.TrangThaiThanhToan === "failed") {
+                            paymentStatusClass = "order-failed";
+                            paymentText = "T.toán thất bại";
+                        }
+                        else if (order.TrangThaiThanhToan === "paid") {
+                            paymentStatusClass = "order-success";
+                            paymentText = "Đã thanh toán";
+                        }
+
+                        let statusClass = "order-waiting";
+                        let statusText = "Chờ xác nhận";
+                        if (order.TrangThai === "cancelled") {
+                            statusClass = "order-failed";
+                            statusText = "Đã hủy";
+                        } else if (order.TrangThai === "confirmed") {
+                            statusClass = "order-success";
+                            statusText = "Đã xác nhận";
+                        }
+
+                        let str = `<tr>
+                            <td class="order-id">${order.MaHD}</td>
+                            <td class="order-date">${formatDate(order.NgayDat)}</td>
+                            <td class="order-total">${order.TongTien.toLocaleString("vi-VN")}đ</td>
+                            <td>
+                                <div class="order-status ${paymentStatusClass}">${paymentText}</div>
+                            </td>
+                             <td>
+                                <div class="order-status ${statusClass}">${statusText}</div>
+                            </td>
+                            <td> <a href="/order/detail/${order.MaHD}">Chi tiết</a></td>
+                                </tr>`;
+
+                        $('.order-list table tbody').append(str);
+                    })
+
+                } else {
+                    $('.order-list table tbody').html(`<div class="my-5 text-center">Không tìm thấy đơn hàng nào</div>`);
+                }
+
+
                 setParentHeight();
             },
             error: () => { hideWebLoader(); }

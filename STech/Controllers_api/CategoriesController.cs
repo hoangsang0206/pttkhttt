@@ -14,7 +14,6 @@ namespace STech.Controllers_api
 {
     public class CategoriesController : ApiController
     {
-        // GET api/<controller>/5
         public async Task<IEnumerable<DanhMucDTO>> Get()
         {
             using (DbEntities db = new DbEntities())
