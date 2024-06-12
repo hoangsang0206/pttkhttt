@@ -7,47 +7,44 @@ $('.order-info-summary').click(() => {
     var address = $('#ship-address').val();
     var note = $('#cart-note').val();
 
+    if (shipMethod != "COD") {
+        address = "Store";
+    }
+
     $.ajax({
-        type: 'Post',
+        type: 'POST',
         url: '/order/checkorderinfo',
         data: {
             gender: gender,
             customerName: name,
             customerPhone: phone,
-            shipMethod: shipMethod,
             address: address,
             note: note
         },
         success: (res) => {
-            if (res.success) {       
-                $.ajax({
-                    type: 'POST',
-                    url: '/account/update',
-                    data: {
-                        UserFullName: name,
-                        Gender: gender,
-                        PhoneNumber: phone,
-                        Address: address
-                    },
-                    success: (response) => {
-                        if (response.success) {
-                            window.location.href = '/order/orderinfo';
-                        }
-                    },
-                    error: () => { }
-                })
-            }
-            else {
-                $('.cart-info .form-error').empty();
-                $('.cart-info .form-error').show();
-                var str = `<span>
-                    <i class="fa-solid fa-circle-exclamation"></i>`
-                    + res.error + `</span>`;
-                $('.cart-info .form-error').append(str);
+            if (res.status === 200) {       
+                window.location.href = res.redirectUrl;
+            } else if(res.status === 400) {
+                if (res.error != null) {
+                    let str = ``;
+                    res.error.map(value => {
+                        console.log(value)
+                        str += `<li><i class="fa-solid fa-circle-exclamation"></i><span>${value}</span></li>`;
+                    })
 
-                setTimeout(function () {
-                    $('.cart-info .form-error').hide();
-                }, 8000)
+                    showOrderNotice(str);
+                } else {
+                    $('.cart-info .form-error').empty();
+                    $('.cart-info .form-error').show();
+                    var str = `<span>
+                    <i class="fa-solid fa-circle-exclamation"></i>`
+                        + res.error + `</span>`;
+                    $('.cart-info .form-error').append(str);
+
+                    setTimeout(function () {
+                        $('.cart-info .form-error').hide();
+                    }, 8000)
+                }
             }
         },
         error: () => {  }
@@ -66,17 +63,8 @@ $('.payment-action').click(() => {
                 paymentMethod: paymentMethod
             },
             success: (res) => {
-                if (res.success == false) {
-                    var str = ``;
-                    $.each(res.error, (index, value) => {
-                        console.log(value)
-                        str += `<li><i class="fa-solid fa-circle-exclamation"></i><span>${value}</span></li>`;
-                    })
-
-                    showOrderNotice(str);
-                }
-                else {
-                    window.location.href = res.url;
+                if (res.status === 200) {
+                    window.location.href = res.redirectUrl;
                 }
             },
             error: () => { console.log("Payment Error") }

@@ -1,5 +1,5 @@
 ﻿const showBtnLoading = (button) => {
-    var btnText = button.text();
+    var btnText = button.html();
     var loadingStr = `<div class="loadingio-spinner-dual-ring-ekj0ol56kwc">
                         <div class="ldio-gmrbyawnrc">
                             <div></div><div><div></div></div>

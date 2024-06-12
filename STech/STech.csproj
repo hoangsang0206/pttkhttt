@@ -98,6 +98,9 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
+    <Reference Include="PayPal, Version=1.9.1.0, Culture=neutral, PublicKeyToken=5b4afc1ccaef40fb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PayPal.1.9.1\lib\net451\PayPal.dll</HintPath>
+    </Reference>
     <Reference Include="Stripe.net, Version=44.11.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stripe.net.44.11.0\lib\net461\Stripe.net.dll</HintPath>
     </Reference>
@@ -245,11 +248,14 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="ConfigModels\AzureConfig.cs" />
+    <Compile Include="ConfigModels\PaypalConfig.cs" />
+    <Compile Include="ConfigModels\StripeConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CollectionsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\OrdersController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers_api\CategoriesController.cs" />
     <Compile Include="Controllers_api\OrdersController.cs" />
     <Compile Include="Controllers_api\ProductsController.cs" />
@@ -489,7 +495,7 @@
     <Content Include="Views\Account\Index.cshtml" />
     <Content Include="Views\Shared\Partial_ChangePassword.cshtml" />
     <Content Include="Views\Shared\Partial_UpdateAccount.cshtml" />
-    <Content Include="Views\Orders\OrderInfo.cshtml" />
+    <Content Include="Views\Order\OrderInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

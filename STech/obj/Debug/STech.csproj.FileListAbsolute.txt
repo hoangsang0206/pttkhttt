@@ -143,3 +143,5 @@ D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Stripe.net.dll
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\Stripe.net.xml
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\obj\Debug\STech.IdentityMigration.init.resources
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\obj\Debug\STech.csproj.GenerateResource.cache
+D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\PayPal.dll
+D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\PayPal.xml
