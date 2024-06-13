@@ -189,6 +189,7 @@
     <Property Name="NgaySinh" Type="DateTime" Precision="0" />
     <Property Name="GioiTinh" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
     <Property Name="CCCD" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="AccountId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
     <NavigationProperty Name="HoaDons" Relationship="Self.FK_HD_NV" FromRole="NhanVien" ToRole="HoaDon" />
     <NavigationProperty Name="PhieuBaoHanhs" Relationship="Self.FK_PBH_NV" FromRole="NhanVien" ToRole="PhieuBaoHanh" />
     <NavigationProperty Name="PhieuDoiTras" Relationship="Self.FK_PDT_NV" FromRole="NhanVien" ToRole="PhieuDoiTra" />

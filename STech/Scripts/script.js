@@ -20,25 +20,28 @@ $(document).ready(() => {
 })
 
 //Show overlay when click category button -------------------------------------------
+let isShow = false;
 $(".categories-btn").click(() => {
-    $(".hidden-menu").toggleClass("showHiddenMenu");
-
-    $(".hidden-menu").click((e) => {
-        if ($(e.target).closest('.sidebar').length <= 0) {
-            $('.hidden-menu').removeClass("showHiddenMenu");
-            $(".overlay").removeClass("showOverlay");
-        }      
-    });
-
-    $(".overlay").addClass("showOverlay");
-
-    $(".overlay").click(() => {
-        $(".hidden-menu").removeClass("showHiddenMenu");
+    if (!isShow) {
+        isShow = true;
+        $(".hidden-menu").addClass("showHiddenMenu");
+        $(".overlay").addClass("showOverlay");
+    } else {
+        isShow = false;
+        $('.hidden-menu').removeClass("showHiddenMenu");
         $(".overlay").removeClass("showOverlay");
-    });
+    }
+});
+
+$(".hidden-menu").click((e) => {
+    if ($(e.target).closest('.sidebar').length <= 0) {
+        $('.hidden-menu').removeClass("showHiddenMenu");
+        $(".overlay").removeClass("showOverlay");
+    }
 });
 
 $(".overlay").click(() => {
+    $(".hidden-menu").removeClass("showHiddenMenu");
     $(".overlay").removeClass("showOverlay");
 });
 

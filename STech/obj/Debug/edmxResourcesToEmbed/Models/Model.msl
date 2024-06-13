@@ -171,6 +171,7 @@
           <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
           <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
           <ScalarProperty Name="CCCD" ColumnName="CCCD" />
+          <ScalarProperty Name="AccountId" ColumnName="AccountId" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

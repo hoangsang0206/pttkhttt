@@ -1,0 +1,222 @@
+﻿@model  Tuple<STech.DTO.SanPhamDTO, List<STech.DTO.SanPhamDTO>>
+
+@{ 
+    ViewBag.Title = Model.Item1.TenSP;
+}
+
+<section class="breadcrumb">
+    <ul class="breadcrumb-list d-flex">
+        @foreach (var item in ViewBag.Breadcrumb)
+        {
+            <li class="breadcrumb-item">
+                @if (item.BreadcrumbLink == "")
+                {
+                    <span>@item.BreadcrumbName</span>
+                }
+                else
+                {
+                    <a href="@item.BreadcrumbLink">
+                        @item.BreadcrumbName
+                    </a>
+                }
+            </li>
+        }
+    </ul>
+</section>
+
+<section class="product-detail">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-5 col-md-12 col-sm-12 col-12 product-detail-box product-gallery">
+                <div class="slider-main">
+                    @if (Model.Item1.DsHinhAnh != null && Model.Item1.DsHinhAnh.Count > 0)
+                    {
+                        foreach (string url in Model.Item1.DsHinhAnh)
+                        {
+                            <img src="@url" alt="" />
+                        }
+                    }
+                    else
+                    {
+                        <img src="~/Assets/Images/no-image.jpg" alt="" />
+                    }
+
+                </div>
+                <div class="slider-nav mt-3">
+                    @foreach (string url in Model.Item1.DsHinhAnh)
+                    {
+                        <div class="slick-slider-item">
+                            <img src="@url" alt="" />
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-7 col-md-12 col-sm-12 col-12 product-detail-box product-info">
+                <div class="product-info-name">
+                    <h3>@Model.Item1.TenSP</h3>
+                </div>
+                <div class="product-info-original-price">
+                    @{ double discountPercent = 0; }
+                    @if (Model.Item1.GiaGoc > Model.Item1.GiaBan)
+                    {
+                        decimal cost = Convert.ToDecimal(Model.Item1.GiaGoc);
+                        <span>@cost.ToString("#,###", ViewBag.cul)đ</span>
+
+                        discountPercent = ((Convert.ToDouble(Model.Item1.GiaGoc) - Convert.ToDouble(Model.Item1.GiaBan))
+                            / Convert.ToDouble(Model.Item1.GiaGoc)) * 100;
+                    }
+                </div>
+                <div class="product-info-price d-flex align-items-center">
+                    @{
+                        decimal price = Convert.ToDecimal(Model.Item1.GiaBan);
+                    }
+                    <h2>@price.ToString("#,###", ViewBag.cul)đ</h2>
+                    @if (discountPercent > 0)
+                    {
+                        <div class="product-info-discount-percent">
+                            @( "-" + (int)discountPercent + "%" )
+                        </div>
+                    }
+                </div>
+                
+                <div class="product-action d-flex my-2 align-items-center">
+                    @if (Model.Item1.Tonkho > 0)
+                    {
+                        <div class="buy-action d-flex gap-3">
+                            <button class="buy-action-btn" data-product-id="@Model.Item1.MaSP">
+                                <h4>MUA NGAY</h4>
+                                <span>Giao tận nơi hoặc nhận tại cửa hàng</span>
+                            </button>
+                            <button class="add-to-cart-btn" data-product-id="@Model.Item1.MaSP">
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="buy-action">
+                            <button class="buy-action-btn" disabled>
+                                <h4>HẾT HÀNG</h4>
+                            </button>
+                        </div>
+                    }
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-3 p-0">
+        <div class="product-cts-wrapper d-flex align-items-start gap-3">
+            <div class="product-contents product-cts-box">
+                <div class="box-header">
+                    <h4>Mô tả sản phẩm</h4>
+                </div>
+                <div class="text-center mt-5">
+                    Sản phẩm này chưa có mô tả.
+                </div>
+            </div>
+            <div class="product-parameter-news d-flex flex-column gap-3">
+                <div class="product-parameter product-cts-box">
+                    <div class="box-header">
+                        <h4>Thông số kĩ thuật</h4>
+                    </div>
+                    <div class="product-para-table mt-4">
+                        <table>
+                            <tr>
+                                <td>Hãng SX</td>
+                                <td>@(Model.Item1.HangSX != null ? Model.Item1.HangSX.TenHang : "")</td>
+                            </tr>
+                            @if (Model.Item1.ThongSoKyThuat.Count > 0)
+                            {
+                                foreach (var spec in Model.Item1.ThongSoKyThuat)
+                                {
+                                    <tr>
+                                        <td>@spec.TenTS</td>
+                                        <td>@spec.MoTa</td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                </div>
+                <div class="product-news product-cts-box">
+                    <div class="box-header">
+                        <h4>Tin tức nổi bậc</h4>
+                    </div>
+                    <div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Item2.Count > 0)
+    {
+        <div class="order-product product-cts-box mt-3">
+            <div class="box-header">
+                <h4>Sản phẩm tương tự</h4>
+            </div>
+            <div class="order-product-slick-slider">
+                @foreach (var item in Model.Item2)
+                {
+                    <div class="slick-slider-item">
+                        <div class="product-box">
+                            <a href="/product/@item.MaSP" class="product-link">
+                                <div class="product-image lazy-loading">
+                                    <img lazy-src="@(item.HinhAnh != null ? item.HinhAnh : "/Assets/Images/no-image.jpg")" alt="" class="product-img">
+                                </div>
+                            </a>
+                            @if (item.Tonkho <= 0)
+                            {
+                                <div class="out-of-stock mt-1 text-center">
+                                    Hết hàng
+                                </div>
+                            }
+                            <a href="/product/@item.MaSP" class="product-link">
+                                <div class="product-name">
+                                    @item.TenSP
+                                </div>
+                            </a>
+
+                            @{ double discountPercent1 = 0; }
+                            <div class="product-original-price">
+                                @if (item.GiaGoc > item.GiaBan)
+                                {
+                                    decimal cost1 = Convert.ToDecimal(item.GiaGoc);
+
+                                    discountPercent1 = ((Convert.ToDouble(item.GiaGoc) - Convert.ToDouble(item.GiaBan))
+                                        / Convert.ToDouble(item.GiaGoc)) * 100;
+                                    <span>@cost1.ToString("#,###", ViewBag.cul)đ</span>
+                                }
+                                else
+                                {
+                                    <span style="visibility: hidden">0</span>
+                                }
+                            </div>
+                            <div class="product-price d-flex align-items-center">
+                                @{
+                                    decimal price1 = Convert.ToDecimal(item.GiaBan);
+                                }
+                                <span>@price1.ToString("##,###", ViewBag.cul)đ</span>
+                                @if (discountPercent1 > 0)
+                                {
+                                    <div class="product-discount-percent">
+                                        @( "-" + (int)discountPercent1 + "%" )
+                                    </div>
+                                }
+                            </div>
+                            <button class="view-product" onclick="window.location.href='/product/@item.MaSP'">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                            <button class="btn-add-to-cart" data-product="@item.MaSP">
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</section>

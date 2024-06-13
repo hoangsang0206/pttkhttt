@@ -1,4 +1,50 @@
-﻿$(document).on('click', '.order-print-btn', function () {
+﻿if (window.innerWidth < 768) {
+    $('.sidebar').addClass('close');
+}
+
+$('.toggle').click(() => {
+    $('.sidebar').toggleClass('close');
+})
+
+function hideLoading() {
+    var interval = setInterval(() => {
+        $('.loading').hide();
+        clearInterval(interval);
+    }, 600);
+}
+
+function showLoading() {
+    $('.loading').css('display', 'grid');
+}
+
+function activeButton(button) {
+    $('.page-btn').removeClass('active');
+    button.addClass('active');
+}
+
+function getOrderCount() {
+    $.ajax({
+        type: 'GET',
+        url: '/api/orders',
+        data: {
+            t: 'count'
+        },
+        success: (data) => {
+            if (data > 0) {
+                $('.new-order-count').css('display', 'grid');
+                $('.new-order-count').text(data);
+                console.log(data)
+            }
+            else {
+                $('.new-order-count').hide();
+            }
+        }
+    })
+}
+
+getOrderCount();
+
+$(document).on('click', '.order-print-btn', function () {
     const orderId = $(this).data('order');
     if (orderId) {
         $.ajax({
@@ -34,41 +80,66 @@ $('.order-search-value').click((e) => {
     $('.dropdown-search-list').removeClass('show');
 })
 
-//--Search orders
 
-function appendOrderList(res) {
-    var strHead = `<tr> <th>Mã ĐH</th><th>Tên khách hàng</th>
-                        <th>Ngày đặt</th><th>Tổng tiền</th><th>Trạng thái thanh toán</th>
-                        <th>Trạng thái</th><th></th></tr>`;
+function appendOrderList(res, parent_element) {
+    parent_element.empty();
+    const strHead = `<tr> <th>Mã ĐH</th><th>Tên khách hàng</th>
+                    <th>Ngày đặt</th><th>Tổng tiền</th><th>Trạng thái thanh toán</th>
+                    <th>Trạng thái</th><th></th></tr>`;
+    parent_element.append(strHead);
     if (res.length > 0) {
-        $('.order-list table tbody').append(strHead);
-        for (var i = 0; i < res.length; i++) {
-            var date = new Date(res[i].OrderDate);
-            var dateFormat = date.toLocaleDateString('en-GB') + ' ' + date.toLocaleTimeString('en-US');
+        res.map(order => {
+            const date = new Date(order.NgayDat);
+            const dateFormat = date.toLocaleDateString('en-GB') + ' ' + date.toLocaleTimeString('en-US');
 
-            var statusClass = "order-success";
-            if (res[i].PaymentStatus == "Thanh toán thất bại") { statusClass = "order-failed"; }
-            else if (res[i].PaymentStatus == "Chờ thanh toán") { statusClass = "order-waiting"; }
+            let paymentStatusClass = "order-waiting";
+            let paymentText = "Chưa thanh toán";
+            if (order.TrangThaiThanhToan === "failed") {
+                paymentStatusClass = "order-failed";
+                paymentText = "T.toán thất bại";
+            }
+            else if (order.TrangThaiThanhToan === "paid") {
+                paymentStatusClass = "order-success";
+                paymentText = "Đã thanh toán";
+            }
+
+            let statusClass = "order-waiting";
+            let statusText = "Chờ xác nhận";
+            if (order.TrangThai === "cancelled") {
+                statusClass = "order-failed";
+                statusText = "Đã hủy";
+            }
+            else if (order.TrangThai === "confirmed") {
+                statusClass = "order-success";
+                statusText = "Đã xác nhận";
+            }
 
             var str = `<tr>
-                            <td><div class="order-id">${res[i].OrderID}</div></td>
-                            <td><div class="cus-name">${res[i].CustomerName}</div></td>
+                            <td><div class="order-id">${order.MaHD}</div></td>
+                            <td><div class="cus-name">${order.KhachHang.HoTen}</div></td>
                             <td><div class="order-date">${dateFormat}</div></td>
-                            <td><div class="total-payment">${res[i].TotalPaymentAmout.toLocaleString('vi-VN') + 'đ'}</div></td>
-                            <td><div class="order-pstatus d-flex ${statusClass}">${res[i].PaymentStatus} ${res[i].PaymentStatus == 'Chờ thanh toán' ? `&nbsp;<button class='order-btn accept-paid' data-accept-paid="${res[i].OrderID}"><i class='bx bx-check'></i></button>` : ''}</div></td>
-                            <td><div class="order-status ${res[i].Status == 'Đã xác nhận' ? 'order-success' : res[i].Status == 'Chờ xác nhận' ? 'order-waiting' : 'order-failed'}">${res[i].Status}</div></td>
-                            <td><div class="order-button-box d-flex justify-content-end flex-wrap gap-2">
-                                <button class="order-btn order-print-btn" data-print-order="${res[i].OrderID}" onclick="window.open('/admin/orders/printorder?orderID=${res[i].OrderID}', '_blank')">In HĐ</button>
-                                <button class="order-btn order-detail-btn" data-detail-order="${res[i].OrderID}">Chi tiết</button>
-                                <button class="order-btn delete-order-btn" data-del-order="${res[i].OrderID}">Xóa</button>
-                            </div></td>
-                        </tr>`;
+                            <td><div class="total-payment">${order.TongTien.toLocaleString('vi-VN') + 'đ'}</div></td>
+                            <td><div class="order-pstatus d-flex ${paymentStatusClass}">${paymentText}</td>`;
+            if (order.TrangThai == "unconfirmed") {
+                str += `<td>
+                    <div class="order-status">
+                        <button class="order-btn order-status-accept" data-order="${order.MaHD}">Xác nhận</button>
+                        <button class="order-btn order-status-refuse" data-order="${order.MaHD}">Hủy ĐH</button>
+                    </div>
+                </td>`;
+            }
+            else {
+                str += `<td><div class="order-status ${statusClass}">${statusText}</div></td>`;
+            }
+            str += `<td>
+                <div class="order-button-box d-flex justify-content-end flex-wrap gap-2">
+                    <button class="order-btn order-print-btn" data-order="${order.MaHD}">In HĐ</button>
+                    <button class="order-btn order-detail-btn" data-order="${order.MaHD}">Chi tiết</button>
+                </div>
+            </td>`;
 
-            $('.order-list table tbody').append(str);
-        }
-    }
-    else {
-        $('.order-list table tbody').append(strHead);
+            parent_element.append(str);
+        })
     }
 }
 
@@ -95,22 +166,6 @@ $('.search-orders').submit((e) => {
     }
 })
 
-//---Get all orders -----
-$('.get-all-order').click(() => {
-    showLoading();
-    $('.order-list table tbody').empty();
-    $.ajax({
-        type: 'get',
-        url: '/api/orders',
-        success: (res) => {
-            hideLoading();
-            appendOrderList(res);
-        },
-        error: (err) => { console.log(err) }
-    })
-})
-
-//--Search orders by date range
 $('.search-by-date-btn').click(() => {
     var dateFrom = $('#date-from').val();
     var dateTo = $('#date-to').val();
@@ -136,223 +191,181 @@ $('.search-by-date-btn').click(() => {
     }
 })
 
-//Func append order waiting list
-function appendOrderWaitingList(res) {
-    var strHead = `<tr> <th>Mã ĐH</th><th>Tên khách hàng</th>
-                    <th>Ngày đặt</th><th>Tổng tiền</th><th>Trạng thái thanh toán</th>
-                    <th>Trạng thái</th><th></th></tr>`;
-    $('.order-waiting-list table tbody').append(strHead);
-    if (res.length > 0) {
-        for (var i = 0; i < res.length; i++) {
-            var date = new Date(res[i].OrderDate);
-            var dateFormat = date.toLocaleDateString('en-GB') + ' ' + date.toLocaleTimeString('en-US');
-
-            var statusClass = "order-success";
-            if (res[i].PaymentStatus == "Thanh toán thất bại") { statusClass = "order-failed"; }
-            else if (res[i].PaymentStatus == "Chờ thanh toán") { statusClass = "order-waiting"; }
-
-            var str = `<tr>
-                                    <td><div class="order-id">${res[i].OrderID}</div></td>
-                                    <td><div class="cus-name">${res[i].CustomerName}</div></td>
-                                    <td><div class="order-date">${dateFormat}</div></td>
-                                    <td><div class="total-payment">${res[i].TotalPaymentAmout.toLocaleString('vi-VN') + 'đ'}</div></td>
-                                    <td><div class="order-pstatus d-flex ${statusClass}">${res[i].PaymentStatus} ${res[i].PaymentStatus == 'Chờ thanh toán' ? `&nbsp;<button class='order-btn accept-paid' data-accept-paid="${res[i].OrderID}"><i class='bx bx-check'></i></button>` : ''}</div></td>`;
-            if (res[i].Status === 'Chờ xác nhận') {
-                str += `<td><div class="order-status">
-                        <button class="order-btn order-status-accept" data-accept-order="${res[i].OrderID}">Xác nhận</button>
-                        <button class="order-btn order-status-refuse" data-refuse-order="${res[i].OrderID}">Hủy</button>
-                    </div></td>`;
-            }
-            else if (res[i].Status === 'Đã xác nhận') {
-                str += `<td><div class="order-status order-success">${res[i].Status}</div></td>`
-            }
-            else if (res[i].Status === 'Đã hủy') {
-                str += `<td><div class="order-status order-failed">${res[i].Status}</div></td>`
-            }
-
-            str += `<td><div class="order-button-box d-flex justify-content-end flex-wrap gap-2">
-                        <button class="order-btn order-detail-btn" data-detail-order="${res[i].OrderID}">Chi tiết</button>
-                        <button class="order-btn delete-order-btn" data-del-order="${res[i].OrderID}">Xóa</button>
-                    </div></td>
-                </tr>`;
-
-            $('.order-waiting-list table tbody').append(str);
-        }
-    }
+function reloadOrders() {
+    $.ajax({
+        type: 'GET',
+        url: '/api/orders',
+        success: (res) => {
+            hideLoading();
+            appendOrderList(res, $('.order-waiting-list table tbody'));
+        },
+        error: () => { }
+    })
 }
 
-//Get order with Status = "Chờ xác nhận"
-$('.reload-orders').click(() => {
+
+$('.reload-orders').click(function() {
+    $('.page-btn').removeClass('active');
     showLoading();
-    $('.order-waiting-list table tbody').empty();
+    reloadOrders();
+})
+
+$('.get-confirmed').click(function() {
+    activeButton($(this));
+    showLoading();
     $.ajax({
-        type: 'get',
+        type: 'GET',
         url: '/api/orders',
         data: {
-            type: 'status',
-            status: 'Chờ xác nhận'
+            status: 'confirmed'
         },
         success: (res) => {
             hideLoading();
-            appendOrderWaitingList(res);
-
-            $.ajax({
-                type: 'get',
-                url: '/admin/orders/countneworder',
-                success: (data) => {
-                    if (data.count > 0) {
-                        $('.new-order-count').css('display', 'grid');
-                        $('.new-order-count').text(data.count);
-                    }
-                    else {
-                        $('.new-order-count').hide();
-                    }
-                }
-            })
+            appendOrderList(res, $('.order-waiting-list table tbody'));
         },
         error: () => { }
     })
 })
 
-//Get order with Status = "Đã xác nhận"
-$('.get-accept-order').click(() => {
+$('.get-cancelled').click(function() {
+    activeButton($(this));
     showLoading();
-    $('.order-waiting-list table tbody').empty();
     $.ajax({
-        type: 'get',
+        type: 'GET',
         url: '/api/orders',
         data: {
-            type: 'status',
-            status: 'Đã xác nhận'
+            status: 'cancelled'
         },
         success: (res) => {
             hideLoading();
-            appendOrderWaitingList(res);
+            appendOrderList(res, $('.order-waiting-list table tbody'));
         },
         error: () => { }
     })
 })
-//Get order with Status = "Đã hủy"
-$('.get-refuse-order').click(() => {
+
+$('.get-paid').click(function() {
+    activeButton($(this));
     showLoading();
-    $('.order-waiting-list table tbody').empty();
     $.ajax({
-        type: 'get',
+        type: 'GET',
         url: '/api/orders',
         data: {
-            type: 'status',
-            status: 'Đã hủy'
+            pstatus: 'paid'
         },
         success: (res) => {
             hideLoading();
-            appendOrderWaitingList(res);
+            appendOrderList(res, $('.order-waiting-list table tbody'));
         },
         error: () => { }
     })
 })
-//Get order with payment status = "Đã thanh toán"
-$('.get-paid-order').click(() => {
+
+$('.get-unpaid').click(function() {
+    activeButton($(this));
     showLoading();
-    $('.order-waiting-list table tbody').empty();
     $.ajax({
-        type: 'get',
+        type: 'GET',
         url: '/api/orders',
         data: {
-            type: 'payment-stt',
-            status: 'Đã thanh toán'
+            pstatus: 'unpaid'
         },
         success: (res) => {
             hideLoading();
-            appendOrderWaitingList(res);
+            appendOrderList(res, $('.order-waiting-list table tbody'));
         },
         error: () => { }
     })
 })
-//Get order with payment status = "Chờ thanh toán"
-$('.get-notpaid-order').click(() => {
+
+$('.get-today-unconfirmed').click(function () {
+    activeButton($(this));
     showLoading();
-    $('.order-waiting-list table tbody').empty();
     $.ajax({
-        type: 'get',
+        type: 'GET',
         url: '/api/orders',
         data: {
-            type: 'payment-stt',
-            status: 'Chờ thanh toán'
+            todayStatus: 'unconfirmed'
         },
         success: (res) => {
             hideLoading();
-            appendOrderWaitingList(res);
+            appendOrderList(res, $('.order-waiting-list table tbody'));
+        },
+        error: () => { }
+    })
+})
+
+$('.get-unconfirmed').click(function () {
+    activeButton($(this));
+    showLoading();
+    $.ajax({
+        type: 'GET',
+        url: '/api/orders',
+        data: {
+            status: 'unconfirmed'
+        },
+        success: (res) => {
+            hideLoading();
+            appendOrderList(res, $('.order-waiting-list table tbody'));
         },
         error: () => { }
     })
 })
 
 //Change order status ------------------
-$(document).on('click', '.order-status-accept', (e) => {
-    var orderID = $(e.target).data('accept-order');
+$(document).on('click', '.order-status-accept', function() {
+    const orderID = $(this).data('order');
     if (orderID.length > 0) {
-        showLoading();
-        $.ajax({
-            type: 'post',
-            url: '/admin/orders/updatestatus',
-            data: {
-                orderID: orderID,
-                type: 'accept'
-            },
-            success: () => {
-                hideLoading();
-                $(e.target).closest('tr').remove();
-
+        Swal.fire({
+            title: "Xác nhận đơn hàng?",
+            icon: "question",
+            showCancelButton: true,
+            showConfirmButton: true,
+            focusConfirm: false,
+            cancelButtonText: "Thoát",
+            confirmButtonText: "Xác nhận"
+        }).then((result) => {
+            showLoading();
+            if (result.isConfirmed) {
                 $.ajax({
-                    type: 'get',
-                    url: '/admin/orders/countneworder',
-                    success: (data) => {
-                        if (data.count > 0) {
-                            $('.new-order-count').css('display', 'grid');
-                            $('.new-order-count').text(data.count);
-                        }
-                        else {
-                            $('.new-order-count').hide();
-                        }
-                    }
+                    type: 'PUT',
+                    url: `/api/orders?orderId=${orderID}&status=confirmed`,
+                    success: () => {
+                        reloadOrders();
+                        getOrderCount();
+                    },
+                    error: () => { }
                 })
-            },
-            error: () => { }
-        })
+            }
+        });
     }
 })
 
-$(document).on('click', '.order-status-refuse', (e) => {
-    var orderID = $(e.target).data('refuse-order');
+$(document).on('click', '.order-status-refuse', function() {
+    const orderID = $(this).data('order');
     if (orderID.length > 0) {
-        showLoading();
-        $.ajax({
-            type: 'post',
-            url: '/admin/orders/updatestatus',
-            data: {
-                orderID: orderID,
-                type: 'refuse'
-            },
-            success: () => {
-                hideLoading();
-                $(e.target).closest('tr').remove();
-
+        Swal.fire({
+            title: "Hủy đơn hàng?",
+            icon: "question",
+            showCancelButton: true,
+            showConfirmButton: true,
+            focusConfirm: false,
+            cancelButtonText: "Thoát",
+            confirmButtonText: "Xác nhận"
+        }).then((result) => {
+            showLoading();
+            if (result.isConfirmed) {
                 $.ajax({
-                    type: 'get',
-                    url: '/admin/orders/countneworder',
-                    success: (data) => {
-                        if (data.count > 0) {
-                            $('.new-order-count').css('display', 'grid');
-                            $('.new-order-count').text(data.count);
-                        }
-                        else {
-                            $('.new-order-count').hide();
-                        }
-                    }
+                    type: 'PUT',
+                    url: `/api/orders?orderId=${orderID}&status=cancelled`,
+                    success: () => {
+                        reloadOrders();
+                        getOrderCount();
+                    },
+                    error: () => { }
                 })
-            },
-            error: () => { }
-        })
+            }
+        });
     }
 })
 
@@ -433,7 +446,7 @@ $(document).on('click', '.order-detail-btn', (e) => {
                         if (data1.length > 0) {
                             for (var i = 0; i < data1.length; i++) {
                                 str += `<tr>
-                                            <td>${data1[i].Product.ProductID}</td>
+                                            <td>${data1[i].Product.MaSP}</td>
                                             <td>${data1[i].Product.ProductName}</td>
                                             <td>${data1[i].Product.Price.toLocaleString('vi-VN') + 'đ'}</td>
                                              <td>${data1[i].Quantity}</td>
@@ -519,7 +532,7 @@ $('#search-cus-by-phone').keyup((e) => {
     var phone = $(e.target).val();
     if (phone.length > 0) {
         $.ajax({
-            type: 'get',
+            type: 'GET',
             url: '/api/customers',
             data: { phone: phone },
             success: (data) => {
@@ -527,11 +540,11 @@ $('#search-cus-by-phone').keyup((e) => {
                     $('.cus-search-auto-complete').empty();
                     $('.cus-search-auto-complete').show();
                     for (let i = 0; i < data.length; i++) {
-                        var str = `<div class="cus-search-item">
-                            <input type="radio" id="cus-search-cbx-${i + 1}" name="cus-search-cbx" class="d-none" value="${data[i].CustomerID}" />
+                        const str = `<div class="cus-search-item">
+                            <input type="radio" id="cus-search-cbx-${i + 1}" name="cus-search-cbx" class="d-none" value="${data[i].MaKH}" />
                             <label for="cus-search-cbx-${i + 1}" class="d-flex gap-3 align-items-center">
-                                <span class="cus-search-phone">${data[i].Phone}</span>
-                                <span class="cus-search-name">${data[i].CustomerName}</span>
+                                <span class="cus-search-phone">${data[i].HoTen}</span>
+                                <span class="cus-search-name">${data[i].SDT}</span>
                             </label>
                         </div>`;
 
@@ -562,19 +575,18 @@ $(document).on('change', 'input[name="cus-search-cbx"]', (e) => {
         $('.cus-search-auto-complete').hide();
         showLoading();
         $.ajax({
-            type: 'get',
+            type: 'GET',
             url: '/api/customers',
             data: {
-                customerID: $(e.target).val()
+                id: $(e.target).val()
             },
             success: (data) => {
                 hideLoading();
-                $('#cusID').val(data.CustomerID);
-                $('#cusName').val(data.CustomerName);
-                $('#cusPhone').val(data.Phone);
-                $('#cusAddress').val(data.Address);
+                $('#cusName').val(data.HoTen);
+                $('#cusPhone').val(data.SDT);
+                $('#cusAddress').val(data.DiaChi);
                 $('#cusEmail').val(data.Email);
-                data.Gender === "Nam" ? $('#cusGender-Male').prop('checked', true) :
+                data.GioiTinh === "Nam" ? $('#cusGender-Male').prop('checked', true) :
                     $('#cusGender-FeMale').prop('checked', true);
             },
             error: () => { }
@@ -593,7 +605,7 @@ function updateTotal() {
     $('.order-totalprice span').text(total.toLocaleString('vi-VN') + 'đ');
 }
 
-var typingTimeOut;
+let typingTimeOut;
 $('#order-search-p').keyup((e) => {
     clearTimeout(typingTimeOut);
     typingTimeOut = setTimeout(() => {
@@ -602,7 +614,7 @@ $('#order-search-p').keyup((e) => {
             $.ajax({
                 type: 'get',
                 url: '/api/products',
-                data: { nameIS: productName },
+                data: { q: productName },
                 success: (data) => {
                     if (data.length > 0) {
                         $('.pro-search-auto-complete').empty();
@@ -610,11 +622,11 @@ $('#order-search-p').keyup((e) => {
 
                         for (let i = 0; i < data.length; i++) {
                             var str = ` <div class="pro-search-item d-flex align-items-center gap-2">
-                            <input type="radio" class="d-none" name="pro-search-id" id="pro-search-id-${i + 1}" value="${data[i].ProductID}" />
+                            <input type="radio" class="d-none" name="pro-search-id" id="pro-search-id-${i + 1}" value="${data[i].MaSP}" />
                             <label for="pro-search-id-${i + 1}" class=" d-flex align-items-center justify-content-between gap-3">
-                                <img src="${data[i].ImgSrc != null ? data[i].ImgSrc : '/images/no-image.jpg'}" alt="" />
-                                <span class="m-0 p-0 pro-search-name">${data[i].ProductName}</span>
-                                <span class="pro-search-price">${data[i].Price.toLocaleString('vi-VN') + 'đ'}</span>
+                                <img src="${data[i].HinhAnh != null ? data[i].HinhAnh : '/Assets/Images/no-image.jpg'}" alt="" />
+                                <span class="m-0 p-0 pro-search-name">${data[i].TenSP}</span>
+                                <span class="pro-search-price">${data[i].GiaBan.toLocaleString('vi-VN') + 'đ'}</span>
                             </label>
                         </div>`;
 
@@ -641,13 +653,13 @@ $('#order-search-p').keyup((e) => {
 
 //--------------------
 $(document).on('click', (e) => {
-    var cusSearch = $('.cus-search-auto-complete');
+    const cusSearch = $('.cus-search-auto-complete');
     if (!$(e.target).closest('.cus-search-auto-complete').length) {
         cusSearch.hide();
         cusSearch.empty();
     }
 
-    var proSearch = $('.pro-search-auto-complete');
+    const proSearch = $('.pro-search-auto-complete');
     if (!$(e.target).closest('.pro-search-auto-complete').length) {
         proSearch.hide();
         proSearch.empty();
@@ -665,32 +677,32 @@ $(document).on('change', '.create-order input[name="pro-search-id"]', (e) => {
         if (proID.length > 0) {
             showLoading();
             $.ajax({
-                type: 'get',
+                type: 'GET',
                 url: '/api/products',
                 data: {
-                    productID: proID
+                    id: proID
                 },
                 success: (data) => {
                     hideLoading();
-                    var currentPro = $('input[name="order-pro-qty"]').toArray();
-                    var exist = currentPro.some(function (el) {
-                        return $(el).data('order-pro') === data.ProductID;
+                    let currentPro = $('input[name="order-pro-qty"]').toArray();
+                    let exist = currentPro.some(function (el) {
+                        return $(el).data('order-pro') === data.MaSP;
                     });
 
                     if (exist === false) {
-                        if (data.ProductID != null) {
-                            var str = `<tr>
+                        if (data.MaSP != null) {
+                            let str = `<tr>
                                         <td>
-                                            <input type="hidden" name="order-pro-id" value="${data.ProductID}" />
-                                            ${data.ProductID}
+                                            <input type="hidden" name="order-pro-id" value="${data.MaSP}" />
+                                            ${data.MaSP}
                                         </td>
-                                        <td>${data.ProductName}</td>
-                                        <td>${data.Price.toLocaleString('vi-VN')}đ</td>
+                                        <td>${data.TenSP}</td>
+                                        <td>${data.GiaBan.toLocaleString('vi-VN')}đ</td>
                                         <td>
-                                            <input type="number" name="order-pro-qty" value="1" min="1" data-order-pro="${data.ProductID}" required/>
+                                            <input type="number" name="order-pro-qty" value="1" min="1" data-order-pro="${data.MaSP}" required/>
                                         </td>
                                         <td class="one-p-total">
-                                            ${data.Price.toLocaleString('vi-VN')}đ
+                                            ${data.GiaBan.toLocaleString('vi-VN')}đ
                                         </td>
                                         <td>
                                             <i class='bx bx-trash del-order-pro'></i>
@@ -719,7 +731,7 @@ $(document).on('focus', 'input[name="order-pro-qty"]', (e) => {
                 type: 'post',
                 url: '/admin/orders/updateproductqty',
                 data: {
-                    productID: $(e.target).data('order-pro'),
+                    MaSP: $(e.target).data('order-pro'),
                     qty: qty
                 },
                 success: (data) => {
@@ -743,14 +755,77 @@ $(document).on('click', '.del-order-pro', (e) => {
 
 
 //-----------------------------------------------------------
+const getCustomer = (sdt) => { 
+    $.ajax({
+        type: 'GET',
+        url: '/api/customers',
+        data: { sdt: sdt },
+        success: (data) => {
+            $('#cusName').text(data.HoTen);
+            $('#cusPhone').text(data.SDT);
+            $('#cusEmail').text(data.Email);
+            $('#cusAddress').text(data.DiaChi);
+            if (data.Gender == "Nam") {
+                $('#cusGender-Male').prop('checked', true);
+            } else {
+                $('#cusGender-FeMale').prop('checked', true);
+            }
+        }
+    })
+}
+
 $('.create-cus-btn').click(() => {
-    $('.create-customer-wrapper').css('visibility', 'visible');
-    $('.create-customer-box').addClass('show');
+    $('.create-customer-wrapper').addClass('show');
+    $('.create-customer-wrapper .form-box').addClass('show');
 })
 
 $('.close-create-customer').click(() => {
-    $('.create-customer-wrapper').css('visibility', 'hidden');
-    $('.create-customer-box').removeClass('show');
+    $('.create-customer-wrapper').removeClass('show');
+    $('.create-customer-wrapper .form-box').removeClass('show');
+})
+
+$('.create-customer-wrapper .form-box').on('reset', function (e) {
+    $(this).removeClass('show');
+    $(this).closest('.create-customer-wrapper').removeClass('show')
+})
+
+$('.create-customer-wrapper .form-box').submit(function (e) {
+    e.preventDefault();
+    let name = $(this).find('#HoTen').val();
+    let phone = $(this).find('#SDT').val();
+    let address = $(this).find('#DiaChi').val();
+    let gender = $(this).find('input[name="Gender"]:checked').val();
+    let dob = $(this).find('#NgaySinh').val();
+    let email = $(this).find('#Email').val();
+    showLoading();
+    $.ajax({
+        type: 'POST',
+        url: '/api/customers',
+        data: {
+            'HoTen': name,
+            'SDT': phone,
+            'DiaChi': address,
+            'GioiTinh': gender,
+            'NgaySinh': dob,
+            'Email': email
+        },
+        success: (response) => {
+            if (response) {
+                hideLoading();
+                getCustomer(phone);
+                $(this).removeClass('show');
+                $(this).closest('.create-customer-wrapper').removeClass('show')
+            }
+        },
+        error: () => {
+            
+        }
+    })
+
+    $(e.target).find('.form-submit-reset').click(() => {
+        $(e.target).find('.form-error').hide();
+        $(e.target).find('.form-error').empty();
+    })
 })
 
 //Create order ---------------------------
@@ -767,10 +842,10 @@ $('.create-order-box').submit((e) => {
     var strProduct = '';
 
     $('.order-create-products table tr:not(:first-child)').each((index, row) => {
-        const productId = $(row).find('input[name="order-pro-id"]').val();
+        const MaSP = $(row).find('input[name="order-pro-id"]').val();
         const orderQty = $(row).find('input[name="order-pro-qty"]').val();
 
-        strProduct += productId + '++++++++' + orderQty + ';;;;;;;;';
+        strProduct += MaSP + '++++++++' + orderQty + ';;;;;;;;';
     })
 
     if (strProduct.length > 0) {

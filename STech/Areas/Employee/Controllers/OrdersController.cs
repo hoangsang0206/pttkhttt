@@ -43,6 +43,13 @@ namespace STech.Areas.Employee.Controllers
             }
         }
 
+        public ActionResult Create()
+        {
+
+            ViewBag.ActiveNav = "create";
+            return View();
+        }
+
         public async Task<ActionResult> PrintInvoice(string orderID)
         {
             try

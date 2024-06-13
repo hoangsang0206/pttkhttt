@@ -1,0 +1,64 @@
+﻿@model STech.ViewModels.CreateCustomerVM 
+
+<div class="form-container create-customer-wrapper">
+    <form action="#" class="form-box position-relative">
+        <div class="close-form close-create-customer position-absolute">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <h4 class="text-center mb-4">Tạo mới khách hàng</h4>
+        <div class="form-box-header">
+            <h5 class="form-header-text">Thông tin khách hàng</h5>
+        </div>
+        <div class="form-create-customer">
+            <div>
+                <div class="d-flex align-items-center justify-content-between gap-3 my-3">
+                    @Html.LabelFor(row => row.HoTen, "Họ tên")
+                    @Html.TextBoxFor(row => row.HoTen, new { @class="form-add-input", placeholder = "Họ tên"})
+                    @Html.ValidationMessageFor(row => row.HoTen)
+                </div>
+                <div class="d-flex align-items-center justify-content-between gap-3 my-3">
+                    @Html.LabelFor(row => row.SDT, "Số điện thoại")
+                    @Html.TextBoxFor(row => row.SDT, new { @class="form-add-input", placeholder = "Số điện thoại" })
+                    @Html.ValidationMessageFor(row => row.SDT)
+                </div>
+                <div class="d-flex align-items-center justify-content-between gap-3 my-3">
+                    @Html.LabelFor(row => row.DiaChi, "Địa chỉ")
+                    @Html.TextBoxFor(row => row.DiaChi, new { @class = "form-add-input", placeholder = "Địa chỉ" })
+                    @Html.ValidationMessageFor(row => row.HoTen)
+                </div>
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-5 my-3">
+                    <span>Giới tính</span>
+                    <div class="d-flex gap-3">
+                        <div>
+                            <input type="radio" id="Gender1" name="create-cusGender" value="Nam" checked />
+                            <label for="Gender1">Nam</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="Gender2" name="create-cusGender" value="Nữ" />
+                            <label for="Gender2">Nữ</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-between gap-3 my-3">
+                    @Html.LabelFor(row => row.NgaySinh, "Ngày sinh")
+                    @Html.TextBoxFor(model => model.NgaySinh, new { @class = "form-add-input", type = "date" })
+                    @Html.ValidationMessageFor(row => row.NgaySinh)
+                </div>
+                <div class="d-flex align-items-center justify-content-between gap-3 my-3">
+                    @Html.LabelFor(row => row.Email, "Email")
+                    @Html.TextBoxFor(row => row.Email, new { @class = "form-add-input", type = "email", placeholder = "Email" })
+                    @Html.ValidationMessageFor(row => row.Email)
+                </div>
+            </div>
+        </div>
+        <div class="form-error"></div>
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="order-btn frm-create-cusomer-btn">
+                TẠO KHÁCH HÀNG
+            </button>
+            <button type="reset" class="page-btn border-btn">Hủy</button>
+        </div>
+    </form>
+</div>

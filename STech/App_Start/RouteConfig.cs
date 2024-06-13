@@ -14,6 +14,12 @@ namespace STech
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "Product",
+                url: "product/{id}",
+                defaults: new { controller = "Product", action = "Index", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "Search",
                 url: "search/",
                 defaults: new { controller = "Collections", action = "Search" }

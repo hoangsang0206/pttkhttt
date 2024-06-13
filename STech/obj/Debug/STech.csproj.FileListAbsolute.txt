@@ -183,3 +183,6 @@ D:\HUFI\HK6\TH PTTKHTTT\STech\STech\obj\Debug\STech.csproj.CoreCompileInputs.cac
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\obj\Debug\STech.csproj.CopyComplete
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\obj\Debug\STech.dll
 D:\HUFI\HK6\TH PTTKHTTT\STech\STech\obj\Debug\STech.pdb
+D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\System.Web.Cors.dll
+D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\System.Web.Http.Cors.dll
+D:\HUFI\HK6\TH PTTKHTTT\STech\STech\bin\System.Web.Http.Cors.xml

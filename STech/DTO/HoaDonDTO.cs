@@ -5,7 +5,6 @@ using System.Web;
 
 namespace STech.DTO
 {
-    [Serializable]
     public class HoaDonDTO
     {
         public string MaHD { get; set; }

@@ -15,6 +15,12 @@ namespace STech.Areas.Employee
         public override void RegisterArea(AreaRegistrationContext context) 
         {
             context.MapRoute(
+                "Employee_orders",
+                "employee/",
+                new { controller = "Orders", action = "Index" }
+            );
+
+            context.MapRoute(
                 "Employee_default",
                 "employee/{controller}/{action}/{id}",
                 new { action = "Index", id = UrlParameter.Optional }

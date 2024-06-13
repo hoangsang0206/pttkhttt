@@ -165,6 +165,7 @@
           <Property Name="NgaySinh" Type="date" />
           <Property Name="GioiTinh" Type="nvarchar" MaxLength="10" />
           <Property Name="CCCD" Type="varchar" MaxLength="20" />
+          <Property Name="AccountId" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <EntityType Name="PhieuBaoHanh">
           <Key>
@@ -1042,6 +1043,7 @@
           <Property Name="NgaySinh" Type="DateTime" Precision="0" />
           <Property Name="GioiTinh" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="CCCD" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="AccountId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="HoaDons" Relationship="Self.FK_HD_NV" FromRole="NhanVien" ToRole="HoaDon" />
           <NavigationProperty Name="PhieuBaoHanhs" Relationship="Self.FK_PBH_NV" FromRole="NhanVien" ToRole="PhieuBaoHanh" />
           <NavigationProperty Name="PhieuDoiTras" Relationship="Self.FK_PDT_NV" FromRole="NhanVien" ToRole="PhieuDoiTra" />
@@ -1940,6 +1942,7 @@
                 <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
                 <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
                 <ScalarProperty Name="CCCD" ColumnName="CCCD" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -18,23 +18,18 @@
         </ul>
     </div>
     <div class="orders-page-main mb-4">
-        <div class="action-box orders-action d-flex flex-wrap">
-            <button class="add-order-btn">
-                <i class="fa-regular fa-square-plus action-btn-icon"></i>
-                Tạo đơn hàng
-            </button>
-            <div class="orders-action-notice"></div>
-        </div>
-        <div class="orders-page-content mt-3">
+        <div class="orders-page-content">
             <div class="orders-search-wrapper mt-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <div>
-                    <h5 class="m-0 p-0">Đơn hàng chờ xác nhận</h5>
+                    <h5 class="m-0 p-0">Danh sách đơn hàng</h5>
                 </div>
                 <div class="d-flex flex-wrap align-items-center justify-content-start gap-2">
-                    <button class="page-btn get-accept-order">Đã xác nhận</button>
-                    <button class="page-btn get-refuse-order">Đã hủy</button>
-                    <button class="page-btn get-paid-order">Đã thanh toán</button>
-                    <button class="page-btn get-notpaid-order">Chưa thanh toán</button>
+                    <button class="page-btn get-today-unconfirmed">Chưa xác nhận hôm nay</button>
+                    <button class="page-btn get-unconfirmed">Chưa xác nhận</button>
+                    <button class="page-btn get-confirmed">Đã xác nhận</button>
+                    <button class="page-btn get-cancelled">Đã hủy</button>
+                    <button class="page-btn get-paid">Đã thanh toán</button>
+                    <button class="page-btn get-unpaid">Chưa thanh toán</button>
                     <button class="page-btn reload-orders">Tải lại</button>
                 </div>
             </div>
@@ -86,8 +81,8 @@
                             {
                                 <td>
                                     <div class="order-status">
-                                        <button class="order-btn order-status-accept" data-accept-order="@order.MaHD">Xác nhận</button>
-                                        <button class="order-btn order-status-refuse" data-refuse-order="@order.MaHD">Hủy ĐH</button>
+                                        <button class="order-btn order-status-accept" data-order="@order.MaHD">Xác nhận</button>
+                                        <button class="order-btn order-status-refuse" data-order="@order.MaHD">Hủy ĐH</button>
                                     </div>
                                 </td>
                             }

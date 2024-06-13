@@ -22,7 +22,7 @@ namespace STech.Controllers_api
                     .Include(sp => sp.ChiTietKhoes)
                     .Include(sp => sp.DanhMuc)
                     .Include(sp => sp.HangSX)
-                    .ToListAsync(); 
+                    .ToListAsync();
 
                 return dsSP.Select(sp => new SanPhamDTO()
                 {
@@ -112,7 +112,7 @@ namespace STech.Controllers_api
                         TenHang = sp.HangSX.TenHang
                     }
                 });
-            }   
+            }
         }
 
         public async Task<IEnumerable<SanPhamDTO>> GetByCategory(string category)
@@ -180,7 +180,7 @@ namespace STech.Controllers_api
                         TenHang = sp.HangSX.TenHang
                     }
                 });
-            }    
+            }
         }
 
         public async Task<IEnumerable<SanPhamDTO>> GetByCategoryAndBrand(string category, string brand)
@@ -214,7 +214,35 @@ namespace STech.Controllers_api
                         TenHang = sp.HangSX.TenHang
                     }
                 });
-            }  
+            }
+        }
+
+        public async Task<SanPhamDTO> GetById(string id)
+        {
+            using (DbEntities db = new DbEntities())
+            {
+                SanPham sp = await db.SanPhams.FirstOrDefaultAsync(t => t.MaSP == id);
+
+                return new SanPhamDTO()
+                {
+                    MaSP = sp.MaSP,
+                    TenSP = sp.TenSP,
+                    GiaBan = sp.GiaBan,
+                    GiaGoc = sp.GiaGoc,
+                    HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                    Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong),
+                    DanhMuc = new DanhMucDTO()
+                    {
+                        MaDM = sp.MaDM,
+                        TenDM = sp.DanhMuc.TenDM
+                    },
+                    HangSX = new HangSxDTO()
+                    {
+                        MaHSX = sp.MaHSX,
+                        TenHang = sp.HangSX.TenHang
+                    }
+                };
+            }
         }
     }
 }

@@ -160,6 +160,7 @@
     <Property Name="NgaySinh" Type="date" />
     <Property Name="GioiTinh" Type="nvarchar" MaxLength="10" />
     <Property Name="CCCD" Type="varchar" MaxLength="20" />
+    <Property Name="AccountId" Type="nvarchar" MaxLength="128" />
   </EntityType>
   <EntityType Name="PhieuBaoHanh">
     <Key>

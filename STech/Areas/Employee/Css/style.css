@@ -657,6 +657,40 @@ main {
     height: 100vh;
 }
 
+.page-btn {
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    outline: none;
+    border-radius: 0.3rem;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+    .page-btn.border-btn {
+        background: none;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
+    }
+
+        .page-btn.border-btn:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+    .page-btn:hover {
+        outline: 2px solid #938afc;
+    }
+
+.page-btn.active {
+    border: none;
+    background: #009432;
+}
+
+.page-btn.active:hover {
+    outline: 2px solid #9cf185;
+}
+
 /*Loading ---------------------------------- */
 .loading {
     width: 100%;
@@ -916,8 +950,8 @@ footer span {
 
 .order-list, .order-waiting-list {
     margin-top: 1rem;
-    min-height: 30rem;
-    max-height: 40rem;
+    min-height: 40rem;
+    max-height: 50rem;
     overflow-y: scroll;
 }
 
@@ -1126,9 +1160,7 @@ footer span {
     color: #ff6a00;
 }
 
-.order-infomation-wrapper,
-.order-update-wrapper,
-.create-customer-wrapper {
+.form-container {
     position: fixed;
     top: 0;
     left: 0;
@@ -1141,26 +1173,30 @@ footer span {
     z-index: 55;
 }
 
-.order-infomation-box,
-.order-update-box,
-.create-customer-box {
+.form-container.show {
+    visibility: visible;
+}
+
+.create-customer-wrapper .form-box {
+    width: 40rem;
+}
+
+.form-box {
     position: relative;
     background: var(--sidebar-color);
-    width: 80%;
-    max-height: 90%;
+    max-width: calc(100vw - 1rem);
+    max-height: calc(100% - 2rem);
     overflow-y: scroll;
     padding: 1.5rem 2rem;
     border-radius: 0.3rem;
     cursor: auto;
-    transform: scale(0);
+    visibility: hidden;
     opacity: 0;
-    transition: var(--tran-02);
+    transition: var(--tran-04);
 }
 
-    .order-infomation-box.show,
-    .order-update-box.show,
-    .create-customer-box.show {
-        transform: scale(1);
+    .form-box.show {
+        visibility: visible;
         opacity: 1;
     }
 
@@ -1256,10 +1292,6 @@ footer span {
     outline: none;
     width: 75%;
 }
-
-    .form-add-input:focus {
-        border: 1px solid #00c643;
-    }
 
 .cus-search-auto-complete,
 .pro-search-auto-complete {
@@ -1416,10 +1448,14 @@ input[name="cus-search-cbx"]:checked ~ label {
     border: 1px solid #cfcfcf;
 }
 
-.form-create-customer {
-    /*display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 2rem; */
+.form-create-customer label {
+    width: 4rem;
+}
+
+.field-validation-error span {
+    margin: 0.3rem 0;
+    color: #e30019;
+    font-size: 0.85rem !important;
 }
 
 

@@ -210,6 +210,9 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Cors, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.3.0\lib\net45\System.Web.Cors.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -220,6 +223,9 @@
     </Reference>
     <Reference Include="System.Web.Http, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.3.0\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.3.0\lib\net45\System.Web.Http.Cors.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.3.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
@@ -288,7 +294,9 @@
     <Compile Include="Controllers\CollectionsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers_api\CategoriesController.cs" />
+    <Compile Include="Controllers_api\CustomersController.cs" />
     <Compile Include="Controllers_api\OrdersController.cs" />
     <Compile Include="Controllers_api\ProductsController.cs" />
     <Compile Include="DTO\ChiTietHDDTO.cs" />
@@ -299,6 +307,7 @@
     <Compile Include="DTO\KhachHangDTO.cs" />
     <Compile Include="DTO\NhanVienDTO.cs" />
     <Compile Include="DTO\TheTVDTO.cs" />
+    <Compile Include="DTO\ThongSoDTO.cs" />
     <Compile Include="DTO\TichDiemDTO.cs" />
     <Compile Include="Filters\AuthenticationFilter.cs" />
     <Compile Include="IdentityMigration\202406110747327_init.cs" />
@@ -404,6 +413,7 @@
     <Compile Include="Utils\RandomString.cs" />
     <Compile Include="Validations\DateOfBirth.cs" />
     <Compile Include="ViewModels\ChangePasswordVM.cs" />
+    <Compile Include="ViewModels\CreateCustomerVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="DTO\SanPhamDTO.cs" />
@@ -494,6 +504,13 @@
     <Content Include="CSS\fonts\SFProDisplay\SF-Pro-Display-Regular.woff2" />
     <Content Include="CSS\fonts\SFProDisplay\SF-Pro-Display-Semibold.woff2" />
     <Content Include="Assets\Images\banner\10.webp" />
+    <Content Include="Areas\Employee\Views\web.config" />
+    <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="Areas\Employee\Views\Shared\_LayoutAdmin.cshtml" />
+    <Content Include="Areas\Employee\Views\Shared\Partial_Sidebar.cshtml" />
+    <Content Include="Areas\Employee\Views\Orders\Index.cshtml" />
+    <Content Include="Areas\Employee\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Employee\Views\Orders\Create.cshtml" />
     <EntityDeploy Include="Models\Model.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Model.Designer.cs</LastGenOutput>
@@ -501,12 +518,7 @@
     <Content Include="Models\Model.edmx.diagram">
       <DependentUpon>Model.edmx</DependentUpon>
     </Content>
-    <Content Include="Areas\Employee\Views\web.config" />
-    <Content Include="Areas\Admin\Views\web.config" />
-    <Content Include="Areas\Employee\Views\Shared\_LayoutAdmin.cshtml" />
-    <Content Include="Areas\Employee\Views\Shared\Partial_Sidebar.cshtml" />
-    <Content Include="Areas\Employee\Views\Orders\Index.cshtml" />
-    <Content Include="Areas\Employee\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Employee\Views\Shared\Partial_CreateCustomer.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\Partial_Footer.cshtml" />
     <Content Include="Views\Shared\Partial_Megamenu.cshtml" />
@@ -526,6 +538,7 @@
     <Content Include="Views\Order\Succeeded.cshtml" />
     <Content Include="Views\Order\Failed.cshtml" />
     <Content Include="Views\Order\Detail.cshtml" />
+    <Content Include="Views\Product\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
