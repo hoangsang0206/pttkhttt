@@ -37,6 +37,13 @@ namespace STech.App_Start
                 roleManager.Create(role);
             }
 
+            if (!roleManager.RoleExists("Employee"))
+            {
+                IdentityRole role = new IdentityRole();
+                role.Name = "Employee";
+                roleManager.Create(role);
+            }
+
             if (!roleManager.RoleExists("Customer"))
             {
                 IdentityRole role = new IdentityRole();
@@ -50,12 +57,26 @@ namespace STech.App_Start
                 ApplicationUser user = new ApplicationUser();
                 user.UserName = "admin";
                 user.Email = "2001210561@huit.edu.vn";
-                user.Avatar = "https://lhswebstorage.blob.core.windows.net/stechweb/user-images/admin-avatarpng";
+                user.Avatar = "https://lhswebstorage.blob.core.windows.net/stechweb/user-images/admin-avatar.png";
                 string password = "admin@2001210561";
 
                 if(userManager.Create(user, password).Succeeded)
                 {
                     userManager.AddToRole(user.Id, "Admin");
+                };
+            }
+
+            if (userManager.FindByName("employee") == null)
+            {
+                ApplicationUser user = new ApplicationUser();
+                user.UserName = "employee";
+                user.Email = "employee@gmail.com";
+                user.Avatar = "https://lhswebstorage.blob.core.windows.net/stechweb/user-images/admin-avatar.png";
+                string password = "employee@2001210561";
+
+                if (userManager.Create(user, password).Succeeded)
+                {
+                    userManager.AddToRole(user.Id, "Employee");
                 };
             }
         }

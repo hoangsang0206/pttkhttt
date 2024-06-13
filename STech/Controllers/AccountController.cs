@@ -96,6 +96,9 @@ namespace STech.Controllers
                         if (await userManager.IsInRoleAsync(user.Id, "admin"))
                         {
                             return Json(new {status = HttpStatusCode.OK, redirectUrl = "/admin"});
+                        } else if(await userManager.IsInRoleAsync(user.Id, "employee"))
+                        {
+                            return Json(new { status = HttpStatusCode.OK, redirectUrl = "/employee" });
                         }
 
                         return Json(new { status = HttpStatusCode.OK });
