@@ -21,6 +21,7 @@ using Stripe;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using STech.Utils;
 
 namespace STech.Controllers
 {
@@ -280,7 +281,7 @@ namespace STech.Controllers
                 ApplicationUserManager userManager = new ApplicationUserManager(new ApplicationUserStore(new ApplicationDbContext()));
                 ApplicationUser user = userManager.FindById(userID);
 
-                string fileName = user.UserName + '-' + randomString(30);
+                string fileName = user.UserName + '-' + RandomString.random(30);
                 string imgSrc = null;
 
                 //Upload hình ảnh lên Azure Storage -----
@@ -313,23 +314,6 @@ namespace STech.Controllers
             {
                 return Json(new { status = HttpStatusCode.BadRequest, message = "Tải lên thất bại." });
             }
-        }
-
-        //Tạo ngẫu nhiên chuỗi
-        private string randomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            Random random = new Random();
-            char[] randomChars = new char[length];
-
-            for (int i = 0; i < length; i++)
-            {
-                randomChars[i] = chars[random.Next(chars.Length)];
-            }
-
-            string uniqueFileName = new string(randomChars);
-
-            return uniqueFileName;
         }
     }
 }

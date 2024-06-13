@@ -20,6 +20,7 @@ using STech.Filters;
 using PayPal.Api;
 using System.Data.Entity.Migrations;
 using STech.ConfigModels;
+using STech.Utils;
 
 namespace STech.Controllers
 {
@@ -182,7 +183,6 @@ namespace STech.Controllers
                         return Redirect("/cart");
                     }
 
-
                     List<GioHang> userCart = await db.GioHangs.Where(t => t.AccountId == userID).ToListAsync();
                     
                     KhachHang kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
@@ -212,6 +212,13 @@ namespace STech.Controllers
                     hd.TrangThaiThanhToan = "unpaid";
                     hd.TrangThai = "unconfirmed";
                     hd.DiaChiGiao = orderTemp.DiaChiGiao;
+
+                    TichDiem td = new TichDiem();
+                    td.MaTD = RandomString.random(30);
+                    td.MaHD = orderID;
+                    td.NgayTD = DateTime.Now;
+                    td.SoDiem = totalPrice * (decimal)0.01;
+                    td.TrangThai = "unconfirmed";
 
                     List<ChiTietHD> chitietHD = new List<ChiTietHD>();
                     foreach (GioHang c in userCart)
@@ -252,6 +259,7 @@ namespace STech.Controllers
                         db.HoaDons.Add(hd);
                         db.ChiTietHDs.AddRange(chitietHD);
                         db.GioHangs.RemoveRange(userCart);
+                        db.TichDiems.Add(td);
                         db.SaveChanges();
 
                         Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
@@ -303,6 +311,7 @@ namespace STech.Controllers
                         db.HoaDons.Add(hd);
                         db.ChiTietHDs.AddRange(chitietHD);
                         db.GioHangs.RemoveRange(userCart);
+                        db.TichDiems.Add(td);
                         db.SaveChanges();
 
                         Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
@@ -424,6 +433,13 @@ namespace STech.Controllers
                 hd.TrangThai = "unconfirmed";
                 hd.DiaChiGiao = orderTemp.DiaChiGiao;
 
+                TichDiem td = new TichDiem();
+                td.MaTD = RandomString.random(30);
+                td.MaHD = orderID;
+                td.NgayTD = DateTime.Now;
+                td.SoDiem = totalPrice * (decimal)0.01;
+                td.TrangThai = "unconfirmed";
+
                 List<ChiTietHD> chitietHD = new List<ChiTietHD>();
                 foreach (GioHang c in userCart)
                 {
@@ -486,6 +502,7 @@ namespace STech.Controllers
                             db.HoaDons.Add(hd);
                             db.ChiTietHDs.AddRange(chitietHD);
                             db.GioHangs.RemoveRange(userCart);
+                            db.TichDiems.Add(td);
                             db.SaveChanges();
 
                             Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
@@ -500,6 +517,7 @@ namespace STech.Controllers
                     db.HoaDons.Add(hd);
                     db.ChiTietHDs.AddRange(chitietHD);
                     db.GioHangs.RemoveRange(userCart);
+                    db.TichDiems.Add(td);
                     db.SaveChanges();
 
                     Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
@@ -511,6 +529,7 @@ namespace STech.Controllers
                 db.HoaDons.Add(hd);
                 db.ChiTietHDs.AddRange(chitietHD);
                 db.GioHangs.RemoveRange(userCart);
+                db.TichDiems.Add(td);
                 db.SaveChanges();
 
                 Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);

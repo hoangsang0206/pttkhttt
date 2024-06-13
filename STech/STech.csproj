@@ -366,6 +366,7 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="OtherModels\GioHangCookie.cs" />
+    <Compile Include="Utils\RandomString.cs" />
     <Compile Include="Validations\DateOfBirth.cs" />
     <Compile Include="ViewModels\ChangePasswordVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
@@ -496,6 +497,8 @@
     <Content Include="Views\Shared\Partial_ChangePassword.cshtml" />
     <Content Include="Views\Shared\Partial_UpdateAccount.cshtml" />
     <Content Include="Views\Order\OrderInfo.cshtml" />
+    <Content Include="Views\Order\Succeeded.cshtml" />
+    <Content Include="Views\Order\Failed.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
