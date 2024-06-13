@@ -10,6 +10,7 @@ namespace STech.DTO
         public string MaSP { get; set; }
         public string TenSP { get; set; }
         public Nullable<decimal> GiaGoc { get; set; }
+        public Nullable<int> BaoHanh { get; set; }
         public decimal GiaBan { get; set; }
         public string HinhAnh { get; set; }
         public int Tonkho {  get; set; }
@@ -18,7 +19,7 @@ namespace STech.DTO
 
         public SanPhamDTO() { }
 
-        public SanPhamDTO(string maSP, string tenSP, decimal? giaGoc, decimal giaBan, string hinhAnh, int tonkho, DanhMucDTO danhMuc, HangSxDTO hangSX)
+        public SanPhamDTO(string maSP, string tenSP, decimal? giaGoc, decimal giaBan, string hinhAnh, int tonkho, DanhMucDTO danhMuc, HangSxDTO hangSX, int? baoHanh)
         {
             MaSP = maSP;
             TenSP = tenSP;
@@ -28,6 +29,7 @@ namespace STech.DTO
             Tonkho = tonkho;
             DanhMuc = danhMuc;
             HangSX = hangSX;
+            BaoHanh = baoHanh;
         }
     }
 }

@@ -198,7 +198,7 @@ namespace STech.Controllers
             {
                 ApplicationUser user = await userManager.FindByIdAsync(userID);
 
-                string customerID = "KH" + DateTime.Now.ToString("ddMMyy") + RandomString.random(5);
+                string customerID = "KH" + DateTime.Now.ToString("ddMMyy") + RandomString.random(5).ToUpper();
                 KhachHang kh = new KhachHang();
                 kh.AccountId = userID;
                 kh.MaKH = customerID;
@@ -243,7 +243,7 @@ namespace STech.Controllers
                 await addNewCustomer(db, userID);
             }
 
-            string orderID = "DH" + DateTime.Now.ToString("ddMMyy") + RandomString.random(5);
+            string orderID = "DH" + DateTime.Now.ToString("ddMMyy") + RandomString.random(5).ToUpper();
             decimal totalPrice = userCart.Sum(t => t.SoLuong * t.SanPham.GiaBan);
             kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
 
@@ -307,7 +307,7 @@ namespace STech.Controllers
                         PhieuXuatKho pxk = dsPXK.FirstOrDefault(p => p.MaKho == ctk.MaKho);
                         if (pxk == null)
                         {
-                            string maPXK = "PXK" + DateTime.Now.ToString("ddMMyy") + RandomString.random(5);
+                            string maPXK = "PXK" + DateTime.Now.ToString("ddMMyy") + RandomString.random(5).ToUpper();
                             pxk = new PhieuXuatKho();
                             pxk.MaHD = hd.MaHD;
                             pxk.MaPXK = maPXK;
@@ -719,7 +719,6 @@ namespace STech.Controllers
                     breadcrumb.Add(new Breadcrumb("Trang chủ", "/"));
                     breadcrumb.Add(new Breadcrumb("Đơn hàng", "/account#orders"));
                     breadcrumb.Add(new Breadcrumb("Chi tiết đơn hàng " + hd.MaHD, ""));
-
                     CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
 
                     Tuple<HoaDonDTO, List<ChiTietHDDTO>, TichDiemDTO, KhachHangDTO> tuple
@@ -737,43 +736,72 @@ namespace STech.Controllers
 
         }
 
-        //In hóa đơn
-        //public ActionResult PrintOrder(string orderID)
-        //{
-        //    try
-        //    {
-        //        if (User.Identity.IsAuthenticated)
-        //        {
-        //            string userID = User.Identity.GetUserId();
-        //            DbEntities db = new DbEntities();
-        //            STech_Web.Models.Customer customer = db.Customers.FirstOrDefault(t => t.AccountID == userID);
-        //            if (customer == null)
-        //            {
-        //                return Redirect("#");
-        //            }
+        public async Task<ActionResult> PrintInvoice(string orderID)
+        {
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    using (DbEntities db = new DbEntities())
+                    {
+                        string userID = User.Identity.GetUserId();
+                        KhachHang kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
+                        if (kh == null)
+                        {
+                            return Redirect("#");
+                        }
 
-        //            STech_Web.Models.Order order = customer.Orders.FirstOrDefault(t => t.OrderID == orderID);
-        //            if (order == null)
-        //            {
-        //                return Redirect("#");
-        //            }
+                        HoaDonDTO hd = kh.HoaDons
+                            .Select(t => new HoaDonDTO()
+                            {
+                                MaHD = t.MaHD,
+                                TongTien = t.TongTien,
+                                NgayDat = t.NgayDat,
+                                PhuongThucThanhToan = t.PhuongThucThanhToan,
+                                DiaChiGiao = t.DiaChiGiao,
+                                GhiChu = t.GhiChu,
+                                KhachHang = new KhachHangDTO()
+                                {
+                                    HoTen = t.KhachHang.HoTen,
+                                    SDT = t.KhachHang.SDT
 
-        //            PrintInvoice printInvoice = new PrintInvoice(order);
-        //            byte[] file = printInvoice.Print();
+                                },
+                                ChiTietHD = t.ChiTietHDs.Select(cthd => new ChiTietHDDTO()
+                                {
+                                    SoLuong = cthd.SoLuong,
+                                    ThanhTien = cthd.ThanhTien,
+                                    SanPham = new SanPhamDTO()
+                                    {
+                                        TenSP = cthd.SanPham.TenSP,
+                                        BaoHanh = cthd.SanPham.BaoHanh
+                                    }
+                                }).ToList(),
 
-        //            return File(file, printInvoice.ContentType, printInvoice.FileName);
-        //        }
-        //        else
-        //        {
-        //            return Redirect("#");
-        //        }
+                            })
+                            .FirstOrDefault(t => t.MaHD == orderID);
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Redirect("#");
-        //    }
-        //}
+                        if (hd == null)
+                        {
+                            return Redirect("#");
+                        }
+
+                        PrintInvoice printInvoice = new PrintInvoice(hd);
+                        byte[] file = printInvoice.Print();
+
+                        return File(file, printInvoice.ContentType, printInvoice.FileName);
+                    }    
+                }
+                else
+                {
+                    return Redirect("#");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Redirect("#");
+            }
+        }
 
         //Xóa hóa đơn có trạng thái chờ thanh toán
         public async Task<ActionResult> CancelOrder(string orderID)

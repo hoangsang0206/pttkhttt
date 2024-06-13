@@ -116,6 +116,28 @@ $('.cancel-order').click(function() {
     });
 })
 
+$('.print-order').click(function() {
+    const orderId = $(this).data('order');
+    if (orderId) {
+        $.ajax({
+            type: 'GET',
+            url: `/order/printinvoice?orderID=${orderId}`,
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: (response) => {
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(response);
+                link.download = orderId + ".pdf";
+                link.click();
+            },
+            error: () => {
+                console.log('Cannot download file');
+            }
+        })
+    }
+})
+
 //--------------
 function showOrderNotice(string) {
     $('.notice-list').empty();
