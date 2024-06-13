@@ -266,6 +266,8 @@
     <Compile Include="DTO\HoaDonDTO.cs" />
     <Compile Include="DTO\KhachHangDTO.cs" />
     <Compile Include="DTO\NhanVienDTO.cs" />
+    <Compile Include="DTO\TheTVDTO.cs" />
+    <Compile Include="DTO\TichDiemDTO.cs" />
     <Compile Include="Filters\AuthenticationFilter.cs" />
     <Compile Include="IdentityMigration\202406110747327_init.cs" />
     <Compile Include="IdentityMigration\202406110747327_init.designer.cs">
@@ -366,6 +368,7 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="OtherModels\GioHangCookie.cs" />
+    <Compile Include="Utils\PrintInvoice.cs" />
     <Compile Include="Utils\RandomString.cs" />
     <Compile Include="Validations\DateOfBirth.cs" />
     <Compile Include="ViewModels\ChangePasswordVM.cs" />
@@ -499,6 +502,7 @@
     <Content Include="Views\Order\OrderInfo.cshtml" />
     <Content Include="Views\Order\Succeeded.cshtml" />
     <Content Include="Views\Order\Failed.cshtml" />
+    <Content Include="Views\Order\Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

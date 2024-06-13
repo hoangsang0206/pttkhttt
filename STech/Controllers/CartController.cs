@@ -74,7 +74,7 @@ namespace STech.Controllers
                         List<GioHang> cartToDelete = new List<GioHang>();
                         foreach (GioHang cart in userCart)
                         {
-                            if (cart.SanPham.ChiTietKhoes.Count <= 0 || cart.SanPham.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
+                            if (cart.SanPham.ChiTietKhoes.Count() <= 0 || cart.SanPham.ChiTietKhoes.Sum(ctk => ctk.SoLuong) <= 0)
                             {
                                 cartToDelete.Add(cart);
                             }

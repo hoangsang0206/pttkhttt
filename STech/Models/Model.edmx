@@ -100,6 +100,7 @@
           <Property Name="GhiChu" Type="nvarchar" MaxLength="200" />
           <Property Name="MaKH" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="MaNV" Type="varchar" MaxLength="50" />
+          <Property Name="MaTichDiem" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="KhachHang">
           <Key>
@@ -113,6 +114,7 @@
           <Property Name="NgaySinh" Type="date" />
           <Property Name="GioiTinh" Type="nvarchar" MaxLength="10" />
           <Property Name="AccountId" Type="nvarchar" MaxLength="128" />
+          <Property Name="MaTTV" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Kho">
           <Key>
@@ -211,7 +213,8 @@
           <Property Name="NgayXuatKho" Type="datetime" />
           <Property Name="TongSoLuong" Type="int" />
           <Property Name="MaKho" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="MaNV" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="MaNV" Type="varchar" MaxLength="50" />
+          <Property Name="MaHD" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="SanPham">
           <Key>
@@ -251,7 +254,7 @@
           <Property Name="MaThe" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="TongDiem" Type="decimal" Precision="18" Scale="0" />
           <Property Name="NgayTao" Type="datetime" />
-          <Property Name="MaKH" Type="varchar" MaxLength="50" />
+          <Property Name="MaKH" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="ThongSoKyThuat">
           <Key>
@@ -405,6 +408,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_HD_TD">
+          <End Role="TichDiem" Type="Self.TichDiem" Multiplicity="0..1" />
+          <End Role="HoaDon" Type="Self.HoaDon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TichDiem">
+              <PropertyRef Name="MaTD" />
+            </Principal>
+            <Dependent Role="HoaDon">
+              <PropertyRef Name="MaTichDiem" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_HinhAnhSP">
           <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
           <End Role="HinhAnhSP" Type="Self.HinhAnhSP" Multiplicity="*" />
@@ -414,6 +429,18 @@
             </Principal>
             <Dependent Role="HinhAnhSP">
               <PropertyRef Name="MaSP" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_KH_TTV">
+          <End Role="TheThanhVien" Type="Self.TheThanhVien" Multiplicity="0..1" />
+          <End Role="KhachHang" Type="Self.KhachHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TheThanhVien">
+              <PropertyRef Name="MaThe" />
+            </Principal>
+            <Dependent Role="KhachHang">
+              <PropertyRef Name="MaTTV" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -549,6 +576,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PXK_HD">
+          <End Role="HoaDon" Type="Self.HoaDon" Multiplicity="0..1" />
+          <End Role="PhieuXuatKho" Type="Self.PhieuXuatKho" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HoaDon">
+              <PropertyRef Name="MaHD" />
+            </Principal>
+            <Dependent Role="PhieuXuatKho">
+              <PropertyRef Name="MaHD" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PXK_Kho">
           <End Role="Kho" Type="Self.Kho" Multiplicity="1" />
           <End Role="PhieuXuatKho" Type="Self.PhieuXuatKho" Multiplicity="*" />
@@ -562,7 +601,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PXK_NV">
-          <End Role="NhanVien" Type="Self.NhanVien" Multiplicity="1" />
+          <End Role="NhanVien" Type="Self.NhanVien" Multiplicity="0..1" />
           <End Role="PhieuXuatKho" Type="Self.PhieuXuatKho" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="NhanVien">
@@ -634,7 +673,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_TTV_KH">
-          <End Role="KhachHang" Type="Self.KhachHang" Multiplicity="0..1" />
+          <End Role="KhachHang" Type="Self.KhachHang" Multiplicity="1" />
           <End Role="TheThanhVien" Type="Self.TheThanhVien" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="KhachHang">
@@ -716,9 +755,17 @@
             <End Role="NhanVien" EntitySet="NhanVien" />
             <End Role="HoaDon" EntitySet="HoaDon" />
           </AssociationSet>
+          <AssociationSet Name="FK_HD_TD" Association="Self.FK_HD_TD">
+            <End Role="TichDiem" EntitySet="TichDiem" />
+            <End Role="HoaDon" EntitySet="HoaDon" />
+          </AssociationSet>
           <AssociationSet Name="FK_HinhAnhSP" Association="Self.FK_HinhAnhSP">
             <End Role="SanPham" EntitySet="SanPham" />
             <End Role="HinhAnhSP" EntitySet="HinhAnhSP" />
+          </AssociationSet>
+          <AssociationSet Name="FK_KH_TTV" Association="Self.FK_KH_TTV">
+            <End Role="TheThanhVien" EntitySet="TheThanhVien" />
+            <End Role="KhachHang" EntitySet="KhachHang" />
           </AssociationSet>
           <AssociationSet Name="FK_Megamenu_Sidebar" Association="Self.FK_Megamenu_Sidebar">
             <End Role="SidebarMenu" EntitySet="SidebarMenu" />
@@ -763,6 +810,10 @@
           <AssociationSet Name="FK_PN_NV" Association="Self.FK_PN_NV">
             <End Role="NhanVien" EntitySet="NhanVien" />
             <End Role="PhieuNhap" EntitySet="PhieuNhap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PXK_HD" Association="Self.FK_PXK_HD">
+            <End Role="HoaDon" EntitySet="HoaDon" />
+            <End Role="PhieuXuatKho" EntitySet="PhieuXuatKho" />
           </AssociationSet>
           <AssociationSet Name="FK_PXK_Kho" Association="Self.FK_PXK_Kho">
             <End Role="Kho" EntitySet="Kho" />
@@ -909,11 +960,14 @@
           <Property Name="GhiChu" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="MaKH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="MaNV" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MaTichDiem" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="ChiTietHDs" Relationship="Self.FK_CTHD_HD" FromRole="HoaDon" ToRole="ChiTietHD" />
           <NavigationProperty Name="KhachHang" Relationship="Self.FK_HD_KH" FromRole="HoaDon" ToRole="KhachHang" />
           <NavigationProperty Name="NhanVien" Relationship="Self.FK_HD_NV" FromRole="HoaDon" ToRole="NhanVien" />
+          <NavigationProperty Name="TichDiem" Relationship="Self.FK_HD_TD" FromRole="HoaDon" ToRole="TichDiem" />
           <NavigationProperty Name="PhieuBaoHanhs" Relationship="Self.FK_PBH_HD" FromRole="HoaDon" ToRole="PhieuBaoHanh" />
           <NavigationProperty Name="PhieuDoiTras" Relationship="Self.FK_PDT_HD" FromRole="HoaDon" ToRole="PhieuDoiTra" />
+          <NavigationProperty Name="PhieuXuatKhoes" Relationship="Self.FK_PXK_HD" FromRole="HoaDon" ToRole="PhieuXuatKho" />
           <NavigationProperty Name="TichDiems" Relationship="Self.FK_TD_HD" FromRole="HoaDon" ToRole="TichDiem" />
         </EntityType>
         <EntityType Name="KhachHang">
@@ -928,7 +982,9 @@
           <Property Name="NgaySinh" Type="DateTime" Precision="0" />
           <Property Name="GioiTinh" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="AccountId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="MaTTV" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="HoaDons" Relationship="Self.FK_HD_KH" FromRole="KhachHang" ToRole="HoaDon" />
+          <NavigationProperty Name="TheThanhVien" Relationship="Self.FK_KH_TTV" FromRole="KhachHang" ToRole="TheThanhVien" />
           <NavigationProperty Name="TheThanhViens" Relationship="Self.FK_TTV_KH" FromRole="KhachHang" ToRole="TheThanhVien" />
         </EntityType>
         <EntityType Name="Kho">
@@ -1049,8 +1105,10 @@
           <Property Name="NgayXuatKho" Type="DateTime" Precision="3" />
           <Property Name="TongSoLuong" Type="Int32" />
           <Property Name="MaKho" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="MaNV" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="MaNV" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MaHD" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="ChiTietPXKs" Relationship="Self.FK_CTPXK_PXK" FromRole="PhieuXuatKho" ToRole="ChiTietPXK" />
+          <NavigationProperty Name="HoaDon" Relationship="Self.FK_PXK_HD" FromRole="PhieuXuatKho" ToRole="HoaDon" />
           <NavigationProperty Name="Kho" Relationship="Self.FK_PXK_Kho" FromRole="PhieuXuatKho" ToRole="Kho" />
           <NavigationProperty Name="NhanVien" Relationship="Self.FK_PXK_NV" FromRole="PhieuXuatKho" ToRole="NhanVien" />
         </EntityType>
@@ -1105,7 +1163,8 @@
           <Property Name="MaThe" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TongDiem" Type="Decimal" Precision="18" Scale="0" />
           <Property Name="NgayTao" Type="DateTime" Precision="3" />
-          <Property Name="MaKH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MaKH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="KhachHangs" Relationship="Self.FK_KH_TTV" FromRole="TheThanhVien" ToRole="KhachHang" />
           <NavigationProperty Name="KhachHang" Relationship="Self.FK_TTV_KH" FromRole="TheThanhVien" ToRole="KhachHang" />
           <NavigationProperty Name="TichDiems" Relationship="Self.FK_TD_TTV" FromRole="TheThanhVien" ToRole="TichDiem" />
         </EntityType>
@@ -1129,6 +1188,7 @@
           <Property Name="TrangThai" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="MaThe" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="MaHD" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="HoaDons" Relationship="Self.FK_HD_TD" FromRole="TichDiem" ToRole="HoaDon" />
           <NavigationProperty Name="HoaDon" Relationship="Self.FK_TD_HD" FromRole="TichDiem" ToRole="HoaDon" />
           <NavigationProperty Name="TheThanhVien" Relationship="Self.FK_TD_TTV" FromRole="TichDiem" ToRole="TheThanhVien" />
         </EntityType>
@@ -1300,6 +1360,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_HD_TD">
+          <End Role="TichDiem" Type="Self.TichDiem" Multiplicity="0..1" />
+          <End Role="HoaDon" Type="Self.HoaDon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TichDiem">
+              <PropertyRef Name="MaTD" />
+            </Principal>
+            <Dependent Role="HoaDon">
+              <PropertyRef Name="MaTichDiem" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PBH_HD">
           <End Role="HoaDon" Type="Self.HoaDon" Multiplicity="1" />
           <End Role="PhieuBaoHanh" Type="Self.PhieuBaoHanh" Multiplicity="*" />
@@ -1324,6 +1396,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PXK_HD">
+          <End Role="HoaDon" Type="Self.HoaDon" Multiplicity="0..1" />
+          <End Role="PhieuXuatKho" Type="Self.PhieuXuatKho" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HoaDon">
+              <PropertyRef Name="MaHD" />
+            </Principal>
+            <Dependent Role="PhieuXuatKho">
+              <PropertyRef Name="MaHD" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TD_HD">
           <End Role="HoaDon" Type="Self.HoaDon" Multiplicity="1" />
           <End Role="TichDiem" Type="Self.TichDiem" Multiplicity="*" />
@@ -1336,8 +1420,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_KH_TTV">
+          <End Role="TheThanhVien" Type="Self.TheThanhVien" Multiplicity="0..1" />
+          <End Role="KhachHang" Type="Self.KhachHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TheThanhVien">
+              <PropertyRef Name="MaThe" />
+            </Principal>
+            <Dependent Role="KhachHang">
+              <PropertyRef Name="MaTTV" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TTV_KH">
-          <End Role="KhachHang" Type="Self.KhachHang" Multiplicity="0..1" />
+          <End Role="KhachHang" Type="Self.KhachHang" Multiplicity="1" />
           <End Role="TheThanhVien" Type="Self.TheThanhVien" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="KhachHang">
@@ -1433,7 +1529,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PXK_NV">
-          <End Role="NhanVien" Type="Self.NhanVien" Multiplicity="1" />
+          <End Role="NhanVien" Type="Self.NhanVien" Multiplicity="0..1" />
           <End Role="PhieuXuatKho" Type="Self.PhieuXuatKho" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="NhanVien">
@@ -1587,6 +1683,10 @@
             <End Role="NhanVien" EntitySet="NhanViens" />
             <End Role="HoaDon" EntitySet="HoaDons" />
           </AssociationSet>
+          <AssociationSet Name="FK_HD_TD" Association="Self.FK_HD_TD">
+            <End Role="TichDiem" EntitySet="TichDiems" />
+            <End Role="HoaDon" EntitySet="HoaDons" />
+          </AssociationSet>
           <AssociationSet Name="FK_PBH_HD" Association="Self.FK_PBH_HD">
             <End Role="HoaDon" EntitySet="HoaDons" />
             <End Role="PhieuBaoHanh" EntitySet="PhieuBaoHanhs" />
@@ -1595,9 +1695,17 @@
             <End Role="HoaDon" EntitySet="HoaDons" />
             <End Role="PhieuDoiTra" EntitySet="PhieuDoiTras" />
           </AssociationSet>
+          <AssociationSet Name="FK_PXK_HD" Association="Self.FK_PXK_HD">
+            <End Role="HoaDon" EntitySet="HoaDons" />
+            <End Role="PhieuXuatKho" EntitySet="PhieuXuatKhoes" />
+          </AssociationSet>
           <AssociationSet Name="FK_TD_HD" Association="Self.FK_TD_HD">
             <End Role="HoaDon" EntitySet="HoaDons" />
             <End Role="TichDiem" EntitySet="TichDiems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_KH_TTV" Association="Self.FK_KH_TTV">
+            <End Role="TheThanhVien" EntitySet="TheThanhViens" />
+            <End Role="KhachHang" EntitySet="KhachHangs" />
           </AssociationSet>
           <AssociationSet Name="FK_TTV_KH" Association="Self.FK_TTV_KH">
             <End Role="KhachHang" EntitySet="KhachHangs" />
@@ -1761,6 +1869,7 @@
                 <ScalarProperty Name="GhiChu" ColumnName="GhiChu" />
                 <ScalarProperty Name="MaKH" ColumnName="MaKH" />
                 <ScalarProperty Name="MaNV" ColumnName="MaNV" />
+                <ScalarProperty Name="MaTichDiem" ColumnName="MaTichDiem" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1775,6 +1884,7 @@
                 <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
                 <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
                 <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="MaTTV" ColumnName="MaTTV" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1883,6 +1993,7 @@
                 <ScalarProperty Name="TongSoLuong" ColumnName="TongSoLuong" />
                 <ScalarProperty Name="MaKho" ColumnName="MaKho" />
                 <ScalarProperty Name="MaNV" ColumnName="MaNV" />
+                <ScalarProperty Name="MaHD" ColumnName="MaHD" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

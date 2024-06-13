@@ -20,6 +20,7 @@ namespace STech.Models
             this.ChiTietHDs = new HashSet<ChiTietHD>();
             this.PhieuBaoHanhs = new HashSet<PhieuBaoHanh>();
             this.PhieuDoiTras = new HashSet<PhieuDoiTra>();
+            this.PhieuXuatKhoes = new HashSet<PhieuXuatKho>();
             this.TichDiems = new HashSet<TichDiem>();
         }
     
@@ -33,15 +34,19 @@ namespace STech.Models
         public string GhiChu { get; set; }
         public string MaKH { get; set; }
         public string MaNV { get; set; }
+        public string MaTichDiem { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietHD> ChiTietHDs { get; set; }
         public virtual KhachHang KhachHang { get; set; }
         public virtual NhanVien NhanVien { get; set; }
+        public virtual TichDiem TichDiem { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PhieuBaoHanh> PhieuBaoHanhs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PhieuDoiTra> PhieuDoiTras { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PhieuXuatKho> PhieuXuatKhoes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TichDiem> TichDiems { get; set; }
     }

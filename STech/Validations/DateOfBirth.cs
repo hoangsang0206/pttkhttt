@@ -10,6 +10,11 @@ namespace STech.Validations
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
+            if(value == null)
+            {
+                return ValidationResult.Success;
+            }
+
             DateTime dob = Convert.ToDateTime(value);
             if(dob != null && (dob < Convert.ToDateTime("1930/01/01") || dob >= DateTime.Now))
             {

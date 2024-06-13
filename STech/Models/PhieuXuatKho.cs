@@ -25,9 +25,11 @@ namespace STech.Models
         public Nullable<int> TongSoLuong { get; set; }
         public string MaKho { get; set; }
         public string MaNV { get; set; }
+        public string MaHD { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietPXK> ChiTietPXKs { get; set; }
+        public virtual HoaDon HoaDon { get; set; }
         public virtual Kho Kho { get; set; }
         public virtual NhanVien NhanVien { get; set; }
     }

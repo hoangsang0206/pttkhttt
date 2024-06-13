@@ -14,12 +14,13 @@ namespace STech.DTO
         public string DiaChi { get; set; }
         public Nullable<System.DateTime> NgaySinh { get; set; }
         public string GioiTinh { get; set; }
+        public TheTVDTO TheTV { get; set; }
 
         public KhachHangDTO()
         {
         }
 
-        public KhachHangDTO(string maKH, string hoTen, string sDT, string email, string diaChi, DateTime? ngaySinh, string gioiTinh)
+        public KhachHangDTO(string maKH, string hoTen, string sDT, string email, string diaChi, DateTime? ngaySinh, string gioiTinh, TheTVDTO theTV)
         {
             MaKH = maKH;
             HoTen = hoTen;
@@ -28,6 +29,7 @@ namespace STech.DTO
             DiaChi = diaChi;
             NgaySinh = ngaySinh;
             GioiTinh = gioiTinh;
+            TheTV = theTV;
         }
     }
 }

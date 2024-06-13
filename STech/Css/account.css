@@ -1,4 +1,95 @@
-﻿.account-wrapper {
+﻿:root {
+    --loader-color: var(--loader-color-light);
+    --loader-color-light: #fff;
+    --loader-color-dark: #000;
+}
+
+.loader-box {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    border-radius: var(--radius);
+    backdrop-filter: var(--blur);
+}
+
+.loader-container {
+    --uib-size: 40px;
+    --uib-color: var(--loader-color);
+    --uib-speed: 2s;
+    --uib-bg-opacity: 0;
+    height: var(--uib-size);
+    width: var(--uib-size);
+    transform-origin: center;
+    animation: rotate var(--uib-speed) linear infinite;
+    will-change: transform;
+    overflow: visible;
+}
+
+.button-loader {
+    --uib-size: 30px;
+    --uib-color: #fff;
+    --uib-speed: 2s;
+    --uib-bg-opacity: 0;
+    height: var(--uib-size);
+    width: var(--uib-size);
+    transform-origin: center;
+    animation: rotate var(--uib-speed) linear infinite;
+    will-change: transform;
+    overflow: visible;
+}
+
+.car {
+    fill: none;
+    stroke: var(--uib-color);
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+    animation: stretch calc(var(--uib-speed) * 0.75) ease-in-out infinite;
+    will-change: stroke-dasharray, stroke-dashoffset;
+    transition: stroke 0.5s ease;
+}
+
+.track {
+    fill: none;
+    stroke: var(--uib-color);
+    opacity: var(--uib-bg-opacity);
+    transition: stroke 0.5s ease;
+}
+
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes stretch {
+    0% {
+        stroke-dasharray: 0, 150;
+        stroke-dashoffset: 0;
+    }
+
+    50% {
+        stroke-dasharray: 75, 150;
+        stroke-dashoffset: -25;
+    }
+
+    100% {
+        stroke-dashoffset: -100;
+    }
+}
+
+
+/* -------------------------- */
+
+
+.account-wrapper {
     column-gap: 1rem;  
 }
 
@@ -415,18 +506,15 @@
     padding: 0;
 }
 
-.order-pstatus.order-success,
-.order-status.order-success {
+.order-success {
     color: #44bd32;
 }
 
-.order-pstatus.order-failed,
-.order-status.order-failed {
+.order-failed {
     color: #e30019;
 }
 
-.order-pstatus.order-waiting,
-.order-status.order-waiting {
+.order-waiting {
     color: #ff6a00;
 }
 
@@ -444,7 +532,7 @@
     outline: 2px solid var(--primary-color-hover);
 }
 
-.delete-order {
+.cancel-order {
     outline: none;
     border: none;
     border-radius: 0.2rem;
@@ -486,18 +574,10 @@
     border-radius: 0.2rem;
 }
 
-.order-product-qty {
-    width: 4rem;
-    font-size: 1.1rem;
-}
-
 .order-product-img {
-    width: 7rem;
+    width: 5rem;
 }
 
-.order-product-img img {
-    width: 100%;
-}
 
 .order-product-name {
     overflow: hidden;
@@ -510,7 +590,7 @@
 .order-product-name a {
     font-weight: 500;
     text-decoration: none;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: #000000;
 }
 
@@ -518,10 +598,9 @@
     color: var(--primary-color);
 }
 
-.order-product-price h6 {
-    font-size: 1.2rem;
+.order-product-price {
+    font-size: 1rem;
     font-weight: 600;
-    color: var(--primary-color);
 }
 /*---Responsive --------------------------------------------------------------*/
 /* For mobile (width < 768px) ---------------------------------------------*/

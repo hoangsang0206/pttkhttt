@@ -21,6 +21,8 @@ using PayPal.Api;
 using System.Data.Entity.Migrations;
 using STech.ConfigModels;
 using STech.Utils;
+using STech.OtherModels;
+using Stripe.Climate;
 
 namespace STech.Controllers
 {
@@ -55,7 +57,7 @@ namespace STech.Controllers
                 await userManager.UpdateAsync(user);
 
                 KhachHang kh = await db.KhachHangs.FirstOrDefaultAsync(k => k.AccountId == userID);
-                if(kh != null)
+                if (kh != null)
                 {
                     kh.SDT = customerPhone;
                     kh.HoTen = customerName;
@@ -94,7 +96,7 @@ namespace STech.Controllers
                     Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
                     return Json(new { status = HttpStatusCode.BadRequest, error = errors });
                 }
-            }    
+            }
 
             HoaDonDTO orderTemp = new HoaDonDTO();
             orderTemp.DiaChiGiao = address;
@@ -105,7 +107,7 @@ namespace STech.Controllers
             string base64String = Convert.ToBase64String(bytesToEncode);
 
             Response.Cookies["OrderTemp"].Value = base64String;
-            Response.Cookies["OrderTemp"].Expires = DateTime.Now.AddMinutes(15);
+            Response.Cookies["OrderTemp"].Expires = DateTime.Now.AddMinutes(5);
 
             return Json(new { status = HttpStatusCode.OK, redirectUrl = "/order/orderinfo" });
         }
@@ -126,7 +128,7 @@ namespace STech.Controllers
                 orderTemp = JsonConvert.DeserializeObject<HoaDonDTO>(orderTempJson);
                 if (orderTemp == null)
                 {
-                    if(Request.Cookies["OrderTemp"] != null)
+                    if (Request.Cookies["OrderTemp"] != null)
                     {
                         Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
                     }
@@ -152,181 +154,24 @@ namespace STech.Controllers
             }
         }
 
-        //Thanh toán
-        [HttpPost]
-        public async Task<ActionResult> CheckOut(string paymentMethod)
+        private void saveDatabase(DbEntities db, HoaDon hd, List<ChiTietHD> cthd, List<PhieuXuatKho> dsPxk, List<GioHang> userCart, TichDiem td)
         {
-            try
+            db.HoaDons.Add(hd);
+            db.ChiTietHDs.AddRange(cthd);
+            db.PhieuXuatKhoes.AddRange(dsPxk);
+            db.GioHangs.RemoveRange(userCart);
+            db.SaveChanges();
+
+            if (td != null)
             {
-                using (DbEntities db = new DbEntities())
-                {
-                    if (paymentMethod == "paypal")
-                    {
-                        return Json(new { status = HttpStatusCode.OK, redirectUrl = "/order/paymentwithpaypal" });
-                    }
-
-                    string userID = User.Identity.GetUserId();
-
-                    string base64String = Request.Cookies["OrderTemp"]?.Value;
-                    HoaDonDTO orderTemp = new HoaDonDTO();
-
-                    if (!string.IsNullOrEmpty(base64String))
-                    {
-                        var bytesToDecode = Convert.FromBase64String(base64String);
-                        var orderTempJson = Encoding.UTF8.GetString(bytesToDecode);
-                        orderTemp = JsonConvert.DeserializeObject<HoaDonDTO>(orderTempJson);
-                    }
-
-                    if (orderTemp == null)
-                    {
-                        Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
-                        return Redirect("/cart");
-                    }
-
-                    List<GioHang> userCart = await db.GioHangs.Where(t => t.AccountId == userID).ToListAsync();
-                    
-                    KhachHang kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
-                    if (kh == null)
-                    {
-                        await addNewCustomer(db, userID);
-                    }
-
-                    
-                    HoaDon last_hd = await db.HoaDons.OrderByDescending(t => t.MaHD).FirstOrDefaultAsync();
-                    int orderNumber = 1;
-                    if (last_hd != null)
-                    {
-                        orderNumber = int.Parse(last_hd.MaHD.Substring(2)) + 1;
-                    }
-
-                    string orderID = "DH" + orderNumber.ToString().PadLeft(5, '0');
-                    decimal totalPrice = userCart.Sum(t => t.SoLuong * t.SanPham.GiaBan);
-                    kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
-
-                    HoaDon hd = new HoaDon();
-                    hd.MaHD = orderID;
-                    hd.MaKH = kh.MaKH;
-                    hd.NgayDat = DateTime.Now;
-                    hd.GhiChu = orderTemp.GhiChu;
-                    hd.TongTien = totalPrice;
-                    hd.TrangThaiThanhToan = "unpaid";
-                    hd.TrangThai = "unconfirmed";
-                    hd.DiaChiGiao = orderTemp.DiaChiGiao;
-
-                    TichDiem td = new TichDiem();
-                    td.MaTD = RandomString.random(30);
-                    td.MaHD = orderID;
-                    td.NgayTD = DateTime.Now;
-                    td.SoDiem = totalPrice * (decimal)0.01;
-                    td.TrangThai = "unconfirmed";
-
-                    List<ChiTietHD> chitietHD = new List<ChiTietHD>();
-                    foreach (GioHang c in userCart)
-                    {
-                        ChiTietHD ctHD = new ChiTietHD();
-                        ctHD.MaHD = orderID;
-                        ctHD.MaSP = c.MaSP;
-                        ctHD.SoLuong = c.SoLuong;
-                        ctHD.ThanhTien = c.SanPham.GiaBan;
-
-                        chitietHD.Add(ctHD);
-
-                        //Trừ số lượng khỏi kho
-                        List<ChiTietKho> chitietKho = c.SanPham.ChiTietKhoes.ToList();
-                        int qty_toDelete = c.SoLuong;
-                        foreach(ChiTietKho ctk in chitietKho)
-                        {
-                            if(ctk.SoLuong < qty_toDelete)
-                            {
-                                qty_toDelete -= ctk.SoLuong;
-                                ctk.SoLuong = 0;
-                            } 
-                            else
-                            {
-                                ctk.SoLuong -= qty_toDelete;
-                                qty_toDelete = 0;
-                                break;
-                            }
-
-                        }
-                    }
-
-
-                    //--------------------------------------------------------------------------------
-                    if (paymentMethod == "COD")
-                    {
-                        hd.PhuongThucThanhToan = "COD";
-                        db.HoaDons.Add(hd);
-                        db.ChiTietHDs.AddRange(chitietHD);
-                        db.GioHangs.RemoveRange(userCart);
-                        db.TichDiems.Add(td);
-                        db.SaveChanges();
-
-                        Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
-                        Session["OrderStatus"] = true;
-                        return Json(new { status = HttpStatusCode.OK, redirectUrl = "/order/succeeded" });
-                    }
-                    else if (paymentMethod == "card")
-                    {
-                        string domain = getCurrentDomain();
-
-                        //Stripe api key
-                        StripeConfiguration.ApiKey = StripeConfig.GetApiKey();
-
-                        // Số tiền cần thanh toán => đổi sang USD (đơn vị là cents - 1 USD  = 100 cents)
-                        long amount = ((long)Math.Round(totalPrice / USD_EXCHANGE_RATE)) * 100;
-                        //-------
-
-                        SessionCreateOptions options = new SessionCreateOptions
-                        {
-                            PaymentMethodTypes = new List<string> { "card" },
-                            LineItems = new List<SessionLineItemOptions>
-                            {
-                                new SessionLineItemOptions
-                                {
-                                    PriceData = new SessionLineItemPriceDataOptions
-                                    {
-                                        Currency = "usd",
-                                        ProductData = new SessionLineItemPriceDataProductDataOptions
-                                        {
-                                            Name = "Thanh toán đơn hàng " + orderID,
-                                        },
-                                        UnitAmount = amount,
-                                    },
-                                    Quantity = 1,
-                                }
-                            },
-                            Metadata = new Dictionary<string, string> { { "order_id", orderID } },
-                            Mode = "payment",
-                            SuccessUrl = domain + "/order/updatepaymentstatus",
-                            CancelUrl = domain + "/order/failed"
-
-                        };
-
-                        var service = new SessionService();
-                        var session = service.Create(options);
-                        TempData["Session"] = session.Id;
-
-                        hd.PhuongThucThanhToan = "Visa/Mastercard";
-                        db.HoaDons.Add(hd);
-                        db.ChiTietHDs.AddRange(chitietHD);
-                        db.GioHangs.RemoveRange(userCart);
-                        db.TichDiems.Add(td);
-                        db.SaveChanges();
-
-                        Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
-                        return Json(new { status = HttpStatusCode.OK, redirectUrl = session.Url });
-                    }
-                    else
-                    {
-                        return Json(new { status = HttpStatusCode.OK, redirectUrl = "/order/orderinfo" });
-                    }
-                }    
+                hd.MaTichDiem = td.MaTD;
+                db.TichDiems.Add(td);
+                db.SaveChanges();
+                db.Entry(hd).State = EntityState.Modified;
+                db.SaveChanges();
             }
-            catch (Exception ex)
-            {
-                return Redirect("/error");
-            }
+
+            Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
         }
 
         public string getCurrentDomain()
@@ -351,16 +196,9 @@ namespace STech.Controllers
 
             using (ApplicationUserManager userManager = new ApplicationUserManager(new ApplicationUserStore(new ApplicationDbContext())))
             {
-                var user = await userManager.FindByIdAsync(userID);
+                ApplicationUser user = await userManager.FindByIdAsync(userID);
 
-                KhachHang last_kh = db.KhachHangs.OrderByDescending(k => k.MaKH).FirstOrDefaultAsync().Result;
-                int customerNumber = 1;
-                if (last_kh != null)
-                {
-                    customerNumber = int.Parse(last_kh.MaKH.Substring(2)) + 1;
-                }
-
-                string customerID = "KH" + customerNumber.ToString().PadLeft(4, '0');
+                string customerID = "KH" + DateTime.Now.ToString("ddMMyy") + RandomString.random(5);
                 KhachHang kh = new KhachHang();
                 kh.AccountId = userID;
                 kh.MaKH = customerID;
@@ -378,98 +216,251 @@ namespace STech.Controllers
             }
         }
 
+        private HoaDonDTO getCookieOrder()
+        {
+            string base64String = Request.Cookies["OrderTemp"]?.Value;
+            HoaDonDTO orderTemp = new HoaDonDTO();
+
+            if (!string.IsNullOrEmpty(base64String))
+            {
+                var bytesToDecode = Convert.FromBase64String(base64String);
+                var orderTempJson = Encoding.UTF8.GetString(bytesToDecode);
+                orderTemp = JsonConvert.DeserializeObject<HoaDonDTO>(orderTempJson);
+            }
+
+            if (orderTemp == null)
+            {
+                Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
+            }
+
+            return orderTemp;
+        }
+
+        private async Task<HoaDon> createOrder(DbEntities db, string userID, List<GioHang> userCart, KhachHang kh)
+        {
+            if (kh == null)
+            {
+                await addNewCustomer(db, userID);
+            }
+
+            string orderID = "DH" + DateTime.Now.ToString("ddMMyy") + RandomString.random(5);
+            decimal totalPrice = userCart.Sum(t => t.SoLuong * t.SanPham.GiaBan);
+            kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
+
+            HoaDonDTO orderTemp = getCookieOrder();
+            if(orderTemp == null)
+            {
+                return null;
+            }
+
+            HoaDon hd = new HoaDon();
+            hd.MaHD = orderID;
+            hd.MaKH = kh.MaKH;
+            hd.NgayDat = DateTime.Now;
+            hd.GhiChu = orderTemp.GhiChu;
+            hd.TongTien = totalPrice;
+            hd.TrangThaiThanhToan = "unpaid";
+            hd.TrangThai = "unconfirmed";
+            hd.DiaChiGiao = orderTemp.DiaChiGiao;
+
+            return hd;
+        }
+
+        private List<ChiTietHD> createOrderDetail(HoaDon hd, List<GioHang> userCart)
+        {
+            List<ChiTietHD> chitietHD = new List<ChiTietHD>();
+            foreach (GioHang c in userCart)
+            {
+                ChiTietHD ctHD = new ChiTietHD();
+                ctHD.MaHD = hd.MaHD;
+                ctHD.MaSP = c.MaSP;
+                ctHD.SoLuong = c.SoLuong;
+                ctHD.ThanhTien = c.SanPham.GiaBan;
+                chitietHD.Add(ctHD);
+            }
+
+            return chitietHD;
+        }
+
+        private List<PhieuXuatKho> createWarehouseExport(List<GioHang> userCart, HoaDon hd)
+        {
+            List<Kho> sp_kho = userCart.SelectMany(c => c.SanPham.ChiTietKhoes.Select(ctk => ctk.Kho)).Distinct().ToList();
+            List<PhieuXuatKho> dsPXK = new List<PhieuXuatKho>();
+
+            foreach (GioHang c in userCart)
+            {
+                List<ChiTietKho> chitietKho = c.SanPham.ChiTietKhoes.ToList();
+                int remainingQty = c.SoLuong;
+                foreach (ChiTietKho ctk in chitietKho)
+                {
+                    if (remainingQty <= 0)
+                    {
+                        break;
+                    }
+
+                    if (ctk.SoLuong > 0)
+                    {
+                        int qtyToDelete = Math.Min(remainingQty, ctk.SoLuong);
+                        ctk.SoLuong -= qtyToDelete;
+                        remainingQty -= qtyToDelete;
+
+                        PhieuXuatKho pxk = dsPXK.FirstOrDefault(p => p.MaKho == ctk.MaKho);
+                        if (pxk == null)
+                        {
+                            string maPXK = "PXK" + DateTime.Now.ToString("ddMMyy") + RandomString.random(5);
+                            pxk = new PhieuXuatKho();
+                            pxk.MaHD = hd.MaHD;
+                            pxk.MaPXK = maPXK;
+                            pxk.TongSoLuong = 0;
+                            pxk.MaKho = ctk.MaKho;
+                            pxk.ChiTietPXKs = new List<ChiTietPXK>();
+
+                            dsPXK.Add(pxk);
+                        }
+
+                        pxk.ChiTietPXKs.Add(new ChiTietPXK()
+                        {
+                            MaPXK = pxk.MaPXK,
+                            MaSP = ctk.MaSP,
+                            SoLuong = qtyToDelete,
+                        });
+                        pxk.TongSoLuong += qtyToDelete;
+                    }
+                }
+            }
+
+            return dsPXK;
+        }
+
+        private TichDiem createAccumulationPoint(KhachHang kh, HoaDon hd)
+        {
+            TheThanhVien ttv = kh.TheThanhVien;
+            TichDiem td = new TichDiem();
+            if (ttv != null)
+            {
+                td.MaThe = ttv.MaThe;
+                td.MaTD = RandomString.random(30);
+                td.MaHD = hd.MaHD;
+                td.NgayTD = DateTime.Now;
+                td.SoDiem = hd.TongTien.Value * (decimal)0.01;
+                td.TrangThai = "unconfirmed";
+            }
+
+            return td;
+        }
+
+        //Thanh toán
+        [HttpPost]
+        public async Task<ActionResult> CheckOut(string paymentMethod)
+        {
+            try
+            {
+                using (DbEntities db = new DbEntities())
+                {
+                    if (paymentMethod == "paypal")
+                    {
+                        return Json(new { status = HttpStatusCode.OK, redirectUrl = "/order/paymentwithpaypal" });
+                    }
+
+                    string userID = User.Identity.GetUserId();
+                    List<GioHang> userCart = await db.GioHangs.Where(t => t.AccountId == userID).ToListAsync();
+                    KhachHang kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
+
+                    HoaDon hd = await createOrder(db, userID, userCart, kh);
+                    if(hd == null)
+                    {
+                        return Redirect("/cart");
+                    }
+
+                    List<ChiTietHD> chitietHD = createOrderDetail(hd, userCart);
+                    List<PhieuXuatKho> dsPXK = createWarehouseExport(userCart, hd);
+                    TichDiem td = createAccumulationPoint(kh, hd);
+
+                    //--------------------------------------------------------------------------------
+                    if (paymentMethod == "COD")
+                    {
+                        hd.PhuongThucThanhToan = "COD";
+                        saveDatabase(db, hd, chitietHD, dsPXK, userCart, td);
+                        Session["OrderStatus"] = true;
+                        return Json(new { status = HttpStatusCode.OK, redirectUrl = "/order/succeeded" });
+                    }
+                    else if (paymentMethod == "card")
+                    {
+                        string domain = getCurrentDomain();
+
+                        //Stripe api key
+                        StripeConfiguration.ApiKey = StripeConfig.GetApiKey();
+
+                        // Số tiền cần thanh toán => đổi sang USD (đơn vị là cents - 1 USD  = 100 cents)
+                        long amount = ((long)Math.Round(hd.TongTien.Value / USD_EXCHANGE_RATE)) * 100;
+                        //-------
+
+                        SessionCreateOptions options = new SessionCreateOptions
+                        {
+                            PaymentMethodTypes = new List<string> { "card" },
+                            LineItems = new List<SessionLineItemOptions>
+                            {
+                                new SessionLineItemOptions
+                                {
+                                    PriceData = new SessionLineItemPriceDataOptions
+                                    {
+                                        Currency = "usd",
+                                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                                        {
+                                            Name = "Thanh toán đơn hàng " + hd.MaHD,
+                                        },
+                                        UnitAmount = amount,
+                                    },
+                                    Quantity = 1,
+                                }
+                            },
+                            Metadata = new Dictionary<string, string> { { "order_id", hd.MaHD } },
+                            Mode = "payment",
+                            SuccessUrl = domain + "/order/updatepaymentstatus",
+                            CancelUrl = domain + "/order/failed"
+
+                        };
+                        
+                        var service = new SessionService();
+                        var session = service.Create(options);
+                        TempData["Session"] = session.Id;
+
+                        hd.PhuongThucThanhToan = "Visa/Mastercard";
+                        saveDatabase(db, hd, chitietHD, dsPXK, userCart, td);
+
+                        return Json(new { status = HttpStatusCode.OK, redirectUrl = session.Url });
+                    }
+                    else
+                    {
+                        return Json(new { status = HttpStatusCode.OK, redirectUrl = "/order/orderinfo" });
+                    }
+                }    
+            }
+            catch (Exception ex)
+            {
+                return Redirect("/error");
+            }
+        }
+
         //Thanh toán bằng paypal
         public async Task<ActionResult> PaymentWithPaypal(string Cancel = null)
         { 
             using (DbEntities db = new DbEntities())
             {
                 APIContext apiContext = PaypalConfig.GetAPIContext();
-
                 string userID = User.Identity.GetUserId();
-                string base64String = Request.Cookies["OrderTemp"]?.Value;
-                HoaDonDTO orderTemp = new HoaDonDTO();
+                List<GioHang> userCart = await db.GioHangs.Where(t => t.AccountId == userID).ToListAsync();
+                KhachHang kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
 
-                if (!string.IsNullOrEmpty(base64String))
+                HoaDon hd = await createOrder(db, userID, userCart, kh);
+                if (hd == null)
                 {
-                    var bytesToDecode = Convert.FromBase64String(base64String);
-                    var orderTempJson = Encoding.UTF8.GetString(bytesToDecode);
-                    orderTemp = JsonConvert.DeserializeObject<HoaDonDTO>(orderTempJson);
-                }
-
-                if (orderTemp == null)
-                {
-                    Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
                     return Redirect("/cart");
                 }
 
-                List<GioHang> userCart = await db.GioHangs.Where(t => t.AccountId == userID).ToListAsync();
-
-                KhachHang kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
-                if (kh == null)
-                {
-                    await addNewCustomer(db, userID);
-                }
-
-
-                HoaDon last_hd = await db.HoaDons.OrderByDescending(t => t.MaHD).FirstOrDefaultAsync();
-                int orderNumber = 1;
-                if (last_hd != null)
-                {
-                    orderNumber = int.Parse(last_hd.MaHD.Substring(2)) + 1;
-                }
-
-                string orderID = "DH" + orderNumber.ToString().PadLeft(5, '0');
-                decimal totalPrice = userCart.Sum(t => t.SoLuong * t.SanPham.GiaBan);
-                kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
-
-                HoaDon hd = new HoaDon();
-                hd.MaHD = orderID;
-                hd.MaKH = kh.MaKH;
-                hd.NgayDat = DateTime.Now;
-                hd.GhiChu = orderTemp.GhiChu;
-                hd.TongTien = totalPrice;
-                hd.PhuongThucThanhToan = "Paypal";
-                hd.TrangThaiThanhToan = "unpaid";
-                hd.TrangThai = "unconfirmed";
-                hd.DiaChiGiao = orderTemp.DiaChiGiao;
-
-                TichDiem td = new TichDiem();
-                td.MaTD = RandomString.random(30);
-                td.MaHD = orderID;
-                td.NgayTD = DateTime.Now;
-                td.SoDiem = totalPrice * (decimal)0.01;
-                td.TrangThai = "unconfirmed";
-
-                List<ChiTietHD> chitietHD = new List<ChiTietHD>();
-                foreach (GioHang c in userCart)
-                {
-                    ChiTietHD ctHD = new ChiTietHD();
-                    ctHD.MaHD = orderID;
-                    ctHD.MaSP = c.MaSP;
-                    ctHD.SoLuong = c.SoLuong;
-                    ctHD.ThanhTien = c.SanPham.GiaBan;
-
-                    chitietHD.Add(ctHD);
-
-                    //Trừ số lượng khỏi kho
-                    List<ChiTietKho> chitietKho = c.SanPham.ChiTietKhoes.ToList();
-                    int qty_toDelete = c.SoLuong;
-                    foreach (ChiTietKho ctk in chitietKho)
-                    {
-                        if (ctk.SoLuong < qty_toDelete)
-                        {
-                            qty_toDelete -= ctk.SoLuong;
-                            ctk.SoLuong = 0;
-                        }
-                        else
-                        {
-                            ctk.SoLuong -= qty_toDelete;
-                            qty_toDelete = 0;
-                            break;
-                        }
-
-                    }
-                }
+                List<ChiTietHD> chitietHD = createOrderDetail(hd, userCart);
+                List<PhieuXuatKho> dsPXK = createWarehouseExport(userCart, hd);
+                TichDiem td = createAccumulationPoint(kh, hd);
 
                 try
                 {
@@ -499,13 +490,7 @@ namespace STech.Controllers
                         if (executedPayment.state.ToLower() != "approved")
                         {
                             hd.TrangThaiThanhToan = "failed";
-                            db.HoaDons.Add(hd);
-                            db.ChiTietHDs.AddRange(chitietHD);
-                            db.GioHangs.RemoveRange(userCart);
-                            db.TichDiems.Add(td);
-                            db.SaveChanges();
-
-                            Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
+                            saveDatabase(db, hd, chitietHD, dsPXK, userCart, td);
                             Session["OrderStatus"] = false;
                             return RedirectToAction("Failed");
                         }
@@ -514,25 +499,13 @@ namespace STech.Controllers
                 catch (Exception ex)
                 {
                     hd.TrangThaiThanhToan = "failed";
-                    db.HoaDons.Add(hd);
-                    db.ChiTietHDs.AddRange(chitietHD);
-                    db.GioHangs.RemoveRange(userCart);
-                    db.TichDiems.Add(td);
-                    db.SaveChanges();
-
-                    Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
+                    saveDatabase(db, hd, chitietHD, dsPXK, userCart, td);
                     Session["OrderStatus"] = false;
                     return RedirectToAction("Failed");
                 }
 
                 hd.TrangThaiThanhToan = "paid";
-                db.HoaDons.Add(hd);
-                db.ChiTietHDs.AddRange(chitietHD);
-                db.GioHangs.RemoveRange(userCart);
-                db.TichDiems.Add(td);
-                db.SaveChanges();
-
-                Request.Cookies["OrderTemp"].Expires = DateTime.Now.AddDays(-10);
+                saveDatabase(db, hd, chitietHD, dsPXK, userCart, td);
                 Session["OrderStatus"] = true;
                 return RedirectToAction("Succeeded");
             }
@@ -565,7 +538,7 @@ namespace STech.Controllers
                 totalPrice += _price * cthd.SoLuong;
                 itemList.items.Add(new Item()
                 {
-                    name = "Pay for " + cthd.MaSP,
+                    name = "x " + cthd.MaSP,
                     currency = "USD",
                     price = _price.ToString(),
                     quantity = Convert.ToString(cthd.SoLuong),
@@ -685,50 +658,86 @@ namespace STech.Controllers
             }    
         }
 
-        ////Kiểm tra chi tiết đơn hàng
-        //public ActionResult Detail(string id)
-        //{
-        //    try
-        //    {
-        //        string userID = User.Identity.GetUserId();
-        //        DbEntities db = new DbEntities();
-        //        STech_Web.Models.Order order = db.Orders.FirstOrDefault(t => t.OrderID == id && t.Customer.AccountID == userID);
+        public async Task<ActionResult> Detail(string id)
+        {
+            try
+            {
+                using (DbEntities db = new DbEntities())
+                {
+                    string userID = User.Identity.GetUserId();
+                    HoaDon hd = await db.HoaDons
+                        .Include(t => t.ChiTietHDs)
+                        .Include(t => t.TichDiems)
+                        .Include(t => t.KhachHang)
+                        .FirstOrDefaultAsync(t => t.MaHD == id && t.KhachHang.AccountId == userID);
 
-        //        if (order == null)
-        //        {
-        //            return Redirect("/account#orders");
-        //        }
+                    if (hd == null)
+                    {
+                        return Redirect("/account#orders");
+                    }
 
-        //        //Tạo danh sách Breadcrumb
-        //        List<Breadcrumb> breadcrumb = new List<Breadcrumb>();
-        //        breadcrumb.Add(new Breadcrumb("Trang chủ", "/"));
-        //        breadcrumb.Add(new Breadcrumb("Đơn hàng", "/account#orders"));
-        //        breadcrumb.Add(new Breadcrumb("Chi tiết " + id, ""));
+                    TichDiem td = hd.TichDiems.FirstOrDefault();
 
-        //        //Dùng để chuyển sang định dạng số có dấu phân cách phần nghìn
-        //        CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
+                    HoaDonDTO hdDTO = new HoaDonDTO()
+                    {
+                        MaHD = hd.MaHD,
+                        NgayDat = hd.NgayDat,
+                        TongTien = hd.TongTien,
+                        DiaChiGiao = hd.DiaChiGiao,
+                        GhiChu = hd.GhiChu,
+                        TrangThai = hd.TrangThai,
+                        PhuongThucThanhToan = hd.PhuongThucThanhToan,
+                        TrangThaiThanhToan = hd.TrangThaiThanhToan,
+                        KhachHang = new KhachHangDTO()
+                        {
+                            MaKH = hd.KhachHang.MaKH,
+                            HoTen = hd.KhachHang.HoTen,
+                            Email = hd.KhachHang.Email,
+                            DiaChi = hd.KhachHang.DiaChi,
+                            SDT = hd.KhachHang.SDT
+                        },
+                        TichDiem = td == null ? null : new TichDiemDTO()
+                        {
+                            SoDiem = td.SoDiem,
+                            TrangThai = td.TrangThai
+                        },
+                        ChiTietHD = hd.ChiTietHDs.Select(cthd => new ChiTietHDDTO()
+                        {
+                            SanPham = new SanPhamDTO()
+                            {
+                                MaSP = cthd.SanPham.MaSP,
+                                TenSP = cthd.SanPham.TenSP,
+                                HinhAnh = cthd.SanPham.HinhAnhSPs != null ? cthd.SanPham.HinhAnhSPs.FirstOrDefault().DuongDan : null
+                            },
+                            SoLuong = cthd.SoLuong,
+                            ThanhTien = cthd.ThanhTien,
+                        }).ToList()
+                        
+                    };
 
-        //        //Lấy chi tiết đơn hàng
-        //        List<OrderDetail> orderDetail = order.OrderDetails.ToList();
+                    List<Breadcrumb> breadcrumb = new List<Breadcrumb>();
+                    breadcrumb.Add(new Breadcrumb("Trang chủ", "/"));
+                    breadcrumb.Add(new Breadcrumb("Đơn hàng", "/account#orders"));
+                    breadcrumb.Add(new Breadcrumb("Chi tiết đơn hàng " + hd.MaHD, ""));
 
-        //        //Lấy thông tin khách hàng
-        //        STech_Web.Models.Customer customer = order.Customer;
+                    CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
 
-        //        ViewBag.Breadcrumb = breadcrumb;
-        //        ViewBag.Order = order;
-        //        ViewBag.Customer = customer;
-        //        ViewBag.cul = cul;
-        //        return View(orderDetail);
-        //    }
-        //    catch (Exception ex)
-        //    {
+                    Tuple<HoaDonDTO, List<ChiTietHDDTO>, TichDiemDTO, KhachHangDTO> tuple
+                        = new Tuple<HoaDonDTO, List<ChiTietHDDTO>, TichDiemDTO, KhachHangDTO>(hdDTO, hdDTO.ChiTietHD, hdDTO.TichDiem, hdDTO.KhachHang);
 
-        //        return Redirect("/error/notfound");
-        //    }
+                    ViewBag.Breadcrumb = breadcrumb;
+                    ViewBag.cul = cul;
+                    return View(tuple);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Redirect("/error/notfound");
+            }
 
-        //}
+        }
 
-        ////In hóa đơn
+        //In hóa đơn
         //public ActionResult PrintOrder(string orderID)
         //{
         //    try
@@ -766,33 +775,54 @@ namespace STech.Controllers
         //    }
         //}
 
-        ////Xóa hóa đơn có trạng thái chờ thanh toán
-        //public ActionResult Delete(string orderID)
+        //Xóa hóa đơn có trạng thái chờ thanh toán
+        public async Task<ActionResult> CancelOrder(string orderID)
+        {
+            try
+            {
+                using (DbEntities db = new DbEntities())
+                {
+                    string userID = User.Identity.GetUserId();
+                    HoaDon hd = await db.HoaDons.FirstOrDefaultAsync(t => t.MaHD == orderID && t.KhachHang.AccountId == userID);
+
+                    if (hd != null  && hd.TrangThai == "unconfirmed")
+                    {
+                        List<PhieuXuatKho> dsPXK = hd.PhieuXuatKhoes.ToList();
+                        TichDiem td = hd.TichDiem;
+                        hd.TrangThai = "cancelled";
+
+                        foreach(PhieuXuatKho pxk in dsPXK)
+                        {
+                            List<ChiTietPXK> chitietPXK = pxk.ChiTietPXKs.ToList();
+                            foreach(ChiTietPXK ctpxk in chitietPXK)
+                            {
+                                ChiTietKho ctk = pxk.Kho.ChiTietKhoes.Where(t => t.MaKho == pxk.MaKho && t.MaSP == ctpxk.MaSP).FirstOrDefault();
+                                if(ctk != null)
+                                {
+                                    ctk.SoLuong += ctpxk.SoLuong;
+                                    db.ChiTietKhoes.AddOrUpdate(ctk);
+                                }
+                            }
+                        }
+
+                        if (td != null)
+                        {
+                            db.TichDiems.Remove(td);
+                        }
+
+                        db.PhieuXuatKhoes.RemoveRange(dsPXK);
+                        db.HoaDons.AddOrUpdate(hd);
+                        db.SaveChanges();
+                    }
+                }    
+            }
+            catch (Exception ex) { }
+            return Redirect("/account#orders");
+        }
+
+        //private Stripe.Refund StripeRefund()
         //{
-        //    try
-        //    {
-        //        string userID = User.Identity.GetUserId();
-        //        DbEntities db = new DbEntities();
-        //        STech_Web.Models.Customer customer = db.Customers.FirstOrDefault(t => t.AccountID == userID);
-        //        STech_Web.Models.Order order = customer.Orders.FirstOrDefault(t => t.OrderID == orderID);
 
-        //        if (order != null && order.PaymentStatus == "Chờ thanh toán" && order.Status == "Chờ xác nhận")
-        //        {
-        //            List<OrderDetail> orderDetails = order.OrderDetails.ToList();
-        //            //Cập nhật lại số lượng của sản phẩm
-        //            foreach (OrderDetail orderDetail in orderDetails)
-        //            {
-        //                WareHouse wh = orderDetail.Product.WareHouse;
-        //                wh.Quantity += orderDetail.Quantity;
-        //            }
-
-        //            db.OrderDetails.RemoveRange(orderDetails);
-        //            db.Orders.Remove(order);
-        //            db.SaveChanges();
-        //        }
-        //    }
-        //    catch (Exception ex) { }
-        //    return Redirect("/account#orders");
         //}
     }
 }
