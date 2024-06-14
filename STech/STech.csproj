@@ -284,8 +284,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
-    <Compile Include="Areas\Employee\Controllers\OrdersController.cs" />
-    <Compile Include="Areas\Employee\EmployeeAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\AccountController.cs" />
+    <Compile Include="Areas\Admin\Controllers\OrdersController.cs" />
     <Compile Include="ConfigModels\AzureConfig.cs" />
     <Compile Include="ConfigModels\PaypalConfig.cs" />
     <Compile Include="ConfigModels\StripeConfig.cs" />
@@ -414,6 +414,7 @@
     <Compile Include="Validations\DateOfBirth.cs" />
     <Compile Include="ViewModels\ChangePasswordVM.cs" />
     <Compile Include="ViewModels\CreateCustomerVM.cs" />
+    <Compile Include="ViewModels\CreateOrderVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="DTO\SanPhamDTO.cs" />
@@ -430,7 +431,8 @@
     <Compile Include="ViewModels\UpdateAccountVM.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Areas\Employee\Scripts\orders.js" />
+    <Content Include="Areas\Admin\Scripts\orders.js" />
+    <Content Include="Areas\Admin\Scripts\script.js" />
     <Content Include="Assets\Images\banner\banner-1-img-1.png" />
     <Content Include="Assets\Images\delivery\emsvn-logo.png" />
     <Content Include="Assets\Images\delivery\ghn-logo.png" />
@@ -455,7 +457,7 @@
     <Content Include="Assets\Images\payment\paypal.jpg" />
     <Content Include="Assets\Images\payment\visa.png" />
     <Content Include="CSS\account.css" />
-    <Content Include="Areas\Employee\Css\style.css" />
+    <Content Include="Areas\Admin\Css\style.css" />
     <Content Include="CSS\cart.css" />
     <Content Include="CSS\collections.css" />
     <Content Include="CSS\home.css" />
@@ -492,10 +494,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Views\Shared\" />
-    <Folder Include="Areas\Employee\Data\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CSS\fonts\SFProDisplay\SF-Pro-Display-Bold.woff2" />
@@ -504,13 +503,12 @@
     <Content Include="CSS\fonts\SFProDisplay\SF-Pro-Display-Regular.woff2" />
     <Content Include="CSS\fonts\SFProDisplay\SF-Pro-Display-Semibold.woff2" />
     <Content Include="Assets\Images\banner\10.webp" />
-    <Content Include="Areas\Employee\Views\web.config" />
     <Content Include="Areas\Admin\Views\web.config" />
-    <Content Include="Areas\Employee\Views\Shared\_LayoutAdmin.cshtml" />
-    <Content Include="Areas\Employee\Views\Shared\Partial_Sidebar.cshtml" />
-    <Content Include="Areas\Employee\Views\Orders\Index.cshtml" />
-    <Content Include="Areas\Employee\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Employee\Views\Orders\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_LayoutAdmin.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\Partial_Sidebar.cshtml" />
+    <Content Include="Areas\Admin\Views\Orders\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Admin\Views\Orders\Create.cshtml" />
     <EntityDeploy Include="Models\Model.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Model.Designer.cs</LastGenOutput>
@@ -518,7 +516,8 @@
     <Content Include="Models\Model.edmx.diagram">
       <DependentUpon>Model.edmx</DependentUpon>
     </Content>
-    <Content Include="Areas\Employee\Views\Shared\Partial_CreateCustomer.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\Partial_CreateCustomer.cshtml" />
+    <Content Include="Areas\Admin\Views\Account\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\Partial_Footer.cshtml" />
     <Content Include="Views\Shared\Partial_Megamenu.cshtml" />

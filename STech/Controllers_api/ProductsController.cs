@@ -81,6 +81,42 @@ namespace STech.Controllers_api
             }
         }
 
+        [Authorize(Roles = "Admin, Employee")]
+        public async Task<IEnumerable<SanPhamDTO>> GetSearchInStock(string query)
+        {
+            using (DbEntities db = new DbEntities())
+            {
+                string[] keywords = query.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                List<SanPham> dsSP = await db.SanPhams
+                    .Where(sp => keywords.All(keyw => sp.TenSP.Contains(keyw)) && sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong) > 0)
+                    .Include(sp => sp.HinhAnhSPs)
+                    .Include(sp => sp.ChiTietKhoes)
+                    .Include(sp => sp.DanhMuc)
+                    .Include(sp => sp.HangSX)
+                    .ToListAsync();
+
+                return dsSP.Select(sp => new SanPhamDTO()
+                {
+                    MaSP = sp.MaSP,
+                    TenSP = sp.TenSP,
+                    GiaBan = sp.GiaBan,
+                    GiaGoc = sp.GiaGoc,
+                    HinhAnh = sp.HinhAnhSPs != null ? sp.HinhAnhSPs.FirstOrDefault().DuongDan : null,
+                    Tonkho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong),
+                    DanhMuc = new DanhMucDTO()
+                    {
+                        MaDM = sp.MaDM,
+                        TenDM = sp.DanhMuc.TenDM
+                    },
+                    HangSX = new HangSxDTO()
+                    {
+                        MaHSX = sp.MaHSX,
+                        TenHang = sp.HangSX.TenHang
+                    }
+                });
+            }
+        }
+
         public async Task<IEnumerable<SanPhamDTO>> GetOutOfStock(string oot)
         {
             using (DbEntities db = new DbEntities())
@@ -221,7 +257,7 @@ namespace STech.Controllers_api
         {
             using (DbEntities db = new DbEntities())
             {
-                SanPham sp = await db.SanPhams.FirstOrDefaultAsync(t => t.MaSP == id);
+                SanPham sp = await db.SanPhams.FirstOrDefaultAsync(t => t.MaSP == id && t.ChiTietKhoes.Sum(ctk => ctk.SoLuong) > 0);
 
                 return new SanPhamDTO()
                 {

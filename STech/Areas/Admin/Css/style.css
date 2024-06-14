@@ -651,7 +651,7 @@ main {
     position: relative;
     left: 270px;
     width: calc(100% - 270px);
-    padding: 1.5rem 2rem 1.5rem 2rem;
+    padding: 1rem;
     transition: var(--tran-03);
     overflow-x: hidden;
     height: 100vh;
@@ -1144,7 +1144,7 @@ footer span {
         color: #fff;
     }
 
-.order-id {
+.order-id, .total-payment {
     font-weight: 600;
 }
 
@@ -1400,6 +1400,7 @@ input[name="cus-search-cbx"]:checked ~ label {
 }
 
 .del-order-pro {
+    color: #e30019;
     font-size: 1.3rem;
     cursor: pointer;
 }

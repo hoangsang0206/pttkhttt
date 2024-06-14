@@ -162,7 +162,7 @@ namespace STech.Controllers
             db.GioHangs.RemoveRange(userCart);
             db.SaveChanges();
 
-            if (td != null)
+            if (td != null && td.TheThanhVien != null)
             {
                 hd.MaTichDiem = td.MaTD;
                 db.TichDiems.Add(td);
@@ -284,7 +284,6 @@ namespace STech.Controllers
 
         private List<PhieuXuatKho> createWarehouseExport(List<GioHang> userCart, HoaDon hd)
         {
-            List<Kho> sp_kho = userCart.SelectMany(c => c.SanPham.ChiTietKhoes.Select(ctk => ctk.Kho)).Distinct().ToList();
             List<PhieuXuatKho> dsPXK = new List<PhieuXuatKho>();
 
             foreach (GioHang c in userCart)

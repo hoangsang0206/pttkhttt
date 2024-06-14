@@ -6,13 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace STech.Areas.Employee.Controllers
+namespace STech.Areas.Admin.Controllers
 {
-    [Authorize(Roles = "Admin, Employee")]
+    [Authorize(Roles = "Admin, Manager, Employee")]
     public class OrdersController : Controller
     {
         // GET: Employee/Orders
@@ -21,22 +22,23 @@ namespace STech.Areas.Employee.Controllers
             using (DbEntities db = new DbEntities())
             {
                 List<HoaDonDTO> dsHD = await db.HoaDons
-                        .OrderByDescending(hd => hd.NgayDat)
-                        .Select(hd => new HoaDonDTO()
+                    .Where(hd => hd.TrangThai == "unconfirmed")
+                    .OrderByDescending(hd => hd.NgayDat)
+                    .Select(hd => new HoaDonDTO()
+                    {
+                        MaHD = hd.MaHD,
+                        TongTien = hd.TongTien,
+                        NgayDat = hd.NgayDat,
+                        TrangThaiThanhToan = hd.TrangThaiThanhToan,
+                        PhuongThucThanhToan = hd.PhuongThucThanhToan,
+                        TrangThai = hd.TrangThai,
+                        KhachHang = new KhachHangDTO()
                         {
-                            MaHD = hd.MaHD,
-                            TongTien = hd.TongTien,
-                            NgayDat = hd.NgayDat,
-                            TrangThaiThanhToan = hd.TrangThaiThanhToan,
-                            PhuongThucThanhToan = hd.PhuongThucThanhToan,
-                            TrangThai = hd.TrangThai,
-                            KhachHang = new KhachHangDTO()
-                            {
-                                MaKH = hd.KhachHang.MaKH,
-                                HoTen = hd.KhachHang.HoTen,
-                            },
-                        })
-                        .ToListAsync();
+                            MaKH = hd.KhachHang.MaKH,
+                            HoTen = hd.KhachHang.HoTen,
+                        },
+                    })
+                    .ToListAsync();
 
                 ViewBag.ActiveNav = "orders";
                 return View(dsHD);
@@ -46,8 +48,28 @@ namespace STech.Areas.Employee.Controllers
         public ActionResult Create()
         {
 
-            ViewBag.ActiveNav = "create";
+            ViewBag.ActiveNav = "order-create";
             return View();
+        }
+
+        [HttpPut]
+        public async Task<JsonResult> UpdateProductQty(string productID, int qty)
+        {
+            using (DbEntities db = new DbEntities())
+            {
+                SanPham sp = await db.SanPhams
+                    .FirstOrDefaultAsync(t => t.MaSP == productID && t.ChiTietKhoes.Sum(ctk => ctk.SoLuong) > 0);
+                if (sp == null)
+                {
+                    return Json(new { status = HttpStatusCode.BadRequest });
+                }
+
+                if (qty <= 0) qty = 1;
+                int sl_kho = sp.ChiTietKhoes.Sum(ctk => ctk.SoLuong);
+                if (sl_kho < qty) qty = sl_kho;
+
+                return Json(new { status = HttpStatusCode.OK, quantity = qty, total = qty * sp.GiaBan });
+            }         
         }
 
         public async Task<ActionResult> PrintInvoice(string orderID)

@@ -1,23 +1,4 @@
-﻿if (window.innerWidth < 768) {
-    $('.sidebar').addClass('close');
-}
-
-$('.toggle').click(() => {
-    $('.sidebar').toggleClass('close');
-})
-
-function hideLoading() {
-    var interval = setInterval(() => {
-        $('.loading').hide();
-        clearInterval(interval);
-    }, 600);
-}
-
-function showLoading() {
-    $('.loading').css('display', 'grid');
-}
-
-function activeButton(button) {
+﻿function activeButton(button) {
     $('.page-btn').removeClass('active');
     button.addClass('active');
 }
@@ -84,13 +65,15 @@ $('.order-search-value').click((e) => {
 function appendOrderList(res, parent_element) {
     parent_element.empty();
     const strHead = `<tr> <th>Mã ĐH</th><th>Tên khách hàng</th>
-                    <th>Ngày đặt</th><th>Tổng tiền</th><th>Trạng thái thanh toán</th>
+                    <th>Ngày đặt</th><th>Tổng tiền</th><th>PT t.toán</th><th>T.thái thanh toán</th>
                     <th>Trạng thái</th><th></th></tr>`;
     parent_element.append(strHead);
     if (res.length > 0) {
         res.map(order => {
             const date = new Date(order.NgayDat);
             const dateFormat = date.toLocaleDateString('en-GB') + ' ' + date.toLocaleTimeString('en-US');
+            const buttonAccept = "&nbsp;<button class='order-btn accept-paid' data-order=" + order.MaHD + "><i class='bx bx-check'></i></button>";
+            let isRender = order.TrangThai !== "cancelled" && order.TrangThaiThanhToan !== "paid";
 
             let paymentStatusClass = "order-waiting";
             let paymentText = "Chưa thanh toán";
@@ -116,10 +99,11 @@ function appendOrderList(res, parent_element) {
 
             var str = `<tr>
                             <td><div class="order-id">${order.MaHD}</div></td>
-                            <td><div class="cus-name">${order.KhachHang.HoTen}</div></td>
-                            <td><div class="order-date">${dateFormat}</div></td>
+                            <td><div>${order.KhachHang.HoTen}</div></td>
+                            <td><div>${dateFormat}</div></td>
                             <td><div class="total-payment">${order.TongTien.toLocaleString('vi-VN') + 'đ'}</div></td>
-                            <td><div class="order-pstatus d-flex ${paymentStatusClass}">${paymentText}</td>`;
+                            <td><div>${order.PhuongThucThanhToan == "COD" ? "TT khi nhận hàng" : order.PhuongThucThanhToan}</div></td>
+                            <td><div class="d-flex align-items-center ${paymentStatusClass}">${paymentText} ${isRender ? buttonAccept : ""}</td>`;
             if (order.TrangThai == "unconfirmed") {
                 str += `<td>
                     <div class="order-status">
@@ -197,7 +181,7 @@ function reloadOrders() {
         url: '/api/orders',
         success: (res) => {
             hideLoading();
-            appendOrderList(res, $('.order-waiting-list table tbody'));
+            appendOrderList(res, $('.order-list table tbody'));
         },
         error: () => { }
     })
@@ -221,7 +205,7 @@ $('.get-confirmed').click(function() {
         },
         success: (res) => {
             hideLoading();
-            appendOrderList(res, $('.order-waiting-list table tbody'));
+            appendOrderList(res, $('.order-list table tbody'));
         },
         error: () => { }
     })
@@ -238,7 +222,7 @@ $('.get-cancelled').click(function() {
         },
         success: (res) => {
             hideLoading();
-            appendOrderList(res, $('.order-waiting-list table tbody'));
+            appendOrderList(res, $('.order-list table tbody'));
         },
         error: () => { }
     })
@@ -255,7 +239,7 @@ $('.get-paid').click(function() {
         },
         success: (res) => {
             hideLoading();
-            appendOrderList(res, $('.order-waiting-list table tbody'));
+            appendOrderList(res, $('.order-list table tbody'));
         },
         error: () => { }
     })
@@ -272,7 +256,7 @@ $('.get-unpaid').click(function() {
         },
         success: (res) => {
             hideLoading();
-            appendOrderList(res, $('.order-waiting-list table tbody'));
+            appendOrderList(res, $('.order-list table tbody'));
         },
         error: () => { }
     })
@@ -289,7 +273,7 @@ $('.get-today-unconfirmed').click(function () {
         },
         success: (res) => {
             hideLoading();
-            appendOrderList(res, $('.order-waiting-list table tbody'));
+            appendOrderList(res, $('.order-list table tbody'));
         },
         error: () => { }
     })
@@ -306,13 +290,13 @@ $('.get-unconfirmed').click(function () {
         },
         success: (res) => {
             hideLoading();
-            appendOrderList(res, $('.order-waiting-list table tbody'));
+            appendOrderList(res, $('.order-list table tbody'));
         },
         error: () => { }
     })
 })
 
-//Change order status ------------------
+
 $(document).on('click', '.order-status-accept', function() {
     const orderID = $(this).data('order');
     if (orderID.length > 0) {
@@ -325,14 +309,28 @@ $(document).on('click', '.order-status-accept', function() {
             cancelButtonText: "Thoát",
             confirmButtonText: "Xác nhận"
         }).then((result) => {
-            showLoading();
             if (result.isConfirmed) {
+                showLoading();
                 $.ajax({
                     type: 'PUT',
                     url: `/api/orders?orderId=${orderID}&status=confirmed`,
-                    success: () => {
-                        reloadOrders();
-                        getOrderCount();
+                    success: (response) => {
+                        if (response) {
+                            $(this).closest('.order-status').addClass('order-success').html('Đã xác nhận');
+                            getOrderCount();
+                            hideLoading();
+                        } else {
+                            Swal.fire({
+                                title: "Xác nhận đơn hàng thất bại?",
+                                icon: "errror",
+                                text: "Đã xảy ra lỗi trong quá trình xác nhận đơn hàng",
+                                confirmButtonText: "OK"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    hideLoading();
+                                }
+                            });
+                        }
                     },
                     error: () => { }
                 })
@@ -353,14 +351,28 @@ $(document).on('click', '.order-status-refuse', function() {
             cancelButtonText: "Thoát",
             confirmButtonText: "Xác nhận"
         }).then((result) => {
-            showLoading();
             if (result.isConfirmed) {
+                showLoading();
                 $.ajax({
                     type: 'PUT',
                     url: `/api/orders?orderId=${orderID}&status=cancelled`,
-                    success: () => {
-                        reloadOrders();
-                        getOrderCount();
+                    success: (response) => {
+                        if (response) {
+                            $(this).closest('.order-status').addClass('order-failed').html('Đã hủy');
+                            hideLoading();
+                            getOrderCount();
+                        } else {
+                            Swal.fire({
+                                title: "Hủy đơn hàng thất bại?",
+                                icon: "errror",
+                                text: "Đã xảy ra lỗi trong quá trình hủy đơn hàng",
+                                confirmButtonText: "OK"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    hideLoading();
+                                }
+                            });
+                        }
                     },
                     error: () => { }
                 })
@@ -369,33 +381,53 @@ $(document).on('click', '.order-status-refuse', function() {
     }
 })
 
-//--Change order status to "Thanh toán thành công"
-$(document).on('click', '.accept-paid', (e) => {
-    $('.payment-acception-confirm').css('visibility', 'visible');
-    $('.payment-acception').addClass('show');
 
-    $('.cancel-acception').off('click').click(() => {
-        $('.payment-acception-confirm').css('visibility', 'hidden');
-        $('.payment-acception').removeClass('show');
-    })
+$(document).on('click', '.accept-paid', function () {
+    const orderID = $(this).data('order');
+    if (orderID) {
+        Swal.fire({
+            title: "Xác nhận đã thanh toán?",
+            icon: "question",
+            text: 'Xác nhận đã thanh toán cho đơn hàng này',
+            showCancelButton: true,
+            showConfirmButton: true,
+            focusConfirm: false,
+            cancelButtonText: "Thoát",
+            confirmButtonText: "Xác nhận"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                showLoading();
+                $.ajax({
+                    type: 'PUT',
+                    url: '/api/orders',
+                    data: {
+                        orderId: orderID,
+                        pstatus: 'paid'
+                    },
+                    success: (res) => {
+                        if (res) {
+                            $(this).remove();
+                            hideLoading();
+                        } else {
+                            Swal.fire({
+                                title: "Xác nhận thanh toán thất bại?",
+                                icon: "errror",
+                                text: "Đã xảy ra lỗi",
+                                confirmButtonText: "OK"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    hideLoading();
+                                }
+                            });
+                        }
+                    },
+                    error: () => {
 
-    $('.confirm-acception').off('click').click(() => {
-        var orderID = $(e.target).data('accept-paid');
-        if (orderID.length > 0) {
-            console.log(orderID);
-            $.ajax({
-                type: 'post',
-                url: '/admin/orders/acceptpaid',
-                data: { orderID: orderID },
-                success: (res) => {
-                    if (res.success) {
-                        $('.payment-acception-confirm').css('visibility', 'hidden');
-                        $('.payment-acception').removeClass('show');
                     }
-                }
-            })
-        }
-    })
+                })
+            }
+        })
+    }
 })
 
 //--Get order detail ---------------------------------------
@@ -406,7 +438,7 @@ $('.close-order-info').click(() => {
 
 $(document).on('click', '.order-detail-btn', (e) => {
     var orderID = $(e.target).data('detail-order');
-    if (orderID.length > 0) {
+    if (orderID) {
         showLoading();
         $.ajax({
             tpe: 'get',
@@ -483,50 +515,6 @@ $(document).on('click', '.order-detail-btn', (e) => {
     }
 })
 
-//--Delete order
-$(document).on('click', '.delete-order-btn', (e) => {
-    $('.delete-order-confirm').css('visibility', 'visible');
-    $('.delete-order-confirm .delete-confirm-box').addClass('show');
-    //----------
-    $('.cancel-delete').off('click').click(() => {
-        $('.delete-order-confirm').css('visibility', 'hidden');
-        $('.delete-order-confirm .delete-confirm-box').removeClass('show');
-    })
-
-    $('.delete-order-confirm .confirm-delete-order').off('click').click(() => {
-        var orderID = $(e.target).data('del-order');
-        if (orderID.length > 0) {
-            $.ajax({
-                type: 'post',
-                url: '/admin/orders/deleteorder',
-                data: {
-                    orderID: orderID
-                },
-                success: (response) => {
-                    if (response.success) {
-                        $('.complete-delete-notice').css('visibility', 'visible');
-                        $('.complete-notice-box').addClass('showForm');
-                        $('.delete-order-confirm').css('visibility', 'hidden');
-                        $('.delete-order-confirm .delete-confirm-box').removeClass('show');
-                    }
-                },
-                error: () => { console.log('Không thể xóa đơn hàng') }
-            })
-        }
-    })
-})
-
-
-//--Create order -------------------------------------------------------
-$('.add-order-btn').click(() => {
-    window.location.href = '/admin/orders/create';
-})
-
-$('.close-create-order').click(() => {
-    $('.create-order').css('visibility', 'hidden');
-    $('.create-order-box').removeClass('show');
-})
-
 //---Search customer by phone
 $('#search-cus-by-phone').keyup((e) => {
     var phone = $(e.target).val();
@@ -582,6 +570,7 @@ $(document).on('change', 'input[name="cus-search-cbx"]', (e) => {
             },
             success: (data) => {
                 hideLoading();
+                $('#cusID').val(data.MaKH);
                 $('#cusName').val(data.HoTen);
                 $('#cusPhone').val(data.SDT);
                 $('#cusAddress').val(data.DiaChi);
@@ -614,7 +603,7 @@ $('#order-search-p').keyup((e) => {
             $.ajax({
                 type: 'get',
                 url: '/api/products',
-                data: { q: productName },
+                data: { query: productName },
                 success: (data) => {
                     if (data.length > 0) {
                         $('.pro-search-auto-complete').empty();
@@ -722,23 +711,22 @@ $(document).on('change', '.create-order input[name="pro-search-id"]', (e) => {
 
 //Update quantity of product in order detail (create order) -------
 $(document).on('focus', 'input[name="order-pro-qty"]', (e) => {
-    var currentQty = $(e.target).val();
+    const currentQty = $(e.target).val();
 
     $(e.target).blur(() => {
-        var qty = $(e.target).val();
+        const qty = $(e.target).val();
         if (qty != currentQty) {
+            const productId = $(e.target).data('order-pro');
             $.ajax({
-                type: 'post',
-                url: '/admin/orders/updateproductqty',
-                data: {
-                    MaSP: $(e.target).data('order-pro'),
-                    qty: qty
-                },
+                type: 'PUT',
+                url: `/employee/orders/updateproductqty?productID=${productId}&qty=${qty}`,
                 success: (data) => {
-                    if (data.success) {
+                    if (data.status === 200) {
                         $(e.target).val(data.quantity);
                         $(e.target).closest('tr').find('.one-p-total').text(data.total.toLocaleString('vi-VN') + 'đ');
                         updateTotal();
+                    } else {
+
                     }
                 },
                 error: () => { }
@@ -761,10 +749,11 @@ const getCustomer = (sdt) => {
         url: '/api/customers',
         data: { sdt: sdt },
         success: (data) => {
-            $('#cusName').text(data.HoTen);
-            $('#cusPhone').text(data.SDT);
-            $('#cusEmail').text(data.Email);
-            $('#cusAddress').text(data.DiaChi);
+            $('#cusID').val(data.MaKH);
+            $('#cusName').val(data.HoTen);
+            $('#cusPhone').val(data.SDT);
+            $('#cusEmail').val(data.Email);
+            $('#cusAddress').val(data.DiaChi);
             if (data.Gender == "Nam") {
                 $('#cusGender-Male').prop('checked', true);
             } else {
@@ -831,44 +820,73 @@ $('.create-customer-wrapper .form-box').submit(function (e) {
 //Create order ---------------------------
 $('.create-order-box').submit((e) => {
     e.preventDefault();
-    var cusID = $('.create-order #cusID').val();
-    var cusName = $('.create-order #cusName').val();
-    var cusPhone = $('.create-order #cusPhone').val();
-    var cusAddress = $('.create-order #cusAddress').val();
-    var cusGender = $('.create-order input[name="cusGender"]:checked').val();
-    var cusEmail = $('.create-order #cusEmail').val();
-    var payment = $('input[name="paymentmethod"]:checked').val();
-    var note = $('#order-note').val();
-    var strProduct = '';
+    const cusID = $('.create-order #cusID').val();
+    const cusName = $('.create-order #cusName').val();
+    const cusPhone = $('.create-order #cusPhone').val();
+    const cusAddress = $('.create-order #cusAddress').val();
+    const cusGender = $('.create-order input[name="cusGender"]:checked').val();
+    const cusEmail = $('.create-order #cusEmail').val();
+    const payment = $('input[name="paymentmethod"]:checked').val();
+    const note = $('#order-note').val();
+
+    let lstProduct = [];
+
 
     $('.order-create-products table tr:not(:first-child)').each((index, row) => {
         const MaSP = $(row).find('input[name="order-pro-id"]').val();
         const orderQty = $(row).find('input[name="order-pro-qty"]').val();
 
-        strProduct += MaSP + '++++++++' + orderQty + ';;;;;;;;';
+        lstProduct.push({ MaSP: MaSP, SoLuong: orderQty})
     })
 
-    if (strProduct.length > 0) {
+    const order = {
+        KhachHang: {
+            MaKH: cusID,
+            HoTen: cusName,
+            SDT: cusPhone,
+            DiaChi: cusAddress,
+            GioiTinh: cusGender,
+            Email: cusEmail,
+        },
+        PaymentMed: payment,
+        Note: note,
+        ChiTietHD: lstProduct
+    }
+
+    console.log(order)
+
+    if (lstProduct) {
         $.ajax({
-            type: 'post',
-            url: '/admin/orders/create',
-            data: {
-                'CustomerID': cusID,
-                'CustomerName': cusName,
-                'Phone': cusPhone,
-                'Address': cusAddress,
-                'Gender': cusGender,
-                'Email': cusEmail,
-                paymentMethod: payment,
-                productStr: strProduct,
-                note: note
-            },
+            type: 'POST',
+            url: '/api/orders',
+            contentType: 'application/json',
+            data: JSON.stringify(order),
             success: (res) => {
                 if (res) {
-                    window.location.href = '';
+                    Swal.fire({
+                        icon: "success",
+                        title: "Tạo đơn hàng thành công",
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '';
+                        }
+                    })
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Không thể tạo đơn hàng",
+                        text: "Đã xảy ra lỗi!"
+                    })
                 }
             },
-            error: () => { }
+            error: () => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Không thể tạo đơn hàng",
+                    text: "Đã xảy ra lỗi!"
+                })
+            }
         })
     }
 })
