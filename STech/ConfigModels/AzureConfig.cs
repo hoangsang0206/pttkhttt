@@ -12,7 +12,7 @@ namespace STech.ConfigModels
         public static string GetConnectionString()
         {
             NameValueCollection azureSection = (NameValueCollection)ConfigurationManager.GetSection("azure");
-            return azureSection["StripeApiKey"];
+            return azureSection["AzureConnectionString"];
         }
     }
 }

@@ -436,79 +436,62 @@ $('.close-order-info').click(() => {
     $('.order-infomation-box').removeClass('show');
 })
 
-$(document).on('click', '.order-detail-btn', (e) => {
-    var orderID = $(e.target).data('detail-order');
+$(document).on('click', '.order-detail-btn', function() {
+    const orderID = $(this).data('order');
     if (orderID) {
         showLoading();
         $.ajax({
-            tpe: 'get',
+            tpe: 'GET',
             url: '/api/orders',
-            data: { id: orderID },
+            data: { orderId: orderID },
             success: (data) => {
-                var date = new Date(data.OrderDate);
-                var dateFormat = date.toLocaleDateString('en-GB') + ' ' + date.toLocaleTimeString('en-US');
+                const date = new Date(data.NgatDat);
+                const dateFormat = date.toLocaleDateString('en-GB') + ' ' + date.toLocaleTimeString('en-US');
 
-                $('.order-info-header').text('Đơn hàng - ' + data.OrderID)
+                $('.order-info-header').text('Đơn hàng - ' + data.MaHD)
                 $('.order-info-date').text(dateFormat);
-                $('.order-info-payment').text(data.PaymentMethod);
-                $('.order-info-ship').text(data.ShipMethod);
-                $('.order-info-note').text(data.Note);
-                $('.order-info-total').text(data.TotalPrice.toLocaleString('vi-VN') + 'đ');
-                $('.order-info-ship-total').text(data.DeliveryFee.toLocaleString('vi-VN') + 'đ');
-                $('.order-info-totalpay').text(data.TotalPaymentAmout.toLocaleString('vi-VN') + 'đ');
-                $('.order-info-pstatus').text(data.PaymentStatus);
-                $('.order-info-status').text(data.Status);
+                $('.order-info-payment').text(data.PhuongThucThanhToan);
+                $('.order-info-ship').text(data.DiaChiGiao != "COD" ? data.DiaChiGiao : "Nhận tại cửa hàng");
+                $('.order-info-note').text(data.GhiChu);
+                $('.order-info-totalpay').text(data.TongTien.toLocaleString('vi-VN') + 'đ');
+                $('.order-info-pstatus').text(data.TrangThaiThanhToan == "paid"
+                    ? "Đã thanh toán" : data.TrangThaiThanhToan == "unpaid" ? "Chưa thanh toán" : "Thanh toán thất bại");
+                $('.order-info-status').text(data.Status == "confirmed"
+                    ? "Đã xác nhận" : data.Status == "unconfirmed" ? "Chờ xác nhận" : "Đã hủy");
 
-                //Get list product in order
-                $.ajax({
-                    type: 'get',
-                    url: '/api/orders',
-                    data: { orderID: data.OrderID },
-                    success: (data1) => {
-                        hideLoading();
-                        $('.order-products-info table tbody').empty();
-                        var strH = ` <tr>
-                                    <th>Mã sản phẩm</th>
-                                    <th>Tên sản phẩm</th>
-                                    <th>Giá bán</th>
-                                    <th>Số lượng</th>
-                                    <th>Thành tiền</th>
+                const strH = ` <tr>
+                            <th>Mã sản phẩm</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá bán</th>
+                            <th>Số lượng</th>
+                            <th>Thành tiền</th>
+                        </tr>`;
+                $('.order-products-info table tbody').html(strH);
+
+                if (data.ChiTietHD) {
+                    data.ChiTietHD.map(item => {
+                        const str = `<tr>
+                                    <td>${item.MaSP}</td>
+                                    <td>${item.SanPham.TenSP}</td>
+                                    <td>${item.ThanhTien.toLocaleString('vi-VN') + 'đ'}</td>
+                                    <td>${item.SoLuong}</td>
+                                    <td class="fw-bold">${(item.ThanhTien * item.SoLuong).toLocaleString('vi-VN') + 'đ'}</td>
                                 </tr>`;
-                        var str = ``;
-                        if (data1.length > 0) {
-                            for (var i = 0; i < data1.length; i++) {
-                                str += `<tr>
-                                            <td>${data1[i].Product.MaSP}</td>
-                                            <td>${data1[i].Product.ProductName}</td>
-                                            <td>${data1[i].Product.Price.toLocaleString('vi-VN') + 'đ'}</td>
-                                             <td>${data1[i].Quantity}</td>
-                                            <td class="fw-bold">${(data1[i].Product.Price * data1[i].Quantity).toLocaleString('vi-VN') + 'đ'}</td>
-                                        </tr>`;
-                            }
+                        $('.order-products-info table tbody').append(str);
+                    })
 
-                            $('.order-info-cnt').text('Số sản phẩm - ' + data1.length);
-                            $('.order-products-info table tbody').append(strH + str);
-                            setTimeout(() => {
-                                $('.order-infomation-wrapper').css('visibility', 'visible');
-                                $('.order-infomation-box').addClass('show');
-                            }, 500)
-                        }
-                    }
-                })
+                    $('.order-info-cnt').text('Số sản phẩm - ' + data.ChiTietHD.length);
+                }
 
-                //Get customer info
-                $.ajax({
-                    type: 'get',
-                    url: '/api/customers',
-                    data: { customerID: data.CustomerID },
-                    success: (data2) => {
-                        $('.order-cus-id').text(data2.CustomerID);
-                        $('.order-cus-name').text(data2.CustomerName);
-                        $('.order-cus-phone').text(data2.Phone);
-                        $('.order-cus-email').text(data2.Email);
-                        $('.order-cus-address').text(data2.Address);
-                    }
-                })
+                $('.order-cus-id').text(data.KhachHang.MaKH);
+                $('.order-cus-name').text(dataKhachHang.HoTen);
+                $('.order-cus-phone').text(data.KhachHang.SDT);
+                $('.order-cus-email').text(data.KhachHang.Email);
+                $('.order-cus-address').text(data.KhachHang.DiaChi);
+
+                setTimeout(() => {
+                    $('.order-infomation-wrapper').addClas('show');
+                }, 600)
             },
             error: () => { console.log('Error') }
         })
@@ -765,17 +748,14 @@ const getCustomer = (sdt) => {
 
 $('.create-cus-btn').click(() => {
     $('.create-customer-wrapper').addClass('show');
-    $('.create-customer-wrapper .form-box').addClass('show');
 })
 
 $('.close-create-customer').click(() => {
     $('.create-customer-wrapper').removeClass('show');
-    $('.create-customer-wrapper .form-box').removeClass('show');
 })
 
 $('.create-customer-wrapper .form-box').on('reset', function (e) {
     $(this).removeClass('show');
-    $(this).closest('.create-customer-wrapper').removeClass('show')
 })
 
 $('.create-customer-wrapper .form-box').submit(function (e) {

@@ -22,6 +22,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using STech.Utils;
+using STech.ConfigModels;
 
 namespace STech.Controllers
 {
@@ -282,13 +283,12 @@ namespace STech.Controllers
 
                 string userID = User.Identity.GetUserId();
                 ApplicationUserManager userManager = new ApplicationUserManager(new ApplicationUserStore(new ApplicationDbContext()));
-                ApplicationUser user = userManager.FindById(userID);
+                ApplicationUser user = await userManager.FindByIdAsync(userID);
 
                 string fileName = user.UserName + '-' + RandomString.random(30);
-                string imgSrc = null;
 
                 //Upload hình ảnh lên Azure Storage -----
-                string blobConnectionString = "";
+                string blobConnectionString = AzureConfig.GetConnectionString();
                 string blobContainerName = "stechweb";
                 string blobFilePath = "user-images/" + fileName + fileEx;
 

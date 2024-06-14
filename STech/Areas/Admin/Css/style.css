@@ -1195,10 +1195,10 @@ footer span {
     transition: var(--tran-04);
 }
 
-    .form-box.show {
-        visibility: visible;
-        opacity: 1;
-    }
+.form-container.show .form-box {
+    visibility: visible;
+    opacity: 1;
+}
 
 .form-box-header {
     width: 100%;

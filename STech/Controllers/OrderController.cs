@@ -461,6 +461,8 @@ namespace STech.Controllers
                 List<PhieuXuatKho> dsPXK = createWarehouseExport(userCart, hd);
                 TichDiem td = createAccumulationPoint(kh, hd);
 
+                hd.PhuongThucThanhToan = "Paypal";
+
                 try
                 {
                     string payerId = Request.Params["PayerID"];

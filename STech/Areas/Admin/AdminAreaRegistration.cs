@@ -17,7 +17,7 @@ namespace STech.Areas.Admin
 
             context.MapRoute(
                 "Admin_dashboard",
-                "employee/",
+                "admin/",
                 new { controller = "Dashboard", action = "Index" }
             );
 

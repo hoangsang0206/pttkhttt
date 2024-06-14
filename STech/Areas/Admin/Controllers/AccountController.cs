@@ -8,6 +8,7 @@ using System.Web.Mvc;
 
 namespace STech.Areas.Admin.Controllers
 {
+    [AuthenticationFilter, Authorize(Roles = "Admin, Manager, Employee")]
     public class AccountController : Controller
     {
         public ActionResult Index()
@@ -15,7 +16,6 @@ namespace STech.Areas.Admin.Controllers
             return View();
         }
 
-        [AuthenticationFilter, Authorize(Roles = "Admin, Manager, Employee")]
         public ActionResult Logout()
         {
             IAuthenticationManager authenManager = HttpContext.GetOwinContext().Authentication;

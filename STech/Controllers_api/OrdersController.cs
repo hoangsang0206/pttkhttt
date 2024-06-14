@@ -29,35 +29,30 @@ namespace STech.Controllers_api
         }
 
 
-
+        [Authorize(Roles = "Admin, Manager, Employee")]
         public async Task<IEnumerable<HoaDonDTO>> Get()
         {
-            if (checkCompanyRole())
+            using (DbEntities db = new DbEntities())
             {
-                using (DbEntities db = new DbEntities())
-                {
 
-                    return await db.HoaDons
-                        .OrderByDescending(hd => hd.NgayDat)
-                        .Select(hd => new HoaDonDTO()
+                return await db.HoaDons
+                    .OrderByDescending(hd => hd.NgayDat)
+                    .Select(hd => new HoaDonDTO()
+                    {
+                        MaHD = hd.MaHD,
+                        TongTien = hd.TongTien,
+                        NgayDat = hd.NgayDat,
+                        TrangThaiThanhToan = hd.TrangThaiThanhToan,
+                        PhuongThucThanhToan = hd.PhuongThucThanhToan,
+                        TrangThai = hd.TrangThai,
+                        KhachHang = new KhachHangDTO()
                         {
-                            MaHD = hd.MaHD,
-                            TongTien = hd.TongTien,
-                            NgayDat = hd.NgayDat,
-                            TrangThaiThanhToan = hd.TrangThaiThanhToan,
-                            PhuongThucThanhToan = hd.PhuongThucThanhToan,
-                            TrangThai = hd.TrangThai,
-                            KhachHang = new KhachHangDTO()
-                            {
-                                MaKH = hd.KhachHang.MaKH,
-                                HoTen = hd.KhachHang.HoTen
-                            }
-                        })
-                        .ToListAsync();
-                }
+                            MaKH = hd.KhachHang.MaKH,
+                            HoTen = hd.KhachHang.HoTen
+                        }
+                    })
+                    .ToListAsync();
             }
-
-            return null;
         }
 
         [Authorize(Roles = "Admin, Manager, Employee")]
@@ -262,7 +257,19 @@ namespace STech.Controllers_api
                             HoTen = hd.KhachHang.HoTen,
                             SDT = hd.KhachHang.SDT,
                             Email = hd.KhachHang.Email,
-                        }
+                            DiaChi = hd.KhachHang.DiaChi
+                        },
+                        ChiTietHD = hd.ChiTietHDs.Select(ctk => new ChiTietHDDTO()
+                        {
+                            MaSP = ctk.MaSP,
+                            SoLuong = ctk.SoLuong,
+                            ThanhTien = ctk.ThanhTien,
+                            SanPham = new SanPhamDTO()
+                            {
+                                MaSP = ctk.SanPham.MaSP,
+                                TenSP = ctk.SanPham.TenSP,
+                            }
+                        }).ToList()
                     };
                 } 
                 else if (checkCustomerRole())
