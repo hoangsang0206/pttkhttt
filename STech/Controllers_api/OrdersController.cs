@@ -516,7 +516,7 @@ namespace STech.Controllers_api
                 NhanVien nv = await db.NhanViens.FirstOrDefaultAsync(t => t.AccountId == userId);
                 if (nv == null) return false;
 
-                HoaDon hd = await db.HoaDons.FirstOrDefaultAsync(t => t.MaHD == orderId && t.TrangThai == "unconfirmed");
+                HoaDon hd = await db.HoaDons.FirstOrDefaultAsync(t => t.MaHD == orderId && t.TrangThai != "cancelled");
                 if (hd != null)
                 {
                     if (pstatus == "paid" && hd.TrangThai != "cancelled")

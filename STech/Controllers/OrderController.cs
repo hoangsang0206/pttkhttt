@@ -191,7 +191,7 @@ namespace STech.Controllers
             return null;
         }
 
-        public async Task<string> addNewCustomer(DbEntities db, string userID)
+        public async Task<KhachHang> addNewCustomer(DbEntities db, string userID)
         {
 
             using (ApplicationUserManager userManager = new ApplicationUserManager(new ApplicationUserStore(new ApplicationDbContext())))
@@ -212,7 +212,7 @@ namespace STech.Controllers
                 db.KhachHangs.Add(kh);
                 db.SaveChanges();
 
-                return customerID;
+                return kh;
             }
         }
 
@@ -238,11 +238,6 @@ namespace STech.Controllers
 
         private async Task<HoaDon> createOrder(DbEntities db, string userID, List<GioHang> userCart, KhachHang kh)
         {
-            if (kh == null)
-            {
-                await addNewCustomer(db, userID);
-            }
-
             string orderID = "DH" + DateTime.Now.ToString("ddMMyy") + RandomString.random(5).ToUpper();
             decimal totalPrice = userCart.Sum(t => t.SoLuong * t.SanPham.GiaBan);
             kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
@@ -364,6 +359,10 @@ namespace STech.Controllers
                     string userID = User.Identity.GetUserId();
                     List<GioHang> userCart = await db.GioHangs.Where(t => t.AccountId == userID).ToListAsync();
                     KhachHang kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
+                    if (kh == null)
+                    {
+                        kh = await addNewCustomer(db, userID);
+                    }
 
                     HoaDon hd = await createOrder(db, userID, userCart, kh);
                     if(hd == null)
@@ -450,6 +449,10 @@ namespace STech.Controllers
                 string userID = User.Identity.GetUserId();
                 List<GioHang> userCart = await db.GioHangs.Where(t => t.AccountId == userID).ToListAsync();
                 KhachHang kh = await db.KhachHangs.FirstOrDefaultAsync(t => t.AccountId == userID);
+                if (kh == null)
+                {
+                    kh = await addNewCustomer(db, userID);
+                }
 
                 HoaDon hd = await createOrder(db, userID, userCart, kh);
                 if (hd == null)

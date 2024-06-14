@@ -1074,7 +1074,7 @@ footer span {
     white-space: nowrap;
 }
 
-.order-btn, .user-btn, .sale-btn {
+.mini-btn {
     border: none;
     border-radius: 0.3rem;
     padding: 0.3rem 0.8rem;
@@ -1094,33 +1094,36 @@ footer span {
         pointer-events: none;
     }
 
-.order-print-btn, .order-status-accept, .accept-paid,
-.begin-sale-btn {
+.mini-btn.green {
     background: #009432;
 }
 
-    .order-print-btn:hover, .order-status-accept:hover,
-    .accept-paid:hover, .begin-sale-btn:hover {
-        outline: 2px solid #9cf185;
-    }
+.mini-btn.green:hover {
+    outline: 2px solid #9cf185;
+}
 
-.order-detail-btn, .user-detail-btn, .sale-detail-btn {
+.mini-btn.blue {
     background: #0652DD;
 }
 
-    .order-detail-btn:hover, .user-detail-btn:hover,
-    .sale-detail-btn:hover {
-        outline: 2px solid #4779ff
-    }
+.mini-btn.blue:hover {
+    outline: 2px solid #4779ff
+}
 
-.delete-order-btn, .order-status-refuse, .user-delete-btn,
-.delete-sale-btn, .delete-sale-p {
+.mini-btn.red {
     background: #e30019;
 }
 
-    .delete-order-btn:hover, .order-status-refuse:hover,
-    .user-delete-btn:hover, .delete-sale-btn:hover, .delete-sale-p:hover {
-        outline: 2px solid #fe9090;
+.mini-btn.red:hover {
+    outline: 2px solid #fe9090;
+}
+
+.mini-btn.purple {
+    background: #695cfe;
+}
+
+    .mini-btn.purple:hover {
+        outline: 2px solid #b0a9fb;
     }
 
 .order-update-btn,
@@ -1181,6 +1184,10 @@ footer span {
     width: 40rem;
 }
 
+.order-infomation-wrapper .form-box {
+    width: 60rem;
+}
+
 .form-box {
     position: relative;
     background: var(--sidebar-color);
@@ -1192,7 +1199,7 @@ footer span {
     cursor: auto;
     visibility: hidden;
     opacity: 0;
-    transition: var(--tran-04);
+    transition: var(--tran-03);
 }
 
 .form-container.show .form-box {
@@ -1224,7 +1231,11 @@ footer span {
         background: var(--primary-color);
     }
 
-.order-infomation,
+.order-infomation {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
 .order-cus-info {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1418,23 +1429,6 @@ input[name="cus-search-cbx"]:checked ~ label {
     color: #e30019;
 }
 
-.create-order-btn,
-.frm-create-cusomer-btn,
-.create-user,
-.submit-create-sale {
-    background: var(--primary-color);
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 0.6rem 2rem;
-}
-
-    .create-order-btn:hover,
-    .frm-create-cusomer-btn:hover,
-    .create-user:hover,
-    .submit-create-sale:hover {
-        outline: 2px solid #b5affa;
-    }
-
 .create-customer-box {
     width: 30rem;
 }
@@ -1523,11 +1517,6 @@ input[name="cus-search-cbx"]:checked ~ label {
     .order-cus-info {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
-    }
-
-    .order-infomation-box,
-    .order-update-box {
-        width: 95%;
     }
 
     .order-products-info {

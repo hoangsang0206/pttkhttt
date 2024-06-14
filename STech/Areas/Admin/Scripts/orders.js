@@ -72,7 +72,7 @@ function appendOrderList(res, parent_element) {
         res.map(order => {
             const date = new Date(order.NgayDat);
             const dateFormat = date.toLocaleDateString('en-GB') + ' ' + date.toLocaleTimeString('en-US');
-            const buttonAccept = "&nbsp;<button class='order-btn accept-paid' data-order=" + order.MaHD + "><i class='bx bx-check'></i></button>";
+            const buttonAccept = "&nbsp;<button class='mini-btn green accept-paid' data-order=" + order.MaHD + "><i class='bx bx-check'></i></button>";
             let isRender = order.TrangThai !== "cancelled" && order.TrangThaiThanhToan !== "paid";
 
             let paymentStatusClass = "order-waiting";
@@ -98,17 +98,17 @@ function appendOrderList(res, parent_element) {
             }
 
             var str = `<tr>
-                            <td><div class="order-id">${order.MaHD}</div></td>
-                            <td><div>${order.KhachHang.HoTen}</div></td>
-                            <td><div>${dateFormat}</div></td>
-                            <td><div class="total-payment">${order.TongTien.toLocaleString('vi-VN') + 'đ'}</div></td>
-                            <td><div>${order.PhuongThucThanhToan == "COD" ? "TT khi nhận hàng" : order.PhuongThucThanhToan}</div></td>
-                            <td><div class="d-flex align-items-center ${paymentStatusClass}">${paymentText} ${isRender ? buttonAccept : ""}</td>`;
+                <td><div class="order-id">${order.MaHD}</div></td>
+                <td><div>${order.KhachHang.HoTen}</div></td>
+                <td><div>${dateFormat}</div></td>
+                <td><div class="total-payment">${order.TongTien.toLocaleString('vi-VN') + 'đ'}</div></td>
+                <td><div>${order.PhuongThucThanhToan == "COD" ? "TT khi nhận hàng" : order.PhuongThucThanhToan}</div></td>
+                <td><div class="d-flex align-items-center ${paymentStatusClass}">${paymentText} ${isRender ? buttonAccept : ""}</td>`;
             if (order.TrangThai == "unconfirmed") {
                 str += `<td>
                     <div class="order-status">
-                        <button class="order-btn order-status-accept" data-order="${order.MaHD}">Xác nhận</button>
-                        <button class="order-btn order-status-refuse" data-order="${order.MaHD}">Hủy ĐH</button>
+                        <button class="mini-btn green order-status-accept" data-order="${order.MaHD}">Xác nhận</button>
+                        <button class="mini-btn red order-status-refuse" data-order="${order.MaHD}">Hủy ĐH</button>
                     </div>
                 </td>`;
             }
@@ -117,8 +117,8 @@ function appendOrderList(res, parent_element) {
             }
             str += `<td>
                 <div class="order-button-box d-flex justify-content-end flex-wrap gap-2">
-                    <button class="order-btn order-print-btn" data-order="${order.MaHD}">In HĐ</button>
-                    <button class="order-btn order-detail-btn" data-order="${order.MaHD}">Chi tiết</button>
+                    <button class="mini-btn green order-print-btn" data-order="${order.MaHD}">In HĐ</button>
+                    <button class="mini-btn blue order-detail-btn" data-order="${order.MaHD}">Chi tiết</button>
                 </div>
             </td>`;
 
@@ -316,20 +316,23 @@ $(document).on('click', '.order-status-accept', function() {
                     url: `/api/orders?orderId=${orderID}&status=confirmed`,
                     success: (response) => {
                         if (response) {
-                            $(this).closest('.order-status').addClass('order-success').html('Đã xác nhận');
+                            if ($(this).closest('.order-infomation-wrapper').length > 0) {
+                                $(this).removeAttr('data-order').hide();
+                                $(this).siblings('.order-status-refuse').removeAttr('data-order').hide();
+                            } else {
+                                $(this).closest('.order-status').addClass('order-success').html('Đã xác nhận');
+                            }
                             getOrderCount();
                             hideLoading();
                         } else {
-                            Swal.fire({
-                                title: "Xác nhận đơn hàng thất bại?",
-                                icon: "errror",
-                                text: "Đã xảy ra lỗi trong quá trình xác nhận đơn hàng",
-                                confirmButtonText: "OK"
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    hideLoading();
-                                }
-                            });
+                            setTimeout(() => {
+                                Swal.fire({
+                                    title: "Xác nhận đơn hàng thất bại?",
+                                    icon: "errror",
+                                    text: "Đã xảy ra lỗi trong quá trình xác nhận đơn hàng",
+                                    confirmButtonText: "OK"
+                                })
+                            }, 600)
                         }
                     },
                     error: () => { }
@@ -358,20 +361,24 @@ $(document).on('click', '.order-status-refuse', function() {
                     url: `/api/orders?orderId=${orderID}&status=cancelled`,
                     success: (response) => {
                         if (response) {
-                            $(this).closest('.order-status').addClass('order-failed').html('Đã hủy');
+                            if ($(this).closest('.order-infomation-wrapper').length > 0) {
+                                $(this).removeAttr('data-order').hide();
+                                $(this).siblings('.order-status-accept').removeAttr('data-order').hide();
+                            } else {
+                                $(this).closest('.order-status').addClass('order-failed').html('Đã hủy');
+                            }
+
                             hideLoading();
                             getOrderCount();
                         } else {
-                            Swal.fire({
-                                title: "Hủy đơn hàng thất bại?",
-                                icon: "errror",
-                                text: "Đã xảy ra lỗi trong quá trình hủy đơn hàng",
-                                confirmButtonText: "OK"
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    hideLoading();
-                                }
-                            });
+                            setTimeout(() => {
+                                Swal.fire({
+                                    title: "Hủy đơn hàng thất bại?",
+                                    icon: "errror",
+                                    text: "Đã xảy ra lỗi trong quá trình hủy đơn hàng",
+                                    confirmButtonText: "OK"
+                                })
+                            }, 600)
                         }
                     },
                     error: () => { }
@@ -399,26 +406,25 @@ $(document).on('click', '.accept-paid', function () {
                 showLoading();
                 $.ajax({
                     type: 'PUT',
-                    url: '/api/orders',
-                    data: {
-                        orderId: orderID,
-                        pstatus: 'paid'
-                    },
+                    url: `/api/orders?orderId=${orderID}&pstatus=paid`,
                     success: (res) => {
                         if (res) {
-                            $(this).remove();
+                            if ($(this).closest('.order-infomation-wrapper').length > 0) {
+                                $(this).removeAttr('data-order').hide();
+                            } else {
+                                $(this).parent().addClass('order-success').html('Đã thanh toán')
+                                    .removeClass('order-waiting').removeClass('order-failed');
+                            }
                             hideLoading();
                         } else {
-                            Swal.fire({
-                                title: "Xác nhận thanh toán thất bại?",
-                                icon: "errror",
-                                text: "Đã xảy ra lỗi",
-                                confirmButtonText: "OK"
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    hideLoading();
-                                }
-                            });
+                            setTimeout(() => {
+                                Swal.fire({
+                                    title: "Xác nhận thanh toán thất bại?",
+                                    icon: "error",
+                                    text: "Đã xảy ra lỗi",
+                                    confirmButtonText: "OK"
+                                })
+                            }, 600)
                         }
                     },
                     error: () => {
@@ -432,8 +438,7 @@ $(document).on('click', '.accept-paid', function () {
 
 //--Get order detail ---------------------------------------
 $('.close-order-info').click(() => {
-    $('.order-infomation-wrapper').css('visibility', 'hidden');
-    $('.order-infomation-box').removeClass('show');
+    $('.order-infomation-wrapper').removeClass('show');
 })
 
 $(document).on('click', '.order-detail-btn', function() {
@@ -445,7 +450,7 @@ $(document).on('click', '.order-detail-btn', function() {
             url: '/api/orders',
             data: { orderId: orderID },
             success: (data) => {
-                const date = new Date(data.NgatDat);
+                const date = new Date(data.NgayDat);
                 const dateFormat = date.toLocaleDateString('en-GB') + ' ' + date.toLocaleTimeString('en-US');
 
                 $('.order-info-header').text('Đơn hàng - ' + data.MaHD)
@@ -484,13 +489,30 @@ $(document).on('click', '.order-detail-btn', function() {
                 }
 
                 $('.order-cus-id').text(data.KhachHang.MaKH);
-                $('.order-cus-name').text(dataKhachHang.HoTen);
+                $('.order-cus-name').text(data.KhachHang.HoTen);
                 $('.order-cus-phone').text(data.KhachHang.SDT);
                 $('.order-cus-email').text(data.KhachHang.Email);
                 $('.order-cus-address').text(data.KhachHang.DiaChi);
 
+                const parent = $('.order-infomation-wrapper');
+
+                if (data.TrangThai == 'unconfirmed') {
+                    parent.find('.order-status-accept').show().data('order', data.MaHD);
+                    parent.find('.order-status-refuse').show().data('order', data.MaHD);
+                } else {
+                    parent.find('.order-status-accept').hide().removeAttr('data-order');
+                    parent.find('.order-status-refuse').hide().removeAttr('data-order');
+                }
+
+                if (data.TrangThaiThanhToan != 'paid' && data.TrangThai != 'cancelled') {
+                    parent.find('.accept-paid').show().data('order', data.MaHD);
+                } else {
+                    parent.find('.accept-paid').hide().removeAttr('data-order');
+                }
+
+                hideLoading();
                 setTimeout(() => {
-                    $('.order-infomation-wrapper').addClas('show');
+                    $('.order-infomation-wrapper').addClass('show');
                 }, 600)
             },
             error: () => { console.log('Error') }
@@ -755,7 +777,7 @@ $('.close-create-customer').click(() => {
 })
 
 $('.create-customer-wrapper .form-box').on('reset', function (e) {
-    $(this).removeClass('show');
+    $('.create-customer-wrapper').removeClass('show');
 })
 
 $('.create-customer-wrapper .form-box').submit(function (e) {
@@ -779,11 +801,18 @@ $('.create-customer-wrapper .form-box').submit(function (e) {
             'Email': email
         },
         success: (response) => {
+            hideLoading();
             if (response) {
-                hideLoading();
                 getCustomer(phone);
                 $(this).removeClass('show');
                 $(this).closest('.create-customer-wrapper').removeClass('show')
+            } else {
+                setTimeout(() => {
+                    Swal.fire({
+                        title: "Thêm khách hàng thất bại",
+                        icon: "error",
+                    });
+                }, 600)
             }
         },
         error: () => {
@@ -836,36 +865,42 @@ $('.create-order-box').submit((e) => {
     console.log(order)
 
     if (lstProduct) {
+        showLoading();
         $.ajax({
             type: 'POST',
             url: '/api/orders',
             contentType: 'application/json',
             data: JSON.stringify(order),
             success: (res) => {
-                if (res) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Tạo đơn hàng thành công",
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = '';
-                        }
-                    })
-                } else {
+                hideLoading();
+                setTimeout(() => {
+                    if (res) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Tạo đơn hàng thành công",
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '';
+                            }
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Không thể tạo đơn hàng",
+                            text: "Đã xảy ra lỗi!"
+                        })
+                    }
+                }, 600);
+            },
+            error: () => {
+                setTimeout(() => {
                     Swal.fire({
                         icon: "error",
                         title: "Không thể tạo đơn hàng",
                         text: "Đã xảy ra lỗi!"
                     })
-                }
-            },
-            error: () => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Không thể tạo đơn hàng",
-                    text: "Đã xảy ra lỗi!"
-                })
+                }, 600)
             }
         })
     }

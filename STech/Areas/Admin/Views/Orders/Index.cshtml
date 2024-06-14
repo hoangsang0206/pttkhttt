@@ -47,7 +47,7 @@
                     </tr>
                     @foreach (var order in Model)
                     {
-                        string buttonAccept = "&nbsp;<button class='order-btn accept-paid' data-order=" + order.MaHD + "><i class='bx bx-check'></i></button>";
+                        string buttonAccept = "&nbsp;<button class='mini-btn green accept-paid' data-order=" + order.MaHD + "><i class='bx bx-check'></i></button>";
                         bool isRender = order.TrangThai != "cancelled" && order.TrangThaiThanhToan != "paid";
 
                         string paymentStatusClass = "order-waiting";
@@ -86,8 +86,8 @@
                             {
                                 <td>
                                     <div class="order-status">
-                                        <button class="order-btn order-status-accept" data-order="@order.MaHD">Xác nhận</button>
-                                        <button class="order-btn order-status-refuse" data-order="@order.MaHD">Hủy ĐH</button>
+                                        <button class="mini-btn green order-status-accept" data-order="@order.MaHD">Xác nhận</button>
+                                        <button class="mini-btn red order-status-refuse" data-order="@order.MaHD">Hủy ĐH</button>
                                     </div>
                                 </td>
                             }
@@ -97,8 +97,8 @@
                             }
                             <td>
                                 <div class="order-button-box d-flex justify-content-end flex-wrap gap-2">
-                                    <button class="order-btn order-print-btn" data-order="@order.MaHD">In HĐ</button>
-                                    <button class="order-btn order-detail-btn" data-order="@order.MaHD">Chi tiết</button>
+                                    <button class="mini-btn green order-print-btn" data-order="@order.MaHD">In HĐ</button>
+                                    <button class="mini-btn blue order-detail-btn" data-order="@order.MaHD">Chi tiết</button>
                                 </div>
                             </td>
                         </tr>
@@ -115,6 +115,12 @@
             <i class='bx bx-x'></i>
         </div>
         <h4 class="text-center mt-3 mb-4">Chi tiết đơn hàng</h4>
+        <div class="d-flex align-items-center gap-1 mb-3">
+            <button class="mini-btn purple order-print-btn">In HĐ</button>
+            <button class="mini-btn blue accept-paid">Đã thanh toán</button>
+            <button class="mini-btn green order-status-accept">Xác nhận</button>
+            <button class="mini-btn red order-status-refuse">Hủy ĐH</button>
+        </div>
         <div class="form-box-header">
             <h5 class="order-info-header form-header-text">Đơn hàng - </h5>
         </div>
@@ -132,6 +138,10 @@
                     <span>Trạng thái:</span>
                     <p class="order-info-status"></p>
                 </div>
+                <div class="order-info-item d-flex gap-2">
+                    <span>Tồng tiền:</span>
+                    <p class="order-info-totalpay fw-bold"></p>
+                </div>
             </div>
             <div>
                 <div class="order-info-item d-flex gap-2">
@@ -145,12 +155,6 @@
                 <div class="order-info-item d-flex gap-2">
                     <span>Ghi chú:</span>
                     <p class="order-info-note"></p>
-                </div>
-            </div>
-            <div>
-                <div class="order-info-item d-flex gap-2">
-                    <span>Tồng tiền:</span>
-                    <p class="order-info-totalpay fw-bold"></p>
                 </div>
             </div>
         </div>
